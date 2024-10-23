@@ -37,7 +37,9 @@ class WelcomeScreen extends StatelessWidget {
                       'ID Digital', // Esto hará que el label sea flotante
                   labelStyle: TextStyle(
                       color: Colors.black54,
-                      fontSize: 18, fontWeight: FontWeight.bold), // Ajuste de estilo del label
+                      fontSize: 18,
+                      fontWeight:
+                          FontWeight.bold), // Ajuste de estilo del label
                   fillColor: Color(0xFFD9D9D9), // Color de fondo del TextField
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 15,
@@ -49,7 +51,6 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
 
               const SizedBox(height: 30),
               // Botón de Entrar
