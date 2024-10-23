@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';  // Para manejar archivos de imagen
+import 'dart:io'; // Para manejar archivos de imagen
 
 class UploadFrontDNIScreen extends StatefulWidget {
   @override
@@ -8,7 +8,7 @@ class UploadFrontDNIScreen extends StatefulWidget {
 }
 
 class _UploadFrontDNIScreenState extends State<UploadFrontDNIScreen> {
-  File? _dniImage;  // Para almacenar la imagen del DNI
+  File? _dniImage; // Para almacenar la imagen del DNI
 
   // Método para seleccionar imagen desde galería o cámara
   Future<void> _pickDniImage(ImageSource source) async {
@@ -29,19 +29,18 @@ class _UploadFrontDNIScreenState extends State<UploadFrontDNIScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50),
           child: Column(
-            
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                color: Colors.black,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  color: Colors.black,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-            ),
               const Text(
                 'Subir DNI',
                 style: TextStyle(
@@ -94,11 +93,13 @@ class _UploadFrontDNIScreenState extends State<UploadFrontDNIScreen> {
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
-                            Icon(Icons.camera_alt, size: 60, color: Colors.black54),
+                            Icon(Icons.camera_alt,
+                                size: 60, color: Colors.black54),
                             SizedBox(height: 10),
                             Text(
                               'Parte frontal del DNI dentro del recuadro',
-                              style: TextStyle(color: Colors.black54, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.black54, fontSize: 16),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -107,7 +108,8 @@ class _UploadFrontDNIScreenState extends State<UploadFrontDNIScreen> {
                           borderRadius: BorderRadius.circular(15),
                           child: Image.file(
                             _dniImage!,
-                            fit: BoxFit.fill, // Ajusta la imagen para que ocupe todo el contenedor
+                            fit: BoxFit
+                                .fill, // Ajusta la imagen para que ocupe todo el contenedor
                             width: double.infinity,
                           ),
                         ),
@@ -124,19 +126,20 @@ class _UploadFrontDNIScreenState extends State<UploadFrontDNIScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_dniImage != null) {
-                                    Navigator.pushNamed(context, 'upload_back_dni');
+                    Navigator.pushNamed(context, 'upload_back_dni');
 
                     print("DNI Subido correctamente");
                     // Aquí puedes agregar la lógica para enviar la imagen
                   } else {
-                                    Navigator.pushNamed(context, 'upload_back_dni');
+                    Navigator.pushNamed(context, 'upload_back_dni');
 
                     print("Por favor, sube una imagen del DNI");
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00C2CB),
-                  padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
