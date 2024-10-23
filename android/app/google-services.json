@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "274254356089",
+    "project_id": "ztech-1d0e3",
+    "storage_bucket": "ztech-1d0e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274254356089:android:4f6b74a157903a23c13ea8",
+        "android_client_info": {
+          "package_name": "com.example.ztech_mobile_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLYfNeixjO4aTY5BdHXbYiCbpcWRe6Vxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
