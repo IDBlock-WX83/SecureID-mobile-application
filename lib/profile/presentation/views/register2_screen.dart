@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';  // Necesario para formatear la fecha seleccionada
+import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';  // Para manejar archivos de imagen
+import 'dart:io'; // Para manejar archivos de imagen
 
 class SignUpScreen2 extends StatefulWidget {
   const SignUpScreen2({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
 
-  String _gender = "M";  // Género por defecto
+  String _gender = "M"; // Género por defecto
   File? _signatureImage; // Para almacenar la firma cargada
 
   // Libera los controladores cuando ya no son necesarios
@@ -36,14 +36,15 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(1900),  // Fecha mínima
-      lastDate: DateTime.now(),   // Fecha máxima
+      firstDate: DateTime(1900), // Fecha mínima
+      lastDate: DateTime.now(), // Fecha máxima
     );
 
     if (selectedDate != null) {
       String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
       setState(() {
-        _birthDateController.text = formattedDate;  // Actualiza el TextField con la fecha seleccionada
+        _birthDateController.text =
+            formattedDate; // Actualiza el TextField con la fecha seleccionada
       });
     }
   }
@@ -63,13 +64,17 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF00747C),
-      resizeToAvoidBottomInset: true,  // Permite que el contenido se ajuste cuando aparece el teclado
-      body: SingleChildScrollView(  // Hace que el contenido sea desplazable cuando aparece el teclado
+      resizeToAvoidBottomInset:
+          true, // Permite que el contenido se ajuste cuando aparece el teclado
+      body: SingleChildScrollView(
+        // Hace que el contenido sea desplazable cuando aparece el teclado
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 50),  // Espacio superior para asegurar que haya espacio con el teclado
+            const SizedBox(
+                height:
+                    50), // Espacio superior para asegurar que haya espacio con el teclado
             Align(
               alignment: Alignment.topLeft,
               child: IconButton(
@@ -95,9 +100,13 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Región',  // Label flotante
-                labelStyle: TextStyle(color: Colors.black, fontSize: 18,fontWeight: FontWeight.bold), // Ajuste de estilo
-                contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Ajuste de padding
+                labelText: 'Región', // Label flotante
+                labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 20, horizontal: 20), // Ajuste de padding
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -111,9 +120,13 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Provincia',  // Label flotante
-                labelStyle: TextStyle(color: Colors.black, fontSize: 18,fontWeight: FontWeight.bold), // Ajuste de estilo
-                contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Ajuste de padding
+                labelText: 'Provincia', // Label flotante
+                labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 20, horizontal: 20), // Ajuste de padding
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -127,9 +140,13 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Distrito',  // Label flotante
-                labelStyle: TextStyle(color: Colors.black, fontSize: 18,fontWeight: FontWeight.bold), // Ajuste de estilo
-                contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Ajuste de padding
+                labelText: 'Distrito', // Label flotante
+                labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 20, horizontal: 20), // Ajuste de padding
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -149,7 +166,10 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 children: [
                   const Text(
                     'Sexo:',
-                    style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
                   ),
                   Row(
                     children: [
@@ -217,9 +237,14 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     filled: true,
                     fillColor: const Color(0xFFD9D9D9),
                     labelText: 'Cargar Firma',
-                    labelStyle: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-                    suffixIcon: const Icon(Icons.attach_file, color: Colors.grey), // Ícono de carga
-                    contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    labelStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                    suffixIcon: const Icon(Icons.attach_file,
+                        color: Colors.grey), // Ícono de carga
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 20),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
@@ -234,20 +259,20 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               Image.file(
                 _signatureImage!,
                 height: 250,
-                width: 250,   // Ajusta el ancho de la imagen
-    fit: BoxFit.fill,  // Esta propiedad ajusta cómo la imagen se adapta al contenedor
-                
+                width: 250, // Ajusta el ancho de la imagen
+                fit: BoxFit
+                    .fill, // Esta propiedad ajusta cómo la imagen se adapta al contenedor
               ),
             const SizedBox(height: 20),
             // Botón de Continuar
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, 'upload_front_dni');
-
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00C2CB),
-                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -257,8 +282,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 style: TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
-                        const SizedBox(height: 20),
-
+            const SizedBox(height: 20),
           ],
         ),
       ),
