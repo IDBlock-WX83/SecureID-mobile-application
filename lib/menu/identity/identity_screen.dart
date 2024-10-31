@@ -1,6 +1,30 @@
+import 'dart:convert'; // Importa para decodificar el JSON
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Importa para cargar el archivo JSON
 
-class IdentityScreen extends StatelessWidget {
+class IdentityScreen extends StatefulWidget {
+  @override
+  _IdentityScreenState createState() => _IdentityScreenState();
+}
+
+class _IdentityScreenState extends State<IdentityScreen> {
+  Map<String, dynamic> userData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    // Cargar el archivo JSON
+    final String response = await rootBundle.loadString('assets/user.json');
+    final data = await json.decode(response);
+    setState(() {
+      userData = data;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +41,9 @@ class IdentityScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white), // Texto en blanco
         ),
       ),
-      body: Container(
+      body: userData.isEmpty
+          ? Center(child: CircularProgressIndicator()) // Mostrar un indicador de carga mientras se cargan los datos
+          : Container(
         color: Colors.white, // Fondo blanco
         padding: EdgeInsets.all(20), // Espacio alrededor del contenido
         child: Column(
@@ -27,11 +53,11 @@ class IdentityScreen extends StatelessWidget {
             Center(
               child: CircleAvatar(
                 radius: 50, // Tamaño de la imagen de perfil
-                backgroundImage: NetworkImage('URL_IMAGEN_PERFIL'), // Cambia por la URL de la imagen
+                backgroundImage: NetworkImage(userData['profile_image']), // Imagen desde el JSON
               ),
             ),
             SizedBox(height: 10), // Espacio debajo de la imagen
-            Text('DNI: 12345678', style: TextStyle(fontSize: 18)), // Ejemplo de DNI
+            Text('DNI: ${userData['dni']}', style: TextStyle(fontSize: 18)), // Ejemplo de DNI
             Divider(thickness: 1), // Línea de separación
 
             // Información personal
@@ -42,21 +68,21 @@ class IdentityScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Primer nombre', style: TextStyle(fontSize: 16)),
-                    Text('JHON', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(userData['first_name'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Primer apellido', style: TextStyle(fontSize: 16)),
-                    Text('Doe', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(userData['last_name_1'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Segundo apellido', style: TextStyle(fontSize: 16)),
-                    Text('Boe', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(userData['last_name_2'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
@@ -71,21 +97,21 @@ class IdentityScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Nacimiento', style: TextStyle(fontSize: 16)),
-                    Text('20-02-2020', style: TextStyle(fontSize: 20)),
+                    Text(userData['birth_date'], style: TextStyle(fontSize: 20)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Sexo', style: TextStyle(fontSize: 16)),
-                    Text('M', style: TextStyle(fontSize: 20)),
+                    Text(userData['gender'], style: TextStyle(fontSize: 20)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Estado Civil', style: TextStyle(fontSize: 16)),
-                    Text('S', style: TextStyle(fontSize: 20)),
+                    Text(userData['civil_status'], style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ],
@@ -100,21 +126,21 @@ class IdentityScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Región', style: TextStyle(fontSize: 16)),
-                    Text('Lima', style: TextStyle(fontSize: 20)),
+                    Text(userData['region'], style: TextStyle(fontSize: 20)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Provincia', style: TextStyle(fontSize: 16)),
-                    Text('Lima', style: TextStyle(fontSize: 20)),
+                    Text(userData['province'], style: TextStyle(fontSize: 20)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Distrito', style: TextStyle(fontSize: 16)),
-                    Text('Lima', style: TextStyle(fontSize: 20)),
+                    Text(userData['district'], style: TextStyle(fontSize: 20)),
                   ],
                 ),
               ],
@@ -123,7 +149,7 @@ class IdentityScreen extends StatelessWidget {
 
             // Dirección
             Text('Dirección:', style: TextStyle(fontSize: 16)),
-            Text('Av. Lima 123', style: TextStyle(fontSize: 20)), // Ejemplo de dirección
+            Text(userData['address'], style: TextStyle(fontSize: 20)), // Dirección desde el JSON
             Divider(thickness: 1), // Línea de separación
 
             // Espacio para la firma digital
@@ -139,7 +165,7 @@ class IdentityScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10), // Bordes redondeados para la imagen
                 child: Image.network(
-                  'URL_FIRMA_DIGITAL', // Cambia por la URL de la firma digital
+                  userData['digital_signature'], // Firma digital desde el JSON
                   fit: BoxFit.cover, // Ajustar la imagen para que cubra todo el contenedor
                 ),
               ),

@@ -1,6 +1,30 @@
+import 'dart:convert'; // Importa para decodificar el JSON
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Importa para cargar el archivo JSON
 
-class DNIScreen extends StatelessWidget {
+class DNIScreen extends StatefulWidget {
+  @override
+  _DNIScreenState createState() => _DNIScreenState();
+}
+
+class _DNIScreenState extends State<DNIScreen> {
+  Map<String, dynamic> userData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    // Cargar el archivo JSON
+    final String response = await rootBundle.loadString('assets/user.json');
+    final data = await json.decode(response);
+    setState(() {
+      userData = data;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,16 +41,18 @@ class DNIScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white), // Texto en blanco
         ),
       ),
-      body: Container(
+      body: userData.isEmpty
+          ? Center(child: CircularProgressIndicator()) // Mostrar indicador de carga
+          : Container(
         color: Colors.white, // Fondo blanco
-        child: Center( // Centrar el contenido en el medio de la pantalla
+        child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min, // Usar tamaño mínimo para la columna
             children: [
               SizedBox(height: 20), // Espacio en la parte superior
-              _buildIDImage('URL_IMAGEN_FRONTAL'), // Cambia por la URL de la imagen frontal
+              _buildIDImage(userData['dni_image_front']), // Imagen frontal desde JSON
               SizedBox(height: 20), // Espacio entre imágenes
-              _buildIDImage('URL_IMAGEN_TRASERA'), // Cambia por la URL de la imagen trasera
+              _buildIDImage(userData['dni_image_back']), // Imagen trasera desde JSON
             ],
           ),
         ),
