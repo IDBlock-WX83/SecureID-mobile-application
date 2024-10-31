@@ -3,7 +3,7 @@ import 'package:intl/intl.dart'; // Necesario para formatear la fecha selecciona
 import 'package:flutter/services.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
