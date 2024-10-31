@@ -5,6 +5,16 @@ class FaceCaptureScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF00747C), // Color primario
+      appBar: AppBar(
+        backgroundColor: Color(0xFF00747C), // Fondo del AppBar
+        elevation: 0, // Eliminar sombra del AppBar
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Flecha de retroceso
+          onPressed: () {
+            Navigator.pop(context); // Acción para retroceder
+          },
+        ),
+      ),
       body: Center( // Centrar todo el contenido en el medio de la pantalla
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center, // Centrar verticalmente
