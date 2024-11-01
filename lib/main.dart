@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/firebase_options.dart';
 import 'package:ztech_mobile_application/menu/identity/DNI_screen.dart';
+import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
+import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
 import 'package:ztech_mobile_application/menu/menu_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/splash_screen.dart';
@@ -35,7 +37,10 @@ class MyApp extends StatelessWidget {
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
         'register2': (context) => SignUpScreen2(),
-
+        'upload_face_capture': (context) =>  FaceCaptureScreen(),
+        'user_menu': (context) =>  MenuScreen(),
+        'user_identification': (context) =>  IdentityScreen(),
+        'user_dni': (context) =>  DNIScreen(),
       },
     );
   }

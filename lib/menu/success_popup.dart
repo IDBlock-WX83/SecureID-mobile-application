@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'menu_screen.dart';
+
 class SuccessPopup extends StatelessWidget {
   final VoidCallback onProfileClick;
 
@@ -27,6 +29,10 @@ class SuccessPopup extends StatelessWidget {
             onPressed: () {
               onProfileClick(); // Llama a la función proporcionada
               Navigator.of(context).pop(); // Cierra el diálogo
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MenuScreen()), // Navega a MenuScreen
+              );
             },
             child: Text(
               'Ir a mi perfil',

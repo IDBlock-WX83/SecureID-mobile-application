@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../success_popup.dart';
+
 class FaceCaptureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -66,6 +68,7 @@ class FaceCaptureScreen extends StatelessWidget {
                 minimumSize: Size(150, 50), // Tamaño mínimo del botón
               ),
               onPressed: () {
+                _showSuccessPopup(context);
                 // Lógica para capturar la imagen
               },
               child: Text(
@@ -78,4 +81,18 @@ class FaceCaptureScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void _showSuccessPopup(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return SuccessPopup(
+        onProfileClick: () {
+          // Aquí puedes manejar la navegación al perfil
+          // Navigator.push(...) o cualquier otra lógica que necesites
+        },
+      );
+    },
+  );
 }

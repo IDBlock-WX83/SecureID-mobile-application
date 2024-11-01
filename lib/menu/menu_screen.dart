@@ -44,16 +44,11 @@ class MenuScreen extends StatelessWidget {
           MenuButton(
             text: 'Servicios',
             onPressed: () {
-              _showSuccessPopup(context);
             },
           ),
           MenuButton(
             text: 'Historial de transacciones',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FaceCaptureScreen()), // Navegar al screen DNI
-              );
             },
           ),
         ],
@@ -61,19 +56,6 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-  void _showSuccessPopup(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SuccessPopup(
-          onProfileClick: () {
-            // Aquí puedes manejar la navegación al perfil
-            // Navigator.push(...) o cualquier otra lógica que necesites
-          },
-        );
-      },
-    );
-  }
 
   Widget _buildAppBarContent() {
     return Row(
@@ -81,7 +63,7 @@ class MenuScreen extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 20, // Radio del círculo para la foto de perfil
-          backgroundImage: NetworkImage('URL_DE_LA_IMAGEN'), // Cambia esto por la URL de la imagen
+          backgroundImage: NetworkImage('URL_DE_LA_IMAGEN'),
         ),
         SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
         Text(
