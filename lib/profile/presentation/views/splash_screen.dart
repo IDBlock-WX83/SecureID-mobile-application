@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/common/utils/local_persistance.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

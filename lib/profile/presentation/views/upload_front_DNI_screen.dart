@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Para manejar archivos de imagen
 
 class UploadFrontDNIScreen extends StatefulWidget {
+  const UploadFrontDNIScreen({super.key});
+
   @override
   _UploadFrontDNIScreenState createState() => _UploadFrontDNIScreenState();
 }

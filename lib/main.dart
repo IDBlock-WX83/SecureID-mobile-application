@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/firebase_options.dart';
+import 'package:ztech_mobile_application/menu/identity/DNI_screen.dart';
+import 'package:ztech_mobile_application/menu/menu_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/splash_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/welcome_screen.dart';
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),//Carga de pantalla completo
-        'welcome': (context) => const WelcomeScreen(),//Pantalla de bienvenida completo
+        'welcome': (context) => WelcomeScreen(),//Pantalla de bienvenida completo
         'upload_front_dni': (context) =>  UploadFrontDNIScreen(),
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
