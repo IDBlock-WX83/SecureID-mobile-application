@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/InAppServices/views/education_service_screen.dart';
+import 'package:ztech_mobile_application/InAppServices/views/energy_service_screen.dart';
+import 'package:ztech_mobile_application/InAppServices/views/health_service_screen.dart';
+import 'package:ztech_mobile_application/InAppServices/views/water_service_screen.dart';
 import 'package:ztech_mobile_application/InAppServices/widget/Service_Button.dart';
 
 class ServicesScreen extends StatelessWidget {
@@ -25,28 +29,40 @@ class ServicesScreen extends StatelessWidget {
               icon: Icons.health_and_safety, 
               label: 'Salud',
               onPressed: () {
-                // TODO: Redireccion
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HealthServiceScreen()),
+                );
               },
             ),
             ServiceButton(
               icon: Icons.battery_full, 
               label: 'Energía',
               onPressed: () {
-                // TODO: Redireccion
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EnergyServiceScreen()),
+                );
               },
             ),
             ServiceButton(
               icon: Icons.book,
               label: 'Educación',
               onPressed: () {
-                // TODO: Redireccion
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EducationServiceScreen()),
+                );
               },
             ),
             ServiceButton(
               icon: Icons.water,
               label: 'Agua',
               onPressed: () {
-                // TODO: Redireccion
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const WaterServiceScreen()),
+                );
               },
             ),
           ],
