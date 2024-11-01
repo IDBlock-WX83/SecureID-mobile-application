@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),//Carga de pantalla completo
-        'welcome': (context) => MenuScreen(),//Pantalla de bienvenida completo
+        'welcome': (context) => WelcomeScreen(),//Pantalla de bienvenida completo
         'upload_front_dni': (context) =>  UploadFrontDNIScreen(),
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
