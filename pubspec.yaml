@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+  crypto: ^3.0.0
   http: ^1.1.0
   image_picker: ^1.1.2
   intl: ^0.19.0
@@ -66,18 +66,31 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-    
-    
+    # To add assets to your application, add an assets section, like this:
+
+
   assets:
     - assets/logosecureid.png
-    - assets/Logo-ztech-inicio.png
+    #- assets/Logo-ztech-inicio.png
     - assets/empty-notification-image.png
     - assets/user.json
     - assets/NotFound.png
-    - assets/plant1.png
-    - assets/plant2.png
-    - assets/plant3.png
+    - assets/juan.jpg
+    - assets/maria.jpg
+    - assets/carlos.jpg
+    - assets/ana.jpg
+    - assets/luis.jpg
+    - assets/elena.jpg
+    - assets/jose.jpg
+    - assets/lucia.jpg
+    - assets/miguel.jpg
+    - assets/sofia.jpg
+    - assets/raul.jpg
+
+
+    #- assets/plant1.png
+    #- assets/plant2.png
+    #- assets/plant3.png
     - assets/Add-Image.png
     - assets/plants_available.json
   # An image asset can refer to one or more resolution-specific "variants", see
