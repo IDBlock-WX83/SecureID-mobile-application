@@ -6,6 +6,19 @@ import 'package:ztech_mobile_application/profile/presentation/views/splash_scree
 import 'package:ztech_mobile_application/profile/presentation/views/welcome_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/upload_front_DNI_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/upload_back_DNI_screen.dart';
+import 'package:ztech_mobile_application/services/agua_service_edit.dart';
+import 'package:ztech_mobile_application/services/agua_service_registration_screen.dart';
+import 'package:ztech_mobile_application/services/agua_services_admin_list.dart';
+import 'package:ztech_mobile_application/services/educacion%20_service_edit.dart';
+import 'package:ztech_mobile_application/services/educacion_service_registration_screen.dart';
+import 'package:ztech_mobile_application/services/educacion_services_admin_list.dart';
+import 'package:ztech_mobile_application/services/energia_service_edit.dart';
+import 'package:ztech_mobile_application/services/energia_service_registration_screen.dart';
+import 'package:ztech_mobile_application/services/energia_services_admin_list.dart';
+import 'package:ztech_mobile_application/services/salud_service_edit.dart';
+import 'package:ztech_mobile_application/services/salud_service_registration_screen.dart';
+import 'package:ztech_mobile_application/services/salud_services_admin_list.dart';
+import 'services/services_admin_screen.dart';
 
 import 'package:ztech_mobile_application/profile/presentation/views/register2_screen.dart';
 void main() async {
@@ -25,7 +38,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
+      initialRoute: 'servicesAdmin',
       routes: {
         '/': (context) => const SplashScreen(),//Carga de pantalla completo
         'welcome': (context) => const WelcomeScreen(),//Pantalla de bienvenida completo
@@ -33,7 +46,19 @@ class MyApp extends StatelessWidget {
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
         'register2': (context) => SignUpScreen2(),
-
+        'servicesAdmin': (context) => ServicesAdminScreen(),
+        'registerhealth': (context) => SaludServiceRegistrationScreen(),
+        'registerenergy': (context) => EnergyServiceRegistrationScreen(),
+        'registereducation': (context) => EducationServiceRegistrationScreen(),
+        'registerwater': (context) => WaterServiceRegistrationScreen(),
+        'healthlistadmin': (context) => HealthServiceListScreen(),
+        'energylistadmin': (context) => EnergyServiceListScreen(),
+        'educationlistadmin': (context) => EducationServiceListScreen(),
+        'waterlistadmin': (context) => WaterServiceListScreen(),
+        'healthedit': (context) => HealthCampaignEditScreen(),
+        'energyedit': (context) => EnergyCampaignEditScreen(),
+        'educationedit': (context) => EducationCampaignEditScreen(),
+        'wateredit': (context) => WaterCampaignEditScreen()
       },
     );
   }
