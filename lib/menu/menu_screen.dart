@@ -1,11 +1,35 @@
+import 'dart:convert'; // Para convertir JSON
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle; // Para cargar el archivo JSON
 import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
 import 'identity/DNI_screen.dart';
 import 'success_popup.dart'; // Asegúrate de importar tu nuevo archivo
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
+  @override
+  _MenuScreenState createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  String profileImage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfileImage();
+  }
+
+  // Función para cargar el archivo JSON y extraer la imagen de perfil
+  Future<void> loadProfileImage() async {
+    String jsonString = await rootBundle.loadString('assets/user.json');
+    Map<String, dynamic> jsonData = json.decode(jsonString);
+    setState(() {
+      profileImage = jsonData['profile_image'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +53,7 @@ class MenuScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => IdentityScreen()), // Navegar al screen DNI
+                MaterialPageRoute(builder: (context) => IdentityScreen()), // Navegar al screen Identity
               );
             },
           ),
@@ -54,6 +78,7 @@ class MenuScreen extends StatelessWidget {
           MenuButton(
             text: 'Historial de transacciones',
             onPressed: () {
+              // Lógica para historial de transacciones
             },
           ),
         ],
@@ -61,14 +86,15 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-
   Widget _buildAppBarContent() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 20, // Radio del círculo para la foto de perfil
-          backgroundImage: NetworkImage('URL_DE_LA_IMAGEN'),
+          backgroundImage: profileImage.isNotEmpty
+              ? NetworkImage(profileImage)
+              : AssetImage('assets/default_profile.png') as ImageProvider, // Imagen por defecto si no hay URL
         ),
         SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
         Text(
