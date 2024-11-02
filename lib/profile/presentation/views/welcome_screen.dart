@@ -56,8 +56,11 @@ class WelcomeScreen extends StatelessWidget {
               // Botón de Entrar
               ElevatedButton(
                 onPressed: () {
+                  //Para segmento de residentes
                   Navigator.pushNamed(context, 'user_menu');
-                  //cuando es autoridad comentar
+
+                  //Para segmento de autoridades
+                  //Navigator.pushNamed(context, 'menu');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF00BBC9),
@@ -75,7 +78,10 @@ class WelcomeScreen extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, 'register');
+
+             
                 },
+                //Comentar si es autoridad
                 child: const Text(
                   '¿No tienes cuenta?',
                   style: TextStyle(

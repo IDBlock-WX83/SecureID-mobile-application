@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navegar según la existencia del usuario
     if (user != null && user.isNotEmpty) {
-      Navigator.of(context).pushReplacementNamed("flowerpots");
+      Navigator.of(context).pushReplacementNamed("welcome");
     } else {
       Navigator.of(context).pushReplacementNamed("welcome");
     }

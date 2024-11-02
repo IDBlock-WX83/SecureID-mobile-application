@@ -131,11 +131,11 @@ class _UploadBackDNIScreenState extends State<UploadBackDNIScreen> {
                 onPressed: () {
                   if (_dniImage != null) {
 
-                    Navigator.pushNamed(context, 'menu');
+                    Navigator.pushNamed(context, 'registro_exitoso');
                     print("DNI Subido correctamente");
                     // Aquí puedes agregar la lógica para enviar la imagen
                   } else {
-                    Navigator.pushNamed(context, 'menu');
+                    Navigator.pushNamed(context, 'registro_exitoso');
 
                     print("Por favor, sube una imagen del DNI");
                   }

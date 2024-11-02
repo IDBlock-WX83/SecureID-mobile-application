@@ -30,8 +30,7 @@ import 'package:ztech_mobile_application/services/salud_services_admin_list.dart
 import 'services/services_admin_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register2_screen.dart';
 import 'package:ztech_mobile_application/common/utils/blockchain_record.dart'; // Asegúrate de importar tu clase Blockchain
-
-
+import 'package:ztech_mobile_application/menu/success_popup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +47,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Ztech',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),//Carga de pantalla completo
         'welcome': (context) => WelcomeScreen(),//Pantalla de bienvenida completo
+        'registro_exitoso': (context) => SuccessPopup(onProfileClick: () {  },),
         'upload_front_dni': (context) =>  UploadFrontDNIScreen(),
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
