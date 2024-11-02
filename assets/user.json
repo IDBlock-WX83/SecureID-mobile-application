@@ -1,28 +1,17 @@
 {
-    "firstName": "Name",
-    "lastName": "LastName",
-    "greeting": "Good morning 👋",
-    "profileImageUrl": "https://pub-static.fotor.com/assets/projects/pages/d5bdd0513a0740a8a38752dbc32586d0/fotor-03d1a91a0cec4542927f53c87e0599f6.jpg",
-    "plants": [
-        {
-            "plantName": "Flowerpot 1",
-            "scientificName": "Scientific Name 1",
-            "plantImageUrl": "https://yorkshireflowerpots.co.uk/wp-content/uploads/2019/09/YFP_Medium_Heavy_Cylinder-928x826.jpg",
-            "careIcons": {
-                "temperature": "alto",
-                "water": "bajo",
-                "sunlight": "medio"
-            }
-        },
-        {
-            "plantName": "Flowerpot 2",
-            "scientificName": "Scientific Name 2",
-            "plantImageUrl": "https://www.hawleygardencentre.co.uk/shop//User/Products/LrgImg/Outdoor%20Living/Planters%20and%20Pots/Terracotta%20Pots/80355-Terra-Large-Flower-Pot.jpg",
-            "careIcons": {
-                "temperature": "bajo",
-                "water": "alto",
-                "sunlight": "medio"
-            }
-        }
-    ]
+    "dni": "32345678",
+    "first_name": "Jhon",
+    "last_name_1": "Doe",
+    "last_name_2": "Boe",
+    "birth_date": "20-02-2020",
+    "gender": "M",
+    "civil_status": "S",
+    "region": "Lima",
+    "province": "Lima",
+    "district": "Lima",
+    "address": "Av. Lima 123",
+    "profile_image": "https://cdn.discordapp.com/attachments/793721172285849600/1301694843319488602/perfil-empresario-dibujos-animados_18591-58481.png?ex=6725694a&is=672417ca&hm=bcbcaa1d1dca8a7714a149cc0003ecd86a827964cd1445f1cce26f0bc3361f4e&",
+    "digital_signature": "https://cdn.discordapp.com/attachments/793721172285849600/1301694998722510858/fake-autograph-samples-hand-drawn-signatures-examples-of-documents-certificates-and-contracts-with-inked-and-handwritten-lettering-vector.png?ex=67256970&is=672417f0&hm=8a45221725628fb55b17b9aec455b37e309330d400c1503f0caafa45ea048557&",
+    "dni_image_front": "https://cdn.discordapp.com/attachments/793721172285849600/1301695334556106833/image.png?ex=672569c0&is=67241840&hm=3d56e1f79ccf495cf660b309d75756b4d85aee8673ba4ac89f53e64090328774&",
+    "dni_image_back": "https://cdn.discordapp.com/attachments/793721172285849600/1301695382312718386/image.png?ex=672569cb&is=6724184b&hm=713a0dae76a8dbfdd3a2f6096a7abd9714d9d93572c37efa21b7230832cbff03&"
 }

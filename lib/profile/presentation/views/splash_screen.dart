@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/common/utils/local_persistance.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  
   @override
   void initState() {
     super.initState();
@@ -19,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkUserAndNavigate() async {
     // Espera 4 segundos antes de la comprobación
     await Future.delayed(const Duration(seconds: 4));
-    
+
     final localPersistance = LocalPersistance();
     final user = await localPersistance.getUser();
 

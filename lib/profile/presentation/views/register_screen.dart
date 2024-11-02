@@ -3,7 +3,7 @@ import 'package:intl/intl.dart'; // Necesario para formatear la fecha selecciona
 import 'package:flutter/services.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -11,8 +11,10 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
-    final TextEditingController _paternalSurnameController = TextEditingController();
-    final TextEditingController _maternalSurnameController = TextEditingController();
+  final TextEditingController _paternalSurnameController =
+      TextEditingController();
+  final TextEditingController _maternalSurnameController =
+      TextEditingController();
 
   final TextEditingController _idDigitalController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -103,7 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-             const SizedBox(height: 30),
+            const SizedBox(height: 30),
             // Campo de texto: Apellido Paterno con labelText flotante
             TextField(
               controller: _paternalSurnameController,
@@ -257,8 +259,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 style: TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
-                        const SizedBox(height: 30),
-
+            const SizedBox(height: 30),
           ],
         ),
       ),

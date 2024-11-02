@@ -86,13 +86,16 @@ flutter:
     - assets/miguel.jpg
     - assets/sofia.jpg
     - assets/raul.jpg
-
-
     #- assets/plant1.png
     #- assets/plant2.png
     #- assets/plant3.png
+    - assets/empty-notification-image.png
+    - assets/user.json
+    - assets/NotFound.png
     - assets/Add-Image.png
     - assets/plants_available.json
+    - assets/service_adultos_mayores.jpg
+    - assets/service_vacunacion.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
