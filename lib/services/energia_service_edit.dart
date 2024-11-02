@@ -8,11 +8,11 @@ class EnergyCampaignEditScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Energia'),
-        backgroundColor: Color(0xFF008080),
+        title: const Text('Energia'),
+        backgroundColor: const Color(0xFF008080),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +71,7 @@ class EnergyCampaignEditScreen extends StatelessWidget {
               style: TextStyle(color: Colors.lightBlue),
             ),
             Container(
-              margin: EdgeInsets.only(top: 8.0, bottom: 16.0),
+              margin: const EdgeInsets.only(top: 8.0, bottom: 16.0),
               height: 100,
               width: double.infinity,
               child: Image.asset(
@@ -86,10 +86,11 @@ class EnergyCampaignEditScreen extends StatelessWidget {
                 onPressed: () {
                   // Acción de guardar
                 },
-                child: Text('Guardar'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF008080),
+                  backgroundColor: const Color(0xFF008080),
+                  foregroundColor: Colors.white,
                 ),
+                child: const Text('Guardar'),
               ),
             ),
           ],

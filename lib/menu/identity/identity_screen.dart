@@ -156,9 +156,9 @@ class _IdentityScreenState extends State<IdentityScreen> {
             Text('Firma Digital:', style: TextStyle(fontSize: 16)),
             SizedBox(height: 10), // Espacio entre texto y firma
             Container(
-              width: 200, // Ancho del espacio para la firma
-              height: 100, // Alto del espacio para la firma
-              decoration: BoxDecoration(
+              width: MediaQuery.of(context).size.width , // Ancho del 80% del ancho de la pantalla
+      height: MediaQuery.of(context).size.height * 0.15, // Alto del 15% de la altura de la pantalla
+      decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey, width: 2), // Borde alrededor del contenedor
                 borderRadius: BorderRadius.circular(10), // Bordes redondeados
               ),
@@ -166,7 +166,7 @@ class _IdentityScreenState extends State<IdentityScreen> {
                 borderRadius: BorderRadius.circular(10), // Bordes redondeados para la imagen
                 child: Image.network(
                   userData['digital_signature'], // Firma digital desde el JSON
-                  fit: BoxFit.cover, // Ajustar la imagen para que cubra todo el contenedor
+                  fit: BoxFit.contain, // Ajustar la imagen para que cubra todo el contenedor
                 ),
               ),
             ),

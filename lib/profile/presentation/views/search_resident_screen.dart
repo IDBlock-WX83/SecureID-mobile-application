@@ -19,9 +19,10 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Residentes'),
+        backgroundColor: Color(0xFF00C2CB), // Color de fondo
       ),
       body: Container(
-        color: Color(0xFF00C2CB),
+        color: Colors.white,
         child: Column(
           children: [
             Padding(

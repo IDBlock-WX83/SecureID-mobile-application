@@ -8,8 +8,8 @@ class EducationCampaignEditScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Educacion'),
-        backgroundColor: Color(0xFF008080),
+        title: const Text('Educacion'),
+        backgroundColor: const Color(0xFF008080),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -71,7 +71,7 @@ class EducationCampaignEditScreen extends StatelessWidget {
               style: TextStyle(color: Colors.lightBlue),
             ),
             Container(
-              margin: EdgeInsets.only(top: 8.0, bottom: 16.0),
+              margin: const EdgeInsets.only(top: 8.0, bottom: 16.0),
               height: 100,
               width: double.infinity,
               child: Image.asset(
@@ -86,10 +86,11 @@ class EducationCampaignEditScreen extends StatelessWidget {
                 onPressed: () {
                   // Acción de guardar
                 },
-                child: Text('Guardar'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF008080),
+                  backgroundColor: const Color(0xFF008080),
+                  foregroundColor: Colors.white,
                 ),
+                child: const Text('Guardar'),
               ),
             ),
           ],
