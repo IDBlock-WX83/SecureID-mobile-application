@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: 'servicesAdmin',
+      initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),//Carga de pantalla completo
         'welcome': (context) => WelcomeScreen(),//Pantalla de bienvenida completo
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
         'register2': (context) => SignUpScreen2(),
-        'servicesAdmin': (context) => ServicesAdminScreen(),
+        'servicesAdmin': (context) => ServicesAdminScreen(),// services para editores
         'registerhealth': (context) => SaludServiceRegistrationScreen(),
         'registerenergy': (context) => EnergyServiceRegistrationScreen(),
         'registereducation': (context) => EducationServiceRegistrationScreen(),
