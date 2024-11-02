@@ -1,6 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/firebase_options.dart';
+import 'package:ztech_mobile_application/menu/identity/DNI_screen.dart';
+import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
+import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
+import 'package:ztech_mobile_application/menu/menu_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/splash_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/welcome_screen.dart';
@@ -41,7 +45,7 @@ class MyApp extends StatelessWidget {
       initialRoute: 'servicesAdmin',
       routes: {
         '/': (context) => const SplashScreen(),//Carga de pantalla completo
-        'welcome': (context) => const WelcomeScreen(),//Pantalla de bienvenida completo
+        'welcome': (context) => WelcomeScreen(),//Pantalla de bienvenida completo
         'upload_front_dni': (context) =>  UploadFrontDNIScreen(),
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
@@ -58,7 +62,11 @@ class MyApp extends StatelessWidget {
         'healthedit': (context) => HealthCampaignEditScreen(),
         'energyedit': (context) => EnergyCampaignEditScreen(),
         'educationedit': (context) => EducationCampaignEditScreen(),
-        'wateredit': (context) => WaterCampaignEditScreen()
+        'wateredit': (context) => WaterCampaignEditScreen(),
+        'upload_face_capture': (context) =>  FaceCaptureScreen(),
+        'user_menu': (context) =>  MenuScreen(),
+        'user_identification': (context) =>  IdentityScreen(),
+        'user_dni': (context) =>  DNIScreen(),
       },
     );
   }
