@@ -56,7 +56,8 @@ class WelcomeScreen extends StatelessWidget {
               // Botón de Entrar
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, 'login');
+                  Navigator.pushNamed(context, 'user_menu');
+                  //cuando es autoridad comentar
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF00BBC9),

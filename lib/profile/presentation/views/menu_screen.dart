@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/common/utils/blockchain_record.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/transaction_history_screen.dart';
 
-class MenuScreen extends StatefulWidget {
+class MenuScreenAutoridades extends StatefulWidget {
   final Blockchain blockchain; // Propiedad para almacenar la instancia de Blockchain
 
-  MenuScreen({required this.blockchain}); // Modificar el constructor
+  MenuScreenAutoridades({required this.blockchain}); // Modificar el constructor
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _MenuScreenState extends State<MenuScreenAutoridades> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
