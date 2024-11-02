@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
 import 'identity/DNI_screen.dart';
@@ -44,6 +45,10 @@ class MenuScreen extends StatelessWidget {
           MenuButton(
             text: 'Servicios',
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ServicesScreen()),
+              );
             },
           ),
           MenuButton(
