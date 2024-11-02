@@ -78,7 +78,8 @@ class _MenuScreenState extends State<MenuScreen> {
           MenuButton(
             text: 'Historial de transacciones',
             onPressed: () {
-              // Lógica para historial de transacciones
+              Navigator.pushNamed(context, 'record_screen');
+
             },
           ),
         ],

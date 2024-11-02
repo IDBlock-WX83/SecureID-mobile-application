@@ -12,7 +12,7 @@ class EducationCampaignEditScreen extends StatelessWidget {
         backgroundColor: Color(0xFF008080),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

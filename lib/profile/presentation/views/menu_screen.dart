@@ -15,6 +15,18 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF00747C), // Color primario
+        title: _buildAppBarContent(),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.white), // Ícono para salir
+            onPressed: () {
+              // Lógica para salir del menú o de la aplicación
+            },
+          ),
+        ],
+      ),
       backgroundColor: Color(0xFF00747C), // Color de fondo
       body: Center(
         child: Column(
@@ -37,6 +49,7 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
               icon: Icons.build,
               onTap: () {
                 // Aquí puedes agregar más lógica en el futuro
+                Navigator.pushNamed(context, 'servicesAdmin');
                 print('Servicios');
               },
             ),
@@ -63,6 +76,24 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
     );
   }
 }
+
+Widget _buildAppBarContent() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      CircleAvatar(
+        radius: 20, // Radio del círculo para la foto de perfil
+        backgroundImage: NetworkImage('URL_DE_LA_IMAGEN'),
+      ),
+      SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
+      Text(
+        'MENÚ',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white), // Texto en blanco
+      ),
+    ],
+  );
+}
+
 
 // Widget para un botón de menú
 class MenuButton extends StatefulWidget {
