@@ -4,6 +4,8 @@ import 'package:flutter/services.dart' show rootBundle; // Para cargar el archiv
 import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
+import '../api_client/baseClient/base_client.dart';
+import '../api_client/models/identification.dart';
 import 'identity/DNI_screen.dart';
 import 'success_popup.dart'; // Asegúrate de importar tu nuevo archivo
 
@@ -13,21 +15,24 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  String profileImage = '';
+  Identification? userData; // Variable para guardar el objeto del usuario
+  final BaseClient _client = BaseClient(); // Instancia del cliente HTTP
 
   @override
   void initState() {
     super.initState();
-    loadProfileImage();
+    loadUserData("1");
   }
 
-  // Función para cargar el archivo JSON y extraer la imagen de perfil
-  Future<void> loadProfileImage() async {
-    String jsonString = await rootBundle.loadString('assets/user.json');
-    Map<String, dynamic> jsonData = json.decode(jsonString);
-    setState(() {
-      profileImage = jsonData['profile_image'];
-    });
+  Future<void> loadUserData(id) async {
+    try {
+      final identification = await _client.getIdentification(id); // Usa el id que necesitas
+      setState(() {
+        userData = identification; // Asigna el objeto Identification al estado
+      });
+    } catch (e) {
+      print("Error al cargar los datos del usuario: $e");
+    }
   }
 
   @override
@@ -93,9 +98,7 @@ class _MenuScreenState extends State<MenuScreen> {
       children: [
         CircleAvatar(
           radius: 20, // Radio del círculo para la foto de perfil
-          backgroundImage: profileImage.isNotEmpty
-              ? NetworkImage(profileImage)
-              : AssetImage('assets/default_profile.png') as ImageProvider, // Imagen por defecto si no hay URL
+          backgroundImage: NetworkImage(userData!.fotoPerfil ?? "")
         ),
         SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
         Text(

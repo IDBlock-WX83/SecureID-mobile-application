@@ -1,6 +1,9 @@
 import 'dart:convert'; // Importa para decodificar el JSON
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Importa para cargar el archivo JSON
+import 'package:flutter/services.dart';
+
+import '../../api_client/baseClient/base_client.dart';
+import '../../api_client/models/identification.dart'; // Importa para cargar el archivo JSON
 
 class DNIScreen extends StatefulWidget {
   @override
@@ -8,21 +11,24 @@ class DNIScreen extends StatefulWidget {
 }
 
 class _DNIScreenState extends State<DNIScreen> {
-  Map<String, dynamic> userData = {};
+  Identification? userData; // Variable para guardar el objeto del usuario
+  final BaseClient _client = BaseClient(); // Instancia del cliente HTTP
 
   @override
   void initState() {
     super.initState();
-    loadUserData();
+    loadUserData("1");
   }
 
-  Future<void> loadUserData() async {
-    // Cargar el archivo JSON
-    final String response = await rootBundle.loadString('assets/user.json');
-    final data = await json.decode(response);
-    setState(() {
-      userData = data;
-    });
+  Future<void> loadUserData(id) async {
+    try {
+      final identification = await _client.getIdentification(id); // Usa el id que necesitas
+      setState(() {
+        userData = identification; // Asigna el objeto Identification al estado
+      });
+    } catch (e) {
+      print("Error al cargar los datos del usuario: $e");
+    }
   }
 
   @override
@@ -41,7 +47,7 @@ class _DNIScreenState extends State<DNIScreen> {
           style: TextStyle(color: Colors.white), // Texto en blanco
         ),
       ),
-      body: userData.isEmpty
+      body: userData == null
           ? Center(child: CircularProgressIndicator()) // Mostrar indicador de carga
           : Container(
         color: Colors.white, // Fondo blanco
@@ -50,9 +56,9 @@ class _DNIScreenState extends State<DNIScreen> {
             mainAxisSize: MainAxisSize.min, // Usar tamaño mínimo para la columna
             children: [
               SizedBox(height: 20), // Espacio en la parte superior
-              _buildIDImage(userData['dni_image_front']), // Imagen frontal desde JSON
+              _buildIDImage(userData!.dniFrontal ?? ""), // Imagen frontal desde JSON
               SizedBox(height: 20), // Espacio entre imágenes
-              _buildIDImage(userData['dni_image_back']), // Imagen trasera desde JSON
+              _buildIDImage(userData!.dniPosterior ?? ""), // Imagen trasera desde JSON
             ],
           ),
         ),
@@ -79,7 +85,7 @@ class _DNIScreenState extends State<DNIScreen> {
         borderRadius: BorderRadius.circular(10), // Bordes redondeados para la imagen
         child: Image.network(
           imageUrl,
-          fit: BoxFit.cover, // Ajustar la imagen para que cubra todo el contenedor
+          fit: BoxFit.cover, // Ajustar la imagen para que cubra
         ),
       ),
     );
