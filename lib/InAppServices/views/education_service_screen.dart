@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevice_api.dart';
 import 'package:ztech_mobile_application/InAppServices/widget/service_card.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
 
-class EducationServiceScreen extends StatelessWidget {
+class EducationServiceScreen extends StatefulWidget {
   const EducationServiceScreen({Key? key}) : super(key: key);
+
+  @override
+  _EducationServiceScreenState createState() => _EducationServiceScreenState();
+}
+
+class _EducationServiceScreenState extends State<EducationServiceScreen> {
+  late Future<List<SocialServiceResponse>> _educationServices;
+
+  @override
+  void initState() {
+    super.initState();
+    _educationServices = SocialServiceApi().getSocialServicesByTypeAndNotExpired('education');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,30 +28,45 @@ class EducationServiceScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF00747C),
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            ServiceCard(
-              title: 'Curso de inglés básico',
-              imageUrl:
-                  'https://aprendergratis.es/wp-content/uploads/2022/11/aprender-ingles-basico-1024x614.jpg',
-              text1: 'Instituto Cultural',
-              text2: 'Martes y Jueves 6 pm a 8 pm',
-              text3: 'Vence 22/02/2025',
-            ),
-            const SizedBox(height: 20),
-            ServiceCard(
-              title: 'Preparación para exámenes de ingreso',
-              imageUrl: 'https://englishtools.net/wp-content/uploads/elementor/thumbs/curso-de-preparacion-examen-fce-1-q2jrgven56lko2wa5bvtc7cyge1aja3ft618rkzrnw.webp',
-              text1: 'Biblioteca Central',
-              text2: 'Lunes a Viernes 4 pm a 6 pm',
-              text3: 'Vence 10/05/2025',
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+      body: FutureBuilder<List<SocialServiceResponse>>(
+        future: _educationServices,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay servicios disponibles.'));
+          } else {
+            final services = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: services.length,
+              itemBuilder: (context, index) {
+                final service = services[index];
+                return Column(
+                  children: [
+                    ServiceCard(
+                      title: service.title,
+                      imageUrl: service.imageUrl,
+                      text1: service.location,
+                      text2: service.schedule,
+                      text3: 'Vence ${service.expirationDate.toLocal().toShortDateString()}',
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
+            );
+          }
+        },
       ),
     );
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  String toShortDateString() {
+    return '${this.day}/${this.month}/${this.year}';
   }
 }
