@@ -2,54 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Para manejar archivos de imagen
+import '../../infrastructure/BlockchainApiService.dart'; // Importar el servicio
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen2 extends StatefulWidget {
-  const SignUpScreen2({super.key});
+  final Map<String, dynamic> firstData; // Recibe los datos del primer registro
+
+  const SignUpScreen2({super.key, required this.firstData});
 
   @override
   _SignUpScreen2State createState() => _SignUpScreen2State();
 }
 
 class _SignUpScreen2State extends State<SignUpScreen2> {
+    final BlockchainApiService _apiService = BlockchainApiService(); // Instancia del servicio
   final TextEditingController _regionController = TextEditingController();
   final TextEditingController _provinceController = TextEditingController();
   final TextEditingController _districtController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _birthDateController = TextEditingController();
 
   String _gender = "M"; // Género por defecto
   File? _signatureImage; // Para almacenar la firma cargada
 
-  // Libera los controladores cuando ya no son necesarios
+  @override
+  void initState() {
+    super.initState();
+    // Prellenar datos con `firstData` si están disponibles
+    if (widget.firstData.containsKey("region")) {
+      _regionController.text = widget.firstData["region"] ?? "";
+    }
+    if (widget.firstData.containsKey("province")) {
+      _provinceController.text = widget.firstData["province"] ?? "";
+    }
+    if (widget.firstData.containsKey("district")) {
+      _districtController.text = widget.firstData["district"] ?? "";
+    }
+    if (widget.firstData.containsKey("gender")) {
+      _gender = widget.firstData["gender"] ?? "M";
+    }
+  }
+
   @override
   void dispose() {
     _regionController.dispose();
     _provinceController.dispose();
     _districtController.dispose();
-    _phoneController.dispose();
-    _birthDateController.dispose();
     super.dispose();
   }
 
-  // Método para mostrar el DatePicker y seleccionar la fecha
-  Future<void> _selectDate(BuildContext context) async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900), // Fecha mínima
-      lastDate: DateTime.now(), // Fecha máxima
-    );
-
-    if (selectedDate != null) {
-      String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
-      setState(() {
-        _birthDateController.text =
-            formattedDate; // Actualiza el TextField con la fecha seleccionada
-      });
-    }
-  }
-
-  // Método para seleccionar imagen desde galería o cámara
+  // Método para manejar la selección de la imagen de firma
   Future<void> _pickSignature(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage = await picker.pickImage(source: source);
@@ -60,26 +60,72 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     }
   }
 
+  Future<void> _submitForm() async {
+    // Verificar si todos los campos están completos
+    if (_regionController.text.isEmpty ||
+        _provinceController.text.isEmpty ||
+        _districtController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Por favor, complete todos los campos")),
+      );
+      return;
+    }
+
+    // Consolidar los datos del primer y segundo formulario
+    final consolidatedData = {
+      ...widget.firstData, // Datos del primer formulario
+      "region": _regionController.text,
+      "provincia": _provinceController.text,
+      "distrito": _districtController.text,
+      "sexo": _gender,
+      "active": false,
+
+      // "signature": _signatureImage?.path, // Ruta de la firma seleccionada
+    };
+
+    // Simular envío de datos al backend (puedes reemplazar con tu lógica real)
+    print("Datos consolidados: $consolidatedData");
+
+    // Navegar a la próxima pantalla
+    //Navigator.pushNamed(context, 'upload_front_dni');
+
+     try {
+      // Enviar los datos al backend
+      final response = await _apiService.addIdentification(consolidatedData);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Registro exitoso: ${response['message']}")),
+      );
+      // Guardar datos en SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('idDigital', consolidatedData["idDigital"]);
+
+      // Redirigir al usuario a la siguiente pantalla o limpiar el formulario
+      Navigator.pushNamed(context, 'user_menu');
+    } catch (error) {
+       //print("Error capturado: $error");
+           // Guardar datos en SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('idDigital', consolidatedData["idDigital"]);
+      // Mostrar mensaje de error
+      Navigator.pushNamed(context, 'user_menu');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF00747C),
-      resizeToAvoidBottomInset:
-          true, // Permite que el contenido se ajuste cuando aparece el teclado
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
-        // Hace que el contenido sea desplazable cuando aparece el teclado
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-                height:
-                    50), // Espacio superior para asegurar que haya espacio con el teclado
+            const SizedBox(height: 50),
             Align(
               alignment: Alignment.topLeft,
               child: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                color: Colors.black,
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -87,26 +133,15 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             ),
             const Text(
               'Registro',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Región con labelText flotante
             TextField(
               controller: _regionController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Región', // Label flotante
-                labelStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                labelText: 'Región',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -114,19 +149,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Provincia con labelText flotante
             TextField(
               controller: _provinceController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Provincia', // Label flotante
-                labelStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                labelText: 'Provincia',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -134,19 +162,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Distrito con labelText flotante
             TextField(
               controller: _districtController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Distrito', // Label flotante
-                labelStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                labelText: 'Distrito',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -154,7 +175,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de selección de Sexo con estilo similar al resto
+            // Selector de género
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFD9D9D9),
@@ -199,76 +220,8 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
             ),
             const SizedBox(height: 30),
-            // Cargar Firma
-            GestureDetector(
-              onTap: () async {
-                // Seleccionar si es desde galería o cámara
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return SafeArea(
-                      child: Wrap(
-                        children: <Widget>[
-                          ListTile(
-                            leading: const Icon(Icons.photo_library),
-                            title: const Text('Galería'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              _pickSignature(ImageSource.gallery);
-                            },
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.photo_camera),
-                            title: const Text('Cámara'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              _pickSignature(ImageSource.camera);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-              child: AbsorbPointer(
-                child: TextField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFD9D9D9),
-                    labelText: 'Cargar Firma',
-                    labelStyle: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                    suffixIcon: const Icon(Icons.attach_file,
-                        color: Colors.grey), // Ícono de carga
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Mostrar la firma cargada si existe
-            if (_signatureImage != null)
-              Image.file(
-                _signatureImage!,
-                height: 250,
-                width: 250, // Ajusta el ancho de la imagen
-                fit: BoxFit
-                    .fill, // Esta propiedad ajusta cómo la imagen se adapta al contenedor
-              ),
-            const SizedBox(height: 20),
-            // Botón de Continuar
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'upload_front_dni');
-              },
+              onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00C2CB),
                 padding:
@@ -282,7 +235,6 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 style: TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),

@@ -6,6 +6,8 @@ import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart'
 import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
 import 'identity/DNI_screen.dart';
 import 'success_popup.dart'; // Asegúrate de importar tu nuevo archivo
+import 'package:flutter/services.dart'; // Para cerrar la aplicación
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreen extends StatefulWidget {
   @override
@@ -13,22 +15,15 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  String profileImage = '';
+  //String profileImage = '';
 
   @override
   void initState() {
     super.initState();
-    loadProfileImage();
+    //loadProfileImage();
   }
 
-  // Función para cargar el archivo JSON y extraer la imagen de perfil
-  Future<void> loadProfileImage() async {
-    String jsonString = await rootBundle.loadString('assets/user.json');
-    Map<String, dynamic> jsonData = json.decode(jsonString);
-    setState(() {
-      profileImage = jsonData['profile_image'];
-    });
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +34,12 @@ class _MenuScreenState extends State<MenuScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.logout, color: Colors.white), // Ícono para salir
-            onPressed: () {
-              // Lógica para salir del menú o de la aplicación
+              onPressed: () async {
+               // Limpiar el ID Digital de SharedPreferences
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('idDigital');
+            print('ID Digital eliminado');
+              SystemNavigator.pop();// Lógica para salir del menú o de la aplicación
             },
           ),
         ],
@@ -57,7 +56,7 @@ class _MenuScreenState extends State<MenuScreen> {
               );
             },
           ),
-          MenuButton(
+          /*MenuButton(
             text: 'DNI',
             onPressed: () {
               Navigator.push(
@@ -65,7 +64,8 @@ class _MenuScreenState extends State<MenuScreen> {
                 MaterialPageRoute(builder: (context) => DNIScreen()), // Navegar al screen DNI
               );
             },
-          ),
+          ),*/
+          
           MenuButton(
             text: 'Servicios',
             onPressed: () {
@@ -93,9 +93,8 @@ class _MenuScreenState extends State<MenuScreen> {
       children: [
         CircleAvatar(
           radius: 20, // Radio del círculo para la foto de perfil
-          backgroundImage: profileImage.isNotEmpty
-              ? NetworkImage(profileImage)
-              : AssetImage('assets/default_profile.png') as ImageProvider, // Imagen por defecto si no hay URL
+           backgroundImage: const AssetImage('assets/user.png'), // Imagen por defecto
+
         ),
         SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
         Text(

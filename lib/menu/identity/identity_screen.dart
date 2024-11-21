@@ -1,6 +1,7 @@
-import 'dart:convert'; // Importa para decodificar el JSON
+import 'dart:convert'; // Para codificar y decodificar JSON
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Importa para cargar el archivo JSON
+import 'package:http/http.dart' as http; // Para realizar solicitudes HTTP
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IdentityScreen extends StatefulWidget {
   @override
@@ -8,7 +9,8 @@ class IdentityScreen extends StatefulWidget {
 }
 
 class _IdentityScreenState extends State<IdentityScreen> {
-  Map<String, dynamic> userData = {};
+  Map<String, dynamic> userData = {}; // Datos del usuario
+  bool isLoading = true; // Indicador de carga
 
   @override
   void initState() {
@@ -17,12 +19,40 @@ class _IdentityScreenState extends State<IdentityScreen> {
   }
 
   Future<void> loadUserData() async {
-    // Cargar el archivo JSON
-    final String response = await rootBundle.loadString('assets/user.json');
-    final data = await json.decode(response);
-    setState(() {
-      userData = data;
-    });
+    try {
+      // Recupera el idDigital almacenado en SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final idDigital = prefs.getString('idDigital');
+
+      if (idDigital != null) {
+        // Realiza la solicitud al backend para obtener los datos del usuario
+        final response = await http.get(
+          Uri.parse("http://10.0.2.2:8080/api/blockchain/identification/$idDigital"),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        );
+
+        if (response.statusCode == 200) {
+          setState(() {
+            userData = json.decode(response.body); // Decodifica los datos del usuario
+            isLoading = false;
+          });
+        } else {
+          throw Exception("Error ${response.statusCode}: ${response.body}");
+        }
+      } else {
+        throw Exception("No se encontró el idDigital en SharedPreferences");
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      // Muestra un error en pantalla
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al cargar los datos: $error")),
+      );
+    }
   }
 
   @override
@@ -41,138 +71,127 @@ class _IdentityScreenState extends State<IdentityScreen> {
           style: TextStyle(color: Colors.white), // Texto en blanco
         ),
       ),
-      body: userData.isEmpty
-          ? Center(child: CircularProgressIndicator()) // Mostrar un indicador de carga mientras se cargan los datos
-          : Container(
-        color: Colors.white, // Fondo blanco
-        padding: EdgeInsets.all(20), // Espacio alrededor del contenido
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Alinear a la izquierda
-          children: [
-            // Imagen de perfil
-            Center(
-              child: CircleAvatar(
-                radius: 50, // Tamaño de la imagen de perfil
-                backgroundImage: NetworkImage(userData['profile_image']), // Imagen desde el JSON
-              ),
-            ),
-            SizedBox(height: 10), // Espacio debajo de la imagen
-            Text('DNI: ${userData['dni']}', style: TextStyle(fontSize: 18)), // Ejemplo de DNI
-            Divider(thickness: 1), // Línea de separación
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) // Indicador de carga
+          : userData.isEmpty
+              ? Center(child: Text("No se encontraron datos del usuario"))
+              : Container(
+                  color: Colors.white, // Fondo blanco
+                  padding: EdgeInsets.all(20), // Espacio alrededor del contenido
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, // Alinear a la izquierda
+                    children: [
+                      // Imagen de perfil
+                      Center(
+                        child: CircleAvatar(
+                          radius: 50, // Tamaño de la imagen de perfil
+                          backgroundImage: const AssetImage('assets/user.png'), // Imagen desde el JSON
+                        ),
+                      ),
+                      SizedBox(height: 10), // Espacio debajo de la imagen
+                      Text('ID Digital: ${userData['idDigital']}', style: TextStyle(fontSize: 18)), // Ejemplo de DNI
+                      Divider(thickness: 1), // Línea de separación
 
-            // Información personal
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Primer nombre', style: TextStyle(fontSize: 16)),
-                    Text(userData['first_name'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Primer apellido', style: TextStyle(fontSize: 16)),
-                    Text(userData['last_name_1'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Segundo apellido', style: TextStyle(fontSize: 16)),
-                    Text(userData['last_name_2'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ],
-            ),
-            Divider(thickness: 1), // Línea de separación
+                      // Información personal
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Primer nombre', style: TextStyle(fontSize: 16)),
+                              Text(userData['preNombres'] ?? '-', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Primer apellido', style: TextStyle(fontSize: 16)),
+                              Text(userData['apellidoPaterno'] ?? '-', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Segundo apellido', style: TextStyle(fontSize: 16)),
+                              Text(userData['apellidoMaterno'] ?? '-', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Divider(thickness: 1), // Línea de separación
 
-            // Información adicional
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Nacimiento', style: TextStyle(fontSize: 16)),
-                    Text(userData['birth_date'], style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Sexo', style: TextStyle(fontSize: 16)),
-                    Text(userData['gender'], style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Estado Civil', style: TextStyle(fontSize: 16)),
-                    Text(userData['civil_status'], style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-              ],
-            ),
-            Divider(thickness: 1), // Línea de separación
+                      // Información adicional
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Nacimiento', style: TextStyle(fontSize: 16)),
+                              Text(userData['fechaNacimiento'] ?? '-', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Telefono', style: TextStyle(fontSize: 16)),
+                              Text(userData['telefono'] ?? '-', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                          
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Sexo', style: TextStyle(fontSize: 16)),
+                              Text(userData['sexo'] ?? '-', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                        ],
+                      ),
+                                            Divider(thickness: 1), // Línea de separación
 
-            // Ubicación
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Región', style: TextStyle(fontSize: 16)),
-                    Text(userData['region'], style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Provincia', style: TextStyle(fontSize: 16)),
-                    Text(userData['province'], style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Distrito', style: TextStyle(fontSize: 16)),
-                    Text(userData['district'], style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-              ],
-            ),
-            Divider(thickness: 1), // Línea de separación
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Provincia', style: TextStyle(fontSize: 16)),
+                              Text(userData['provincia'] ?? '-', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Region', style: TextStyle(fontSize: 16)),
+                              Text(userData['region'] ?? '-', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                          
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Distrito', style: TextStyle(fontSize: 16)),
+                              Text(userData['distrito'] ?? '-', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Divider(thickness: 1), // Línea de separación
 
-            // Dirección
-            Text('Dirección:', style: TextStyle(fontSize: 16)),
-            Text(userData['address'], style: TextStyle(fontSize: 20)), // Dirección desde el JSON
-            Divider(thickness: 1), // Línea de separación
-
-            // Espacio para la firma digital
-            Text('Firma Digital:', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 10), // Espacio entre texto y firma
-            Container(
-              width: MediaQuery.of(context).size.width , // Ancho del 80% del ancho de la pantalla
-      height: MediaQuery.of(context).size.height * 0.15, // Alto del 15% de la altura de la pantalla
-      decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 2), // Borde alrededor del contenedor
-                borderRadius: BorderRadius.circular(10), // Bordes redondeados
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Bordes redondeados para la imagen
-                child: Image.network(
-                  userData['digital_signature'], // Firma digital desde el JSON
-                  fit: BoxFit.contain, // Ajustar la imagen para que cubra todo el contenedor
+                      // Dirección
+                      Text('Dirección:', style: TextStyle(fontSize: 16)),
+                      Text(userData['direccion'] ?? '-', style: TextStyle(fontSize: 20)), // Dirección desde el JSON
+                      
+                      
+                      Divider(thickness: 1), // Línea de separación
+                    
+                    
+                    
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

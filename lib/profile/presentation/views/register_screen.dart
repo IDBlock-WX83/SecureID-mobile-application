@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:flutter/services.dart';
+import 'register2_screen.dart'; // Importa la pantalla del segundo registro
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,7 +16,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       TextEditingController();
   final TextEditingController _maternalSurnameController =
       TextEditingController();
-
   final TextEditingController _idDigitalController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -50,6 +50,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
             formattedDate; // Actualiza el TextField con la fecha seleccionada
       });
     }
+  }
+
+  void _goToSecondScreen() {
+    // Verifica que todos los campos estén completos
+    if (_nameController.text.trim().isEmpty ||
+        _paternalSurnameController.text.trim().isEmpty ||
+        _maternalSurnameController.text.trim().isEmpty ||
+        _idDigitalController.text.trim().isEmpty ||
+        _addressController.text.trim().isEmpty ||
+        _phoneController.text.trim().isEmpty ||
+        _birthDateController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Por favor, complete todos los campos")),
+      );
+      return;
+    }
+
+    // Consolidar los datos del primer formulario
+    final firstData = {
+      "preNombres": _nameController.text.trim(),
+      "apellidoPaterno": _paternalSurnameController.text.trim(),
+      "apellidoMaterno": _maternalSurnameController.text.trim(),
+      "idDigital": _idDigitalController.text.trim(),
+      "fechaNacimiento": _birthDateController.text.trim(),
+      "direccion": _addressController.text.trim(),
+      "telefono": _phoneController.text.trim(),
+    };
+
+    // Navegar al segundo formulario enviando los datos
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignUpScreen2(firstData: firstData),
+      ),
+    );
   }
 
   @override
@@ -92,13 +127,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Nombres', // Label flotante
+                labelText: 'Nombres',
                 labelStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                    fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                    vertical: 20, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -106,19 +141,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Apellido Paterno con labelText flotante
             TextField(
               controller: _paternalSurnameController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Apellido Paterno', // Label flotante
+                labelText: 'Apellido Paterno',
                 labelStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                    fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                    vertical: 20, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -126,19 +160,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Apellido Paterno con labelText flotante
             TextField(
               controller: _maternalSurnameController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Apellido Materno', // Label flotante
+                labelText: 'Apellido Materno',
                 labelStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                    fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                    vertical: 20, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -146,19 +179,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: ID Digital con labelText flotante
             TextField(
               controller: _idDigitalController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'ID Digital', // Label flotante
+                labelText: 'ID Digital',
                 labelStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                    fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                    vertical: 20, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -166,19 +198,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Dirección con labelText flotante
             TextField(
               controller: _addressController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Dirección', // Label flotante
+                labelText: 'Dirección',
                 labelStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                    fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                    vertical: 20, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -186,25 +217,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Teléfono con labelText flotante
             TextField(
               controller: _phoneController,
-              keyboardType: TextInputType.phone, // Muestra el teclado numérico
+              keyboardType: TextInputType.phone,
               inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly, // Permite solo números
-                LengthLimitingTextInputFormatter(
-                    9), // Limita la entrada a 9 caracteres
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(9),
               ],
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Teléfono', // Label flotante
+                labelText: 'Teléfono',
                 labelStyle: TextStyle(
                     color: Colors.black54,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold), // Ajuste de estilo
+                    fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 20, horizontal: 20), // Ajuste de padding
+                    vertical: 20, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -212,10 +241,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Campo de texto: Fecha de Nacimiento con ícono de calendario y labelText flotante
             GestureDetector(
               onTap: () {
-                _selectDate(context); // Abre el DatePicker al hacer clic
+                _selectDate(context);
               },
               child: AbsorbPointer(
                 child: TextField(
@@ -223,15 +251,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFD9D9D9),
-                    labelText: 'Fecha de Nacimiento', // Label flotante
+                    labelText: 'Fecha de Nacimiento',
                     labelStyle: TextStyle(
                         color: Colors.black54,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold), // Ajuste de estilo
+                        fontWeight: FontWeight.bold),
                     suffixIcon: Icon(Icons.calendar_today,
-                        color: Colors.grey), // Ícono de calendario
+                        color: Colors.grey),
                     contentPadding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20), // Ajuste de padding
+                        vertical: 20, horizontal: 20),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
@@ -241,11 +269,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // Botón de Continuar
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'register2');
-              },
+              onPressed: _goToSecondScreen,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00C2CB),
                 padding:

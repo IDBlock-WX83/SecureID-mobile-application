@@ -1,0 +1,56 @@
+import 'dart:convert'; // Para codificar y decodificar JSON
+import 'package:http/http.dart' as http;
+
+class BlockchainApiService {
+  // Define la URL base de tu API
+  //final String _baseUrl = "http://localhost:8080/api/blockchain";
+  final String _baseUrl = "http://10.0.2.2:8080/api/blockchain";
+
+  // Método para añadir una identificación
+  Future<Map<String, dynamic>> addIdentification(Map<String, dynamic> identificationData) async {
+    final String url = "$_baseUrl/addIdentification";
+
+    try {
+      // Realiza la solicitud POST a la API
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json", // Asegúrate de enviar JSON
+        },
+        body: jsonEncode(identificationData), // Convierte el cuerpo a JSON
+      );
+
+      // Maneja la respuesta
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body); // Decodifica la respuesta JSON
+      } else {
+        // Maneja errores
+        throw Exception("Error ${response.statusCode}: ${response.body}");
+      }
+    } catch (error) {
+      throw Exception("Error al conectarse a la API: $error");
+    }
+  }
+
+  Future<Map<String, dynamic>> getIdentification(String idDigital) async {
+  final String url = "http://10.0.2.2:8080/api/blockchain/identification/$idDigital";
+
+  try {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Error ${response.statusCode}: ${response.body}");
+    }
+  } catch (error) {
+    throw Exception("Error al conectarse a la API: $error");
+  }
+}
+
+}

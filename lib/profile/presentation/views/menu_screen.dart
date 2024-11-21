@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/common/utils/blockchain_record.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/transaction_history_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreenAutoridades extends StatefulWidget {
   final Blockchain blockchain; // Propiedad para almacenar la instancia de Blockchain
@@ -21,8 +23,12 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
         actions: [
           IconButton(
             icon: Icon(Icons.logout, color: Colors.white), // Ícono para salir
-            onPressed: () {
-              // Lógica para salir del menú o de la aplicación
+            onPressed: () async {
+               // Limpiar el ID Digital de SharedPreferences
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('idDigital');
+            print('ID Digital eliminado');
+              SystemNavigator.pop();// Lógica para salir del menú o de la aplicación
             },
           ),
         ],
@@ -83,7 +89,7 @@ Widget _buildAppBarContent() {
     children: [
       CircleAvatar(
         radius: 20, // Radio del círculo para la foto de perfil
-        backgroundImage: NetworkImage('URL_DE_LA_IMAGEN'),
+        backgroundImage: const AssetImage('assets/user.png'), // Imagen por defecto
       ),
       SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
       Text(
