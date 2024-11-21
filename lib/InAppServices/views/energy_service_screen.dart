@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevice_api.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
 import 'package:ztech_mobile_application/InAppServices/widget/service_card.dart';
 
-
-class EnergyServiceScreen extends StatelessWidget {
+class EnergyServiceScreen extends StatefulWidget {
   const EnergyServiceScreen({Key? key}) : super(key: key);
+
+  @override
+  _EnergyServiceScreenState createState() => _EnergyServiceScreenState();
+}
+
+class _EnergyServiceScreenState extends State<EnergyServiceScreen> {
+  late Future<List<SocialServiceResponse>> _energyServices;
+
+  @override
+  void initState() {
+    super.initState();
+    _energyServices = SocialServiceApi().getSocialServicesByTypeAndNotExpired('ENERGY');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,29 +28,45 @@ class EnergyServiceScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF00747C),
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            ServiceCard(
-              title: 'Instalación de Paneles Solares para Hogares',
-              imageUrl: 'https://postgradoingenieria.com/wp-content/uploads/mantenimiento-de-sistemas-de-energia.jpg',
-              text1: 'Sector Las Lomas',
-              text2: 'Martes y Jueves 9 am a 4 pm',
-              text3: 'Vence 20/12/2024',
-            ),
-            const SizedBox(height: 20),
-            ServiceCard(
-              title: 'Capacitación en Eficiencia Energética',
-              imageUrl: 'https://i0.wp.com/www.ing.una.py/wp-content/uploads/2022/09/Curso_capacitacion_eficiencia_energetica_ch.jpeg?fit=497%2C509&ssl=1',
-              text1: 'Colegio Fe y Alegría, Pueblo Joven Santa Rosa',
-              text2: '10 am a 12 pm',
-              text3: 'Hasta el 20/09/2024',
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+      body: FutureBuilder<List<SocialServiceResponse>>(
+        future: _energyServices,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay servicios disponibles.'));
+          } else {
+            final services = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: services.length,
+              itemBuilder: (context, index) {
+                final service = services[index];
+                return Column(
+                  children: [
+                    ServiceCard(
+                      title: service.title,
+                      imageUrl: service.imageUrl,
+                      text1: service.location,
+                      text2: service.schedule,
+                      text3: 'Vence ${service.expirationDate.toLocal().toShortDateString()}',
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
+            );
+          }
+        },
       ),
     );
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  String toShortDateString() {
+    return '${this.day}/${this.month}/${this.year}';
   }
 }

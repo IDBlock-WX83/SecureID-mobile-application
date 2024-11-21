@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevice_api.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
 import 'package:ztech_mobile_application/InAppServices/widget/service_card.dart';
 
-
-class HealthServiceScreen extends StatelessWidget {
+class HealthServiceScreen extends StatefulWidget {
   const HealthServiceScreen({Key? key}) : super(key: key);
+
+  @override
+  _HealthServiceScreenState createState() => _HealthServiceScreenState();
+}
+
+class _HealthServiceScreenState extends State<HealthServiceScreen> {
+  late Future<List<SocialServiceResponse>> _healthServices;
+
+  @override
+  void initState() {
+    super.initState();
+    _healthServices = SocialServiceApi().getSocialServicesByTypeAndNotExpired('HEALTH');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,29 +28,45 @@ class HealthServiceScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF00747C),
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            ServiceCard(
-              title: 'Atención para adultos mayores',
-              imageUrl: 'https://casadereposobugambilias.com/wp-content/uploads/2019/06/enfermeria_casa_de_reposo.jpg',
-              text1: 'Posta Medica',
-              text2: 'Lunes 7 am a 1 pm',
-              text3: 'Vence 10/12/14',
-            ),
-            const SizedBox(height: 20),
-            ServiceCard(
-              title: 'Vacunación contra la fiebre amarilla',
-              imageUrl: 'https://www.clikisalud.net/wp-content/uploads/2021/10/vacuna-fiebre-amarilla-debes-saber.jpg',
-              text1: 'Plaza principal',
-              text2: 'Sabados 8 am  a 1 pm',
-              text3: 'Vence 05/10/2024',
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+      body: FutureBuilder<List<SocialServiceResponse>>(
+        future: _healthServices,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay servicios disponibles.'));
+          } else {
+            final services = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: services.length,
+              itemBuilder: (context, index) {
+                final service = services[index];
+                return Column(
+                  children: [
+                    ServiceCard(
+                      title: service.title,
+                      imageUrl: service.imageUrl,
+                      text1: service.location,
+                      text2: service.schedule,
+                      text3: 'Vence ${service.expirationDate.toLocal().toShortDateString()}',
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
+            );
+          }
+        },
       ),
     );
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  String toShortDateString() {
+    return '${this.day}/${this.month}/${this.year}';
   }
 }
