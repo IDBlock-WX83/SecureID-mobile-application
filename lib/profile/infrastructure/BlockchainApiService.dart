@@ -3,8 +3,7 @@ import 'package:http/http.dart' as http;
 
 class BlockchainApiService {
   // Define la URL base de tu API
-  //final String _baseUrl = "http://localhost:8080/api/blockchain";
-  final String _baseUrl = "http://10.0.2.2:8080/api/blockchain";
+  final String _baseUrl = "http://10.0.2.2:8080/api/blockchain"; // Cambia a la IP correcta si es necesario
 
   // Método para añadir una identificación
   Future<Map<String, dynamic>> addIdentification(Map<String, dynamic> identificationData) async {
@@ -20,11 +19,16 @@ class BlockchainApiService {
         body: jsonEncode(identificationData), // Convierte el cuerpo a JSON
       );
 
+      print('Respuesta de la API: ${response.body}'); // Imprimir la respuesta para depuración
+
       // Maneja la respuesta
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body); // Decodifica la respuesta JSON
+        if (response.body.isNotEmpty) {
+          return jsonDecode(response.body); // Decodifica la respuesta JSON
+        } else {
+          throw Exception("Respuesta vacía de la API");
+        }
       } else {
-        // Maneja errores
         throw Exception("Error ${response.statusCode}: ${response.body}");
       }
     } catch (error) {
@@ -33,24 +37,23 @@ class BlockchainApiService {
   }
 
   Future<Map<String, dynamic>> getIdentification(String idDigital) async {
-  final String url = "http://10.0.2.2:8080/api/blockchain/identification/$idDigital";
+    final String url = "$_baseUrl/identification/$idDigital";
 
-  try {
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception("Error ${response.statusCode}: ${response.body}");
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Error ${response.statusCode}: ${response.body}");
+      }
+    } catch (error) {
+      throw Exception("Error al obtener identificación: $error");
     }
-  } catch (error) {
-    throw Exception("Error al conectarse a la API: $error");
   }
-}
-
 }

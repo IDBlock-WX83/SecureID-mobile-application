@@ -15,7 +15,7 @@ class SignUpScreen2 extends StatefulWidget {
 }
 
 class _SignUpScreen2State extends State<SignUpScreen2> {
-    final BlockchainApiService _apiService = BlockchainApiService(); // Instancia del servicio
+  final BlockchainApiService _apiService = BlockchainApiService(); // Instancia del servicio
   final TextEditingController _regionController = TextEditingController();
   final TextEditingController _provinceController = TextEditingController();
   final TextEditingController _districtController = TextEditingController();
@@ -79,36 +79,32 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       "distrito": _districtController.text,
       "sexo": _gender,
       "active": false,
-
-      // "signature": _signatureImage?.path, // Ruta de la firma seleccionada
     };
 
-    // Simular envío de datos al backend (puedes reemplazar con tu lógica real)
+    // Simular envío de datos al backend
     print("Datos consolidados: $consolidatedData");
 
-    // Navegar a la próxima pantalla
-    //Navigator.pushNamed(context, 'upload_front_dni');
-
-     try {
-      // Enviar los datos al backend
+    try {
       final response = await _apiService.addIdentification(consolidatedData);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Registro exitoso: ${response['message']}")),
       );
-      // Guardar datos en SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('idDigital', consolidatedData["idDigital"]);
 
-      // Redirigir al usuario a la siguiente pantalla o limpiar el formulario
-      Navigator.pushNamed(context, 'user_menu');
+      // Guardar datos en SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('idDigital', consolidatedData["idDigital"]);
+
+      // Redirigir al usuario a la siguiente pantalla
+
     } catch (error) {
-       //print("Error capturado: $error");
-           // Guardar datos en SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('idDigital', consolidatedData["idDigital"]);
-      // Mostrar mensaje de error
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('idDigital', consolidatedData["idDigital"]);
       Navigator.pushNamed(context, 'user_menu');
+      /*ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al registrar: $error")),
+
+      );*/
     }
   }
 
@@ -225,7 +221,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00C2CB),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
