@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
         'user_dni': (context) =>  DNIScreen(),
         'menu': (context) => MenuScreenAutoridades(blockchain: blockchain), // Pasar la instancia de Blockchain aquí
         'resident_screen': (context) => ResidentsScreen(),
-        'record_screen': (context) => TransactionHistoryScreen(blockchain: blockchain), // Pasar la instancia de Blockchain aquí
+        'record_screen': (context) => TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
       },
       
     );

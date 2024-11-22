@@ -69,7 +69,7 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TransactionHistoryScreen(blockchain: widget.blockchain),
+                    builder: (context) => TransactionHistoryScreen(),
                   ),
                 );
 
