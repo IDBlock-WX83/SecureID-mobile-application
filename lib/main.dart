@@ -71,7 +71,6 @@ class MyApp extends StatelessWidget {
         'healthedit': (context) => HealthCampaignEditScreen(),
         'energyedit': (context) => EnergyCampaignEditScreen(),
         'educationedit': (context) => EducationCampaignEditScreen(),
-        'wateredit': (context) => WaterCampaignEditScreen(),
         'upload_face_capture': (context) =>  FaceCaptureScreen(),
         'user_menu': (context) =>  MenuScreen(),
         'user_identification': (context) =>  IdentityScreen(),
