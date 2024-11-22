@@ -1,8 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevice_api.dart';
+import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
+import 'package:ztech_mobile_application/services/agua_service_edit.dart';
 
-class WaterServiceListScreen extends StatelessWidget {
+class WaterServiceListScreen extends StatefulWidget {
+  @override
+  _WaterServiceListScreenState createState() => _WaterServiceListScreenState();
+}
 
-  const WaterServiceListScreen({Key? key}) : super(key: key);
+class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
+  late Future<List<SocialServiceResponse>> servicesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    servicesFuture = _fetchServices();
+  }
+
+  Future<List<SocialServiceResponse>> _fetchServices() async {
+    return await SocialServiceApi().getSocialServicesByTypeAndNotExpired("water");
+  }
+
+  Future<void> _deleteService(int id) async {
+    try {
+      await SocialServiceApi().deleteSocialService(id);
+      setState(() {
+        servicesFuture = _fetchServices();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Servicio eliminado exitosamente')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar el servicio: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,41 +45,94 @@ class WaterServiceListScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF00747C),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(10),
-        children: [
-          ServiceListItem(
-            title: 'Atención para adultos mayores',
-            location: 'Posta médica',
-            schedule: 'Lunes 7 am a 1 pm',
-            dueDate: '10/12/14',
-            image: 'assets/service_adultos_mayores.jpg',
-            onEdit: () {
-              // Navegar a la pantalla de edición
-              Navigator.pushNamed(context, 'wateredit');
-            },
-            onDelete: () {
-              // Lógica para eliminar el servicio
-            },
-          ),
-          ServiceListItem(
-            title: 'Vacunación contra la fiebre amarilla',
-            location: 'Plaza principal',
-            schedule: 'Sábados 8 am a 1 pm',
-            dueDate: '05/10/2024',
-            image: 'assets/service_vacunacion.jpg',
-            onEdit: () {
-              // Navegar a la pantalla de edición
-              Navigator.pushNamed(context, 'wateredit');
-            },
-            onDelete: () {
-              // Lógica para eliminar el servicio
-            },
-          ),
-          // Agrega más elementos de la lista según sea necesario
-        ],
+      body: FutureBuilder<List<SocialServiceResponse>>(
+        future: servicesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay servicios disponibles.'));
+          } else {
+            final services = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: services.length,
+              itemBuilder: (context, index) {
+                final service = services[index];
+                return ServiceListItem(
+                  title: service.title,
+                  location: service.location,
+                  schedule: service.schedule,
+                  dueDate: service.expirationDate.toLocal().toShortDateString(),
+                  image: service.imageUrl,
+                  onEdit: () async {
+                    final updated = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WaterCampaignEditScreen(
+                          id: service.id,
+                          title: service.title,
+                          location: service.location,
+                          schedule: service.schedule,
+                          dueDate: service.expirationDate.toLocal().toShortDateString(),
+                          image: service.imageUrl,
+                        ),
+                      ),
+                    );
+
+                    if (updated != null && updated) {
+                      setState(() {
+                        servicesFuture = _fetchServices();
+                      });
+                    }
+                  },
+                  onDelete: () {
+                    _showDeleteConfirmationDialog(service.id);
+                  },
+                );
+              },
+            );
+          }
+        },
       ),
     );
+  }
+
+  // Mostrar el diálogo de confirmación
+  Future<void> _showDeleteConfirmationDialog(int id) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Eliminar Servicio'),
+          content: const Text('¿Estás seguro de que deseas eliminar este servicio?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _deleteService(id); 
+                Navigator.of(context).pop(); 
+                
+              },
+              child: const Text('Sí'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  String toShortDateString() {
+    return '${this.day}/${this.month}/${this.year}';
   }
 }
 
@@ -82,11 +168,9 @@ class ServiceListItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                Image.asset(
-                  image,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
+                Expanded(
+                  child: Image.network(image,
+                      height: 100, width: 100, fit: BoxFit.cover),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
