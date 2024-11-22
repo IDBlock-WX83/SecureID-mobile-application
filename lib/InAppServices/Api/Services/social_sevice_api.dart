@@ -5,7 +5,7 @@ import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServices
 import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
 
 class SocialServiceApi {
-  final String baseUrl = 'http://192.168.1.81:8080/api/social-services';
+  final String baseUrl = 'http://10.0.2.2:8080/api/social-services';
 
   Future<List<SocialServiceResponse>> getSocialServicesByTypeAndNotExpired(
       String type) async {

@@ -59,7 +59,8 @@ class MyApp extends StatelessWidget {
         'upload_front_dni': (context) =>  UploadFrontDNIScreen(),
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
-'register2': (context) => SignUpScreen2(firstData: {}), // Envía un mapa vacío o los datos reales        'servicesAdmin': (context) => ServicesAdminScreen(),// services para editores
+'register2': (context) => SignUpScreen2(firstData: {}), // Envía un mapa vacío o los datos reales
+ 'servicesAdmin': (context) => ServicesAdminScreen(),// services para editores
         'registerhealth': (context) => SaludServiceRegistrationScreen(),
         'registerenergy': (context) => EnergyServiceRegistrationScreen(),
         'registereducation': (context) => EducationServiceRegistrationScreen(),
