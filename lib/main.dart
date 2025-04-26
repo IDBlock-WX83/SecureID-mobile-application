@@ -31,6 +31,7 @@ import 'services/services_admin_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register2_screen.dart';
 import 'package:ztech_mobile_application/common/utils/blockchain_record.dart'; // Asegúrate de importar tu clase Blockchain
 import 'package:ztech_mobile_application/menu/success_popup.dart';
+import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,7 +65,7 @@ class MyApp extends StatelessWidget {
         'registerhealth': (context) => SaludServiceRegistrationScreen(),
         'registerenergy': (context) => EnergyServiceRegistrationScreen(),
         'registereducation': (context) => EducationServiceRegistrationScreen(),
-        'registerwater': (context) => WaterServiceRegistrationScreen(),
+        'registerwater': (ServicesScreencontext) => WaterServiceRegistrationScreen(),
         'healthlistadmin': (context) => HealthServiceListScreen(),
         'energylistadmin': (context) => EnergyServiceListScreen(),
         'educationlistadmin': (context) => EducationServiceListScreen(),
@@ -73,12 +74,13 @@ class MyApp extends StatelessWidget {
         'energyedit': (context) => EnergyCampaignEditScreen(),
         'educationedit': (context) => EducationCampaignEditScreen(),
         'upload_face_capture': (context) =>  FaceCaptureScreen(),
-        'user_menu': (context) =>  MenuScreen(),
-        'user_identification': (context) =>  IdentityScreen(),
+        'menu_residentes': (context) =>  MenuScreen(),
+        'identificacion': (context) =>  IdentityScreen(),
         'user_dni': (context) =>  DNIScreen(),
         'menu': (context) => MenuScreenAutoridades(blockchain: blockchain), // Pasar la instancia de Blockchain aquí
         'resident_screen': (context) => ResidentsScreen(),
         'record_screen': (context) => TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
+        'servicios_residentes': (context) => ServicesScreen(),
       },
       
     );

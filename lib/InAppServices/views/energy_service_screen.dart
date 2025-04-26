@@ -3,14 +3,14 @@ import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevic
 import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
 import 'package:ztech_mobile_application/InAppServices/widget/service_card.dart';
 
-class EnergyServiceScreen extends StatefulWidget {
-  const EnergyServiceScreen({Key? key}) : super(key: key);
+class SocialServiceScreen extends StatefulWidget {
+  const SocialServiceScreen({Key? key}) : super(key: key);
 
   @override
-  _EnergyServiceScreenState createState() => _EnergyServiceScreenState();
+  _SocialServiceScreenState createState() => _SocialServiceScreenState();
 }
 
-class _EnergyServiceScreenState extends State<EnergyServiceScreen> {
+class _SocialServiceScreenState extends State<SocialServiceScreen> {
   late Future<List<SocialServiceResponse>> _energyServices;
 
   @override
@@ -23,8 +23,14 @@ class _EnergyServiceScreenState extends State<EnergyServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Servicio: Energía'),
-        centerTitle: true,
+  leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Servicio: Social', style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
+                centerTitle: true,
         backgroundColor: const Color(0xFF00747C),
       ),
       backgroundColor: const Color(0xFFC7C7CC),

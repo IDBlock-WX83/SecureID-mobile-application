@@ -3,14 +3,14 @@ import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevic
 import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
 import 'package:ztech_mobile_application/InAppServices/widget/service_card.dart';
 
-class WaterServiceScreen extends StatefulWidget {
-  const WaterServiceScreen({Key? key}) : super(key: key);
+class AlimentacionServiceScreen extends StatefulWidget {
+  const AlimentacionServiceScreen({Key? key}) : super(key: key);
 
   @override
-  _WaterServiceScreenState createState() => _WaterServiceScreenState();
+  _AlimentacionServiceScreenState createState() => _AlimentacionServiceScreenState();
 }
 
-class _WaterServiceScreenState extends State<WaterServiceScreen> {
+class _AlimentacionServiceScreenState extends State<AlimentacionServiceScreen> {
   late Future<List<SocialServiceResponse>> _waterServices;
 
   @override
@@ -23,8 +23,14 @@ class _WaterServiceScreenState extends State<WaterServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Servicio: Agua'),
-        centerTitle: true,
+leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Servicio: Alimentación', style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
+                centerTitle: true,
         backgroundColor: const Color(0xFF00747C),
       ),
       backgroundColor: const Color(0xFFC7C7CC),

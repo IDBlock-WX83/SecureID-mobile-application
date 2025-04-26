@@ -23,7 +23,13 @@ class _HealthServiceScreenState extends State<HealthServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Servicio: Salud'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Servicio: Salud', style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
         centerTitle: true,
         backgroundColor: const Color(0xFF00747C),
       ),

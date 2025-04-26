@@ -23,8 +23,14 @@ class _EducationServiceScreenState extends State<EducationServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Servicio: Educación'),
-        centerTitle: true,
+  leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Servicio: Educación', style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
+                 centerTitle: true,
         backgroundColor: const Color(0xFF00747C),
       ),
       backgroundColor: const Color(0xFFC7C7CC),

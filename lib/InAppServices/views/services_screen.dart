@@ -3,7 +3,52 @@ import 'package:ztech_mobile_application/InAppServices/views/education_service_s
 import 'package:ztech_mobile_application/InAppServices/views/energy_service_screen.dart';
 import 'package:ztech_mobile_application/InAppServices/views/health_service_screen.dart';
 import 'package:ztech_mobile_application/InAppServices/views/water_service_screen.dart';
-import 'package:ztech_mobile_application/InAppServices/widget/Service_Button.dart';
+
+// 🔥 Incluyo el ServiceButton corregido aquí
+class ServiceButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const ServiceButton({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF00BBC9), // 🟦 Fondo turquesa
+        foregroundColor: Colors.black,
+        padding: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4, // Sombra ligera
+      ),
+      onPressed: onPressed,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 40),
+          const SizedBox(height: 10),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class ServicesScreen extends StatelessWidget {
   const ServicesScreen({Key? key}) : super(key: key);
@@ -12,7 +57,13 @@ class ServicesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Servicios'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Servicios', style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
         centerTitle: true,
         backgroundColor: const Color(0xFF00747C),
       ),
@@ -21,27 +72,27 @@ class ServicesScreen extends StatelessWidget {
         child: GridView.count(
           shrinkWrap: true,
           crossAxisCount: 2,
-          mainAxisSpacing: 20, 
+          mainAxisSpacing: 20,
           crossAxisSpacing: 20,
           padding: const EdgeInsets.all(20),
           children: [
             ServiceButton(
-              icon: Icons.health_and_safety, 
+              icon: Icons.health_and_safety,
               label: 'Salud',
               onPressed: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const HealthServiceScreen()),
                 );
               },
             ),
             ServiceButton(
-              icon: Icons.battery_full, 
-              label: 'Energía',
+              icon: Icons.person,
+              label: 'Social',
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EnergyServiceScreen()),
+                  MaterialPageRoute(builder: (context) => const SocialServiceScreen()),
                 );
               },
             ),
@@ -56,12 +107,12 @@ class ServicesScreen extends StatelessWidget {
               },
             ),
             ServiceButton(
-              icon: Icons.water,
-              label: 'Agua',
+              icon: Icons.restaurant,
+              label: 'Alimentación',
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const WaterServiceScreen()),
+                  MaterialPageRoute(builder: (context) => const AlimentacionServiceScreen()),
                 );
               },
             ),

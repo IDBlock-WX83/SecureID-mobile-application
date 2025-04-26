@@ -13,14 +13,12 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _idController = TextEditingController();
 
-  // Método para guardar el ID Digital en SharedPreferences
   Future<void> _saveIdDigital(String idDigital) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('idDigital', idDigital);
     print('ID Digital guardado: $idDigital');
   }
 
-  // Método para validar si el ID Digital existe en la base de datos
   Future<bool> _validateIdDigital(String idDigital) async {
     final String url = "http://10.0.2.2:8080/api/blockchain/identification/exists/$idDigital";
 
@@ -43,7 +41,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  // Método para obtener los detalles de la identificación
   Future<Map<String, dynamic>?> _getIdentificationDetails(String idDigital) async {
     final String url = "http://10.0.2.2:8080/api/blockchain/identification/$idDigital";
 
@@ -91,49 +88,64 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   height: 200,
                 ),
                 const SizedBox(height: 40),
-                TextField(
-                  controller: _idController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    labelText: 'ID Digital',
-                    labelStyle: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+
+                // 👇 Aquí la parte adaptada a la imagen
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'ID Digital',
+                      style: TextStyle(
+                        color: Colors.white, // Texto blanco como fondo azul
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    fillColor: const Color(0xFFD9D9D9),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 20,
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _idController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        hintText: 'ID Digital', // 👈 Esto es el placeholder dentro
+                        hintStyle: const TextStyle(
+                          color: Colors.black45, // Gris como tu imagen
+                          fontWeight: FontWeight.bold,
+                        ),
+                        fillColor: const Color(0xFFD9D9D9),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 20,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+                  ],
                 ),
+
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: () async {
+                  onPressed: () /*{
+  Navigator.pushNamed(context, 'menu_residentes');
+}*/
+                  async {
                     final idDigital = _idController.text.trim();
 
                     if (idDigital.isNotEmpty) {
-                      // Validar si el ID Digital existe
                       bool isValid = await _validateIdDigital(idDigital);
 
                       if (isValid) {
-                        // Guardar el ID Digital en SharedPreferences
                         await _saveIdDigital(idDigital);
 
-                        // Obtener los detalles de la identificación
                         final details = await _getIdentificationDetails(idDigital);
 
                         if (details != null) {
-                          // Verificar el atributo "active"
                           if (details['active'] == true) {
                             Navigator.pushNamed(context, 'menu');
                           } else {
-                            Navigator.pushNamed(context, 'user_menu');
+                            Navigator.pushNamed(context, 'menu_residentes');
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -153,17 +165,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BBC9),
-                    padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                   child: const Text(
                     'Entrar',
-                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, 'register');
