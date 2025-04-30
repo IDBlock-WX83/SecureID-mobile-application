@@ -145,6 +145,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           if (details['active'] == true) {
                             Navigator.pushNamed(context, 'menu');
                           } else {
+                            //Navigator.pushNamed(context, 'menu_residentes');
                             Navigator.pushNamed(context, 'menu_residentes');
                           }
                         } else {
@@ -178,7 +179,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 const SizedBox(height: 5),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, 'register');
+                    Navigator.pushNamed(context, 'registro_exitoso');
                   },
                   child: const Text(
                     '¿No tienes cuenta?',

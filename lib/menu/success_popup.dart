@@ -15,28 +15,28 @@ class SuccessPopup extends StatelessWidget {
         mainAxisSize: MainAxisSize.min, // Tamaño mínimo para el diálogo
         children: [
           Text(
-            'Registro exitoso',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            '¡Bienvenido a SecureID!',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 10), // Espacio entre los textos
           Text(
-            'La información se encriptará y almacenará de manera segura.',
+            'Parece que aún no tienes cuenta. Si deseas registrarte, por favor acércate al puesto más cercano. ¡Nuestro equipo estará encantado de ayudarte a obtener tu ID Digital de manera rápida y sencilla!',
             textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, color: Colors.black),
           ),
           SizedBox(height: 20), // Espacio antes del texto clickeable
           TextButton(
             onPressed: () {
               onProfileClick(); // Llama a la función proporcionada
               Navigator.of(context).pop(); // Cierra el diálogo
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MenuScreen()), // Navega a MenuScreen
-              );
+              {
+                    Navigator.pushNamed(context, 'welcome');
+                  };
             },
             child: Text(
-              'Ir a mi perfil',
-              style: TextStyle(color: Color(0xFF00747C)), // Color del texto clickeable
+              'Aceptar',
+              style: TextStyle(color: Color(0xFF00747C),fontSize: 16), // Color del texto clickeable
             ),
           ),
         ],

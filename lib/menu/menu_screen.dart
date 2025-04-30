@@ -29,7 +29,7 @@ class _MenuScreenState extends State<MenuScreen> {
         backgroundColor: const Color(0xFF00747C),
         elevation: 0,
         title: const Text(
-          'Menu',
+          'Menú',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

@@ -17,63 +17,82 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF00747C),
       appBar: AppBar(
-        backgroundColor: Color(0xFF00747C), // Color primario
-        title: _buildAppBarContent(),
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFF00747C),
+        elevation: 0,
+        title: const Text(
+          'Menú',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () {
+              print('Avatar presionado');
+              Navigator.pushNamed(context, 'identificacion');
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 20,
+              child: Icon(Icons.person, color: Colors.black),
+            ),
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: Colors.white), // Ícono para salir
-            onPressed: () async {
-               // Limpiar el ID Digital de SharedPreferences
+            icon: const Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: ()  {
+              Navigator.pushNamed(context, 'welcome');
+            },
+            /*async {
+              // Limpiar el ID Digital de SharedPreferences
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove('idDigital');
-            print('ID Digital eliminado');
-              SystemNavigator.pop();// Lógica para salir del menú o de la aplicación
-            },
+              print('ID Digital eliminado');
+              SystemNavigator.pop(); // Lógica para salir del menú o de la aplicación
+            },*/
           ),
         ],
       ),
-      backgroundColor: Color(0xFF00747C), // Color de fondo
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Botón de Residentes
-            MenuButton(
-              label: 'Residentes',
-              icon: Icons.people,
+            _buildMenuOption(
+              title: 'Registro',
               onTap: () {
-                // Aquí puedes agregar más lógica en el futuro
-                Navigator.pushNamed(context, 'resident_screen');
+                Navigator.pushNamed(context, 'register');
+                print('Registro');
+              },
+            ),
+            _buildMenuOption(
+              title: 'Residentes',
+              onTap: () {
+                Navigator.pushNamed(context, 'servicesAdmin');
                 print('Residentes');
               },
             ),
-            SizedBox(height: 20), // Espacio entre botones
-            // Botón de Servicios
-            MenuButton(
-              label: 'Servicios',
-              icon: Icons.build,
+            _buildMenuOption(
+              title: 'Servicios',
               onTap: () {
-                // Aquí puedes agregar más lógica en el futuro
-                Navigator.pushNamed(context, 'servicesAdmin');
-                print('Servicios');
-              },
-            ),
-            SizedBox(height: 20), // Espacio entre botones
-            // Botón de Historial de Transacciones
-            MenuButton(
-              label: 'Historial de Transacciones',
-              icon: Icons.history,
-              onTap: () {
-                // Navegar a la pantalla de historial de transacciones y pasar la instancia de Blockchain
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => TransactionHistoryScreen(),
                   ),
                 );
-
-                print('Historial de Transacciones');
+                print('Servicios');
               },
             ),
           ],
@@ -81,74 +100,34 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
       ),
     );
   }
-}
 
-Widget _buildAppBarContent() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      CircleAvatar(
-        radius: 20, // Radio del círculo para la foto de perfil
-        backgroundImage: const AssetImage('assets/user.png'), // Imagen por defecto
-      ),
-      SizedBox(width: 10), // Espacio entre la foto de perfil y el texto
-      Text(
-        'MENÚ',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white), // Texto en blanco
-      ),
-    ],
-  );
-}
-
-
-// Widget para un botón de menú
-class MenuButton extends StatefulWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  MenuButton({required this.label, required this.icon, required this.onTap});
-
-  @override
-  _MenuButtonState createState() => _MenuButtonState();
-}
-
-class _MenuButtonState extends State<MenuButton> {
-  bool _isPressed = false; // Estado del botón
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() {
-        _isPressed = true; // Cambiar estado al presionar
-      }),
-      onTapUp: (_) => setState(() {
-        _isPressed = false; // Cambiar estado al soltar
-      }),
-      onTapCancel: () => setState(() {
-        _isPressed = false; // Cambiar estado si se cancela el toque
-      }),
-      onTap: widget.onTap, // Llamar a la función onTap proporcionada
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Margen alrededor del botón
-        padding: EdgeInsets.symmetric(horizontal: 10), // Espacio dentro del botón
-        decoration: BoxDecoration(
-          color: _isPressed ? Color(0xFF00747C) : Color(0xFF005B5B), // Cambiar color al presionar
-          borderRadius: BorderRadius.circular(8), // Bordes redondeados
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Espacio entre texto e icono
-          children: [
-            Text(
-              widget.label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildMenuOption({required String title, required VoidCallback onTap}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Material(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(5),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(5),
+          onTap: onTap,
+          child: Container(
+            height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, color: Colors.black),
+              ],
             ),
-            Icon(widget.icon, color: Colors.white, size: 30),
-          ],
+          ),
         ),
       ),
     );
