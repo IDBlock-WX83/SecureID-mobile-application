@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
+  final TextEditingController _inscriptionDateController = TextEditingController();
 
   String _selectedSexo = ''; // Valor inicial vacío para el Dropdown de Sexo
   String _selectedEstadoCivil = ''; // Valor inicial vacío para el Dropdown de Estado Civil
@@ -31,11 +32,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _paternalSurnameController.dispose();
     _maternalSurnameController.dispose();
     _birthDateController.dispose();
+    _inscriptionDateController.dispose();
     super.dispose();
   }
 
-  // Método para mostrar el DatePicker y seleccionar la fecha
-  Future<void> _selectDate(BuildContext context) async {
+  // Método para mostrar el DatePicker y seleccionar la fecha de nacimiento
+  Future<void> _selectBirthDate(BuildContext context) async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -52,12 +54,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  // Método para mostrar el DatePicker y seleccionar la fecha de inscripción
+  Future<void> _selectInscriptionDate(BuildContext context) async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900), // Fecha mínima
+      lastDate: DateTime.now(), // Fecha máxima
+    );
+
+    if (selectedDate != null) {
+      String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
+      setState(() {
+        _inscriptionDateController.text =
+            formattedDate; // Actualiza el TextField con la fecha seleccionada
+      });
+    }
+  }
+
   void _goToSecondScreen() {
     // Verifica que todos los campos estén completos
     if (_nameController.text.trim().isEmpty ||
         _paternalSurnameController.text.trim().isEmpty ||
         _maternalSurnameController.text.trim().isEmpty ||
         _birthDateController.text.trim().isEmpty ||
+        _inscriptionDateController.text.trim().isEmpty ||
         _selectedSexo.isEmpty || // Verifica que el sexo no esté vacío
         _selectedEstadoCivil.isEmpty) { // Verifica que el estado civil no esté vacío
       ScaffoldMessenger.of(context).showSnackBar(
@@ -72,6 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "apellidoPaterno": _paternalSurnameController.text.trim(),
       "apellidoMaterno": _maternalSurnameController.text.trim(),
       "fechaNacimiento": _birthDateController.text.trim(),
+      "fechaInscripcion": _inscriptionDateController.text.trim(),
       "sexo": _selectedSexo,
       "estadoCivil": _selectedEstadoCivil,
     };
@@ -98,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('Identificación', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+        title: const Text('Registro', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -107,14 +129,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 10), // Espacio superior para asegurar que haya espacio con el teclado
+            const SizedBox(height: 30),
             // Campo de texto: Nombre completo con labelText flotante
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Pre Nombres',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -125,16 +147,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _nameController,
               decoration: InputDecoration(
                 filled: true,
-                hintText: 'Pre Nombres', // 👈 Esto es el placeholder dentro
+                hintText: 'Pre Nombres',
                 hintStyle: const TextStyle(
-                  color: Colors.black45, // Gris como tu imagen
+                  color: Colors.black45,
                   fontWeight: FontWeight.bold,
                 ),
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 20,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -142,12 +161,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            // Primer Apellido
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Primer Apellido',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -158,16 +178,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _paternalSurnameController,
               decoration: InputDecoration(
                 filled: true,
-                hintText: 'Primer Apellido', // 👈 Esto es el placeholder dentro
+                hintText: 'Primer Apellido',
                 hintStyle: const TextStyle(
-                  color: Colors.black45, // Gris como tu imagen
+                  color: Colors.black45,
                   fontWeight: FontWeight.bold,
                 ),
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 20,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -175,12 +192,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 25),
+            // Segundo Apellido
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Segundo Apellido',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -191,46 +209,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _maternalSurnameController,
               decoration: InputDecoration(
                 filled: true,
-                hintText: 'Segundo Apellido', // 👈 Esto es el placeholder dentro
+                hintText: 'Segundo Apellido',
                 hintStyle: const TextStyle(
-                  color: Colors.black45, // Gris como tu imagen
+                  color: Colors.black45,
                   fontWeight: FontWeight.bold,
                 ),
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 20,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-const SizedBox(height: 25),
+            const SizedBox(height: 25),
+            // Fecha de Nacimiento
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Fecha de Nacimiento',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             const SizedBox(height: 10),
-                        // Campo de texto con un gesto para mostrar el DatePicker
             GestureDetector(
-              onTap: () => _selectDate(context),
-              child: AbsorbPointer( // Previene la interacción directa con el campo de texto
+              onTap: () => _selectBirthDate(context),
+              child: AbsorbPointer(
                 child: TextField(
                   controller: _birthDateController,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: 'Fecha de Nacimiento',
                     hintStyle: const TextStyle(
-                      color: Colors.black45, // Gris como tu imagen
+                      color: Colors.black45,
                       fontWeight: FontWeight.bold,
                     ),
                     suffixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
@@ -245,14 +260,13 @@ const SizedBox(height: 25),
               ),
             ),
             const SizedBox(height: 25),
-
-            // Dropdown para Sexo
+            // Sexo Dropdown
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Sexo',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -260,7 +274,7 @@ const SizedBox(height: 25),
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              value: _selectedSexo.isEmpty ? null : _selectedSexo, // Si está vacío, no se selecciona un valor
+              value: _selectedSexo.isEmpty ? null : _selectedSexo,
               hint: const Text("Seleccione Sexo"),
               items: const [
                 DropdownMenuItem(
@@ -280,10 +294,7 @@ const SizedBox(height: 25),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 20,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -291,13 +302,13 @@ const SizedBox(height: 25),
               ),
             ),
             const SizedBox(height: 25),
-            // Dropdown para Estado Civil
+            // Estado Civil Dropdown
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Estado Civil',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -305,7 +316,7 @@ const SizedBox(height: 25),
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              value: _selectedEstadoCivil.isEmpty ? null : _selectedEstadoCivil, // Si está vacío, no se selecciona un valor
+              value: _selectedEstadoCivil.isEmpty ? null : _selectedEstadoCivil,
               hint: const Text("Seleccione Estado Civil"),
               items: const [
                 DropdownMenuItem(
@@ -341,41 +352,37 @@ const SizedBox(height: 25),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 20,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-
-const SizedBox(height: 25),
+            const SizedBox(height: 25),
+            // Fecha de Inscripción
             Align(
-              alignment: Alignment.centerLeft, // Alinea el texto a la izquierda
+              alignment: Alignment.centerLeft,
               child: const Text(
                 'Fecha de Inscripción',
                 style: TextStyle(
-                  color: Colors.white, // Texto blanco como fondo azul
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             const SizedBox(height: 10),
-                        // Campo de texto con un gesto para mostrar el DatePicker
             GestureDetector(
-              onTap: () => _selectDate(context),
-              child: AbsorbPointer( // Previene la interacción directa con el campo de texto
+              onTap: () => _selectInscriptionDate(context),
+              child: AbsorbPointer(
                 child: TextField(
-                  controller: _birthDateController,
+                  controller: _inscriptionDateController,
                   decoration: InputDecoration(
                     filled: true,
                     hintText: 'Fecha de Inscripción',
                     hintStyle: const TextStyle(
-                      color: Colors.black45, // Gris como tu imagen
+                      color: Colors.black45,
                       fontWeight: FontWeight.bold,
                     ),
                     suffixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
@@ -389,9 +396,8 @@ const SizedBox(height: 25),
                 ),
               ),
             ),
-
             const SizedBox(height: 30),
-            // El resto de campos...
+            // El botón continuar
             ElevatedButton(
               onPressed: _goToSecondScreen,
               style: ElevatedButton.styleFrom(

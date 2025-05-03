@@ -16,6 +16,8 @@ class SignUpScreen2 extends StatefulWidget {
 
 class _SignUpScreen2State extends State<SignUpScreen2> {
   final BlockchainApiService _apiService = BlockchainApiService(); // Instancia del servicio
+
+  final TextEditingController _directionController = TextEditingController();
   final TextEditingController _regionController = TextEditingController();
   final TextEditingController _provinceController = TextEditingController();
   final TextEditingController _districtController = TextEditingController();
@@ -46,6 +48,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     _regionController.dispose();
     _provinceController.dispose();
     _districtController.dispose();
+    _directionController.dispose();
     super.dispose();
   }
 
@@ -64,12 +67,16 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     // Verificar si todos los campos están completos
     if (_regionController.text.isEmpty ||
         _provinceController.text.isEmpty ||
+        _directionController.text.isEmpty ||
         _districtController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Por favor, complete todos los campos")),
       );
       return;
     }
+      Navigator.pushNamed(context, 'menu');
+
+
 
     // Consolidar los datos del primer y segundo formulario
     final consolidatedData = {
@@ -84,7 +91,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     // Simular envío de datos al backend
     print("Datos consolidados: $consolidatedData");
 
-    try {
+    /*try {
       final response = await _apiService.addIdentification(consolidatedData);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -105,117 +112,162 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         SnackBar(content: Text("Error al registrar: $error")),
 
       );*/
-    }
+    }*/
   }
+
+     // Método para mostrar el DatePicker y seleccionar la fecha de inscripción
+ 
+
+
+
+
+
+  
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF00747C),
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF00747C),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Registro', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Dirección',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            const Text(
-              'Registro',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _directionController,
+              decoration: InputDecoration(
+                filled: true,
+                hintText: 'Dirección',
+                hintStyle: const TextStyle(
+                  color: Colors.black45,
+                  fontWeight: FontWeight.bold,
+                ),
+                fillColor: const Color(0xFFD9D9D9),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Región',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
             TextField(
               controller: _regionController,
               decoration: InputDecoration(
                 filled: true,
+                hintText: 'Región',
+                hintStyle: const TextStyle(
+                  color: Colors.black45,
+                  fontWeight: FontWeight.bold,
+                ),
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Región',
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Provincia',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
             TextField(
               controller: _provinceController,
               decoration: InputDecoration(
                 filled: true,
+                hintText: 'Provincia',
+                hintStyle: const TextStyle(
+                  color: Colors.black45,
+                  fontWeight: FontWeight.bold,
+                ),
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Provincia',
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
+Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Distrito',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
             TextField(
               controller: _districtController,
               decoration: InputDecoration(
                 filled: true,
+                hintText: 'Distrito',
+                hintStyle: const TextStyle(
+                  color: Colors.black45,
+                  fontWeight: FontWeight.bold,
+                ),
                 fillColor: const Color(0xFFD9D9D9),
-                labelText: 'Distrito',
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 50),
             // Selector de género
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFD9D9D9),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Sexo:',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: 'M',
-                        groupValue: _gender,
-                        onChanged: (String? value) {
-                          setState(() {
-                            _gender = value!;
-                          });
-                        },
-                      ),
-                      const Text('M'),
-                      Radio<String>(
-                        value: 'F',
-                        groupValue: _gender,
-                        onChanged: (String? value) {
-                          setState(() {
-                            _gender = value!;
-                          });
-                        },
-                      ),
-                      const Text('F'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
+            
             ElevatedButton(
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
