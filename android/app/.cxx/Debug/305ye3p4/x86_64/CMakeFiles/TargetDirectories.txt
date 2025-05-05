@@ -1,0 +1,2 @@
+C:/Users/USER/Documents/GitHub/SecureID-mobile-application/android/app/.cxx/Debug/305ye3p4/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/USER/Documents/GitHub/SecureID-mobile-application/android/app/.cxx/Debug/305ye3p4/x86_64/CMakeFiles/rebuild_cache.dir
