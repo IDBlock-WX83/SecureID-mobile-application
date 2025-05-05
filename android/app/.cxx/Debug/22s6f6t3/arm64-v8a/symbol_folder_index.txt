@@ -1,0 +1,1 @@
+C:\Users\USER\Documents\GitHub\SecureID-mobile-application\build\app\intermediates\cxx\Debug\22s6f6t3\obj\arm64-v8a
