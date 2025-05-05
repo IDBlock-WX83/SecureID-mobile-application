@@ -179,7 +179,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Región',
+                'Departamento',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -192,7 +192,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               controller: _regionController,
               decoration: InputDecoration(
                 filled: true,
-                hintText: 'Región',
+                hintText: 'Departamento',
                 hintStyle: const TextStyle(
                   color: Colors.black45,
                   fontWeight: FontWeight.bold,
