@@ -32,6 +32,7 @@ import 'package:ztech_mobile_application/profile/presentation/views/register2_sc
 import 'package:ztech_mobile_application/common/utils/blockchain_record.dart'; // Asegúrate de importar tu clase Blockchain
 import 'package:ztech_mobile_application/menu/success_popup.dart';
 import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
+import 'package:ztech_mobile_application/menu/successregister_popup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
         'upload_back_dni': (context) =>  UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
 'register2': (context) => SignUpScreen2(firstData: {}), // Envía un mapa vacío o los datos reales
- 'servicesAdmin': (context) => ServicesAdminScreen(),// services para editores
+ 'servicios_administrador': (context) => ServicesAdminScreen(),// services para editores
         'registerhealth': (context) => SaludServiceRegistrationScreen(),
         'registerenergy': (context) => EnergyServiceRegistrationScreen(),
         'registereducation': (context) => EducationServiceRegistrationScreen(),
@@ -81,6 +82,8 @@ class MyApp extends StatelessWidget {
         'resident_screen': (context) => ResidentsScreen(),
         'record_screen': (context) => TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
         'servicios_residentes': (context) => ServicesScreen(),
+        'registro_exitoso_adulto_mayor': (context) => SuccessRegisterPopup(onProfileClick: () {  },),
+
       },
       
     );

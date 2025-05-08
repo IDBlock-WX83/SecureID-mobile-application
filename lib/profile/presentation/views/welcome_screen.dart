@@ -20,7 +20,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Future<bool> _validateIdDigital(String idDigital) async {
-    final String url = "http://10.0.2.2:8080/api/blockchain/identification/exists/$idDigital";
+    final String url =
+        "http://10.0.2.2:8080/api/blockchain/identification/exists/$idDigital";
 
     try {
       final response = await http.get(
@@ -41,8 +42,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  Future<Map<String, dynamic>?> _getIdentificationDetails(String idDigital) async {
-    final String url = "http://10.0.2.2:8080/api/blockchain/identification/$idDigital";
+  Future<Map<String, dynamic>?> _getIdentificationDetails(
+      String idDigital) async {
+    final String url =
+        "http://10.0.2.2:8080/api/blockchain/identification/$idDigital";
 
     try {
       final response = await http.get(
@@ -53,7 +56,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        print("Error al obtener los detalles de la identificación: ${response.statusCode}");
+        print(
+            "Error al obtener los detalles de la identificación: ${response.statusCode}");
         return null;
       }
     } catch (error) {
@@ -106,7 +110,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       controller: _idController,
                       decoration: InputDecoration(
                         filled: true,
-                        hintText: 'ID Digital', // 👈 Esto es el placeholder dentro
+                        hintText:
+                            'ID Digital', // 👈 Esto es el placeholder dentro
                         hintStyle: const TextStyle(
                           color: Colors.black45, // Gris como tu imagen
                           fontWeight: FontWeight.bold,
@@ -127,9 +132,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: () /*{
-  Navigator.pushNamed(context, 'menu_residentes');
-}*/
+                  onPressed: () async {
+                    final idDigital = _idController.text.trim();
+
+                    if (idDigital.isNotEmpty) {
+                      if (idDigital == 'ADMIN') {
+                        // Si el ID es ADMIN, redirige a la pestaña de ADMIN
+                        Navigator.pushNamed(context, 'menu');
+                      } else {
+                        // Si el ID no es ADMIN, redirige a la pestaña de residentes
+                        Navigator.pushNamed(context, 'menu_residentes');
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Por favor, ingresa un ID Digital.')),
+                      );
+                    }
+                  },
+
+                  /*onPressed: () 
                   async {
                     final idDigital = _idController.text.trim();
 
@@ -163,10 +185,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         const SnackBar(content: Text('Por favor, ingresa un ID Digital.')),
                       );
                     }
-                  },
+                  },*/
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BBC9),
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),

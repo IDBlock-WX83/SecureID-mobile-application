@@ -86,12 +86,8 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
             _buildMenuOption(
               title: 'Servicios',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TransactionHistoryScreen(),
-                  ),
-                );
+                Navigator.pushNamed(context, 'servicios_administrador');
+
                 print('Servicios');
               },
             ),

@@ -6,10 +6,20 @@ class ServicesAdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Servicios'),
-        backgroundColor: Color(0xFF008080),
+        
+        backgroundColor: const Color(0xFF00747C),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Servicios',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
         centerTitle: true,
       ),
+            backgroundColor: const Color(0xFFC7C7CC),
+
       body: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
@@ -24,30 +34,30 @@ class ServicesAdminScreen extends StatelessWidget {
               shrinkWrap: true, // Permite que el GridView se adapte al contenido
               children: [
                 ServiceAdminCard(
-                  icon: Icons.favorite_border,
+                  icon: Icons.health_and_safety,
                   title: 'Salud',
-                  color: Colors.teal,
+                  color: const Color(0xFF00BBC9),
                   onViewDetails: () => Navigator.pushNamed(context, 'healthlistadmin'),
                   onAddService: () => Navigator.pushNamed(context, 'registerhealth'),
                 ),
                 ServiceAdminCard(
-                  icon: Icons.bolt_outlined,
-                  title: 'Energía',
-                  color: Colors.teal,
+                  icon: Icons.person,
+                  title: 'Social',
+                  color: const Color(0xFF00BBC9),
                   onViewDetails: () => Navigator.pushNamed(context, 'energylistadmin'),
                   onAddService: () => Navigator.pushNamed(context, 'registerenergy'),
                 ),
                 ServiceAdminCard(
-                  icon: Icons.book_outlined,
+                  icon: Icons.book,
                   title: 'Educación',
-                  color: Colors.teal,
+                  color: const Color(0xFF00BBC9),
                   onViewDetails: () => Navigator.pushNamed(context, 'educationlistadmin'),
                   onAddService: () => Navigator.pushNamed(context, 'registereducation'),
                 ),
                 ServiceAdminCard(
-                  icon: Icons.opacity,
-                  title: 'Agua potable',
-                  color: Colors.teal,
+                  icon: Icons.restaurant,
+                  title: 'Alimentación',
+                  color: const Color(0xFF00BBC9),
                   onViewDetails: () => Navigator.pushNamed(context, 'waterlistadmin'),
                   onAddService: () => Navigator.pushNamed(context, 'registerwater'),
                 ),
