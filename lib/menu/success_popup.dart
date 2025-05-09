@@ -36,7 +36,7 @@ class SuccessPopup extends StatelessWidget {
             },
             child: Text(
               'Aceptar',
-              style: TextStyle(color: Color(0xFF00747C),fontSize: 16), // Color del texto clickeable
+              style: TextStyle(color: Color(0xFF0C59A2),fontSize: 16), // Color del texto clickeable
             ),
           ),
         ],

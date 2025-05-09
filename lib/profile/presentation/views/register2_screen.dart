@@ -143,7 +143,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
           },
         ),
         title: const Text('Registro',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

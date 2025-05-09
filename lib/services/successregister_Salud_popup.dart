@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'menu_screen.dart';
 
-class SuccessRegisterPopup extends StatelessWidget {
+class SuccessRegisterSaludPopup extends StatelessWidget {
   final VoidCallback onProfileClick;
 
-  const SuccessRegisterPopup({Key? key, required this.onProfileClick}) : super(key: key);
+  const SuccessRegisterSaludPopup({Key? key, required this.onProfileClick}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class SuccessRegisterPopup extends StatelessWidget {
           ),
           SizedBox(height: 10), // Espacio entre los textos
           Text(
-            'Identificación digital creada satisfactoriamente.',
+            'Difusión del servicio creada satisfactoriamente.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
@@ -31,7 +30,7 @@ class SuccessRegisterPopup extends StatelessWidget {
               onProfileClick(); // Llama a la función proporcionada
               Navigator.of(context).pop(); // Cierra el diálogo
               {
-                    Navigator.pushNamed(context, 'menu');
+                    Navigator.pushNamed(context, 'servicios_administrador');
                   };
             },
             child: Text(

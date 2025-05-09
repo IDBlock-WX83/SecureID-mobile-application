@@ -33,6 +33,8 @@ import 'package:ztech_mobile_application/common/utils/blockchain_record.dart'; /
 import 'package:ztech_mobile_application/menu/success_popup.dart';
 import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
 import 'package:ztech_mobile_application/menu/successregister_popup.dart';
+import 'package:ztech_mobile_application/services/successregister_Salud_popup.dart';
+import 'package:ztech_mobile_application/services/deleteregister_Salud_popup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,6 +85,8 @@ class MyApp extends StatelessWidget {
         'record_screen': (context) => TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
         'servicios_residentes': (context) => ServicesScreen(),
         'registro_exitoso_adulto_mayor': (context) => SuccessRegisterPopup(onProfileClick: () {  },),
+        'servicio_creado_general': (context) => SuccessRegisterSaludPopup(onProfileClick: () {  },),
+        'servicio_eliminar_general': (context) => DeleteRegisterSaludPopup(onProfileClick: () {  },),
 
       },
       

@@ -31,7 +31,7 @@ class _IdentityScreenState extends State<IdentityScreen> {
           },
         ),
         title: const Text('Identificación',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
             backgroundColor: const Color(0xFFC7C7CC),

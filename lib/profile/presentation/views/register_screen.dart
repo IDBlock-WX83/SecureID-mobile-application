@@ -120,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('Registro', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+        title: const Text('Registro', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

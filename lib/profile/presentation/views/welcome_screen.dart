@@ -208,7 +208,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     '¿No tienes cuenta?',
                     style: TextStyle(
                       color: Colors.white,
-                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

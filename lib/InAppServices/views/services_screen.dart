@@ -63,7 +63,7 @@ class ServicesScreen extends StatelessWidget {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('Servicios', style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500)),
+        title: const Text('Servicios', style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: const Color(0xFF00747C),
       ),

@@ -11,11 +11,11 @@ class ServicesAdminScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.of(context).pop();
-          },
+Navigator.pushNamed(context, 'menu');
+   },
         ),
         title: const Text('Servicios',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
             backgroundColor: const Color(0xFFC7C7CC),
