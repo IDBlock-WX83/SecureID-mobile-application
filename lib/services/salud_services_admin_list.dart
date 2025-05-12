@@ -1,7 +1,35 @@
 import 'package:flutter/material.dart';
-
-class HealthServiceListScreen extends StatelessWidget {
+import 'package:ztech_mobile_application/core/http/ApiService .dart'; // Importa ApiService
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; // Importa SocialServicesService
+import 'dart:async'; // Importa para usar TimeoutException
+import 'package:ztech_mobile_application/services/social_service.dart';
+class HealthServiceListScreen extends StatefulWidget {
   const HealthServiceListScreen({Key? key}) : super(key: key);
+
+  @override
+  _HealthServiceListScreenState createState() => _HealthServiceListScreenState();
+}
+
+class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
+  final ApiService apiService = ApiService();
+  late SocialServicesService socialServicesService;
+  late Future<List<SocialService>> _futureServicios;
+
+  @override
+  void initState() {
+    super.initState();
+    socialServicesService = SocialServicesService(apiService: apiService);
+    _futureServicios = _fetchServicios();
+  }
+
+  Future<List<SocialService>> _fetchServicios() async {
+    try {
+      final servicios = await socialServicesService.getAllSocialServices();
+      return servicios;
+    } catch (e) {
+      throw Exception('Error al cargar servicios: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +39,7 @@ class HealthServiceListScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-                              Navigator.pushNamed(context, 'servicios_administrador');
-
+            Navigator.pushNamed(context, 'servicios_administrador');
           },
         ),
         title: const Text(
@@ -22,45 +49,45 @@ class HealthServiceListScreen extends StatelessWidget {
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: ListView(
-        padding: const EdgeInsets.all(10),
-        children: [
-          ServiceListItem(
-            title: 'Atención para adultos mayores',
-            location: 'Posta médica de Madre De Dios'  ,
-            schedule: '10 PM',
-            dueDate: '09/05/2025',
-            description:
-                'Este servicio de atención para adultos mayores ofrece consultas médicas y apoyo en salud general.',
-            image: 'assets/service_adultos_mayores.jpg',
-            onEdit: () {
-              Navigator.pushNamed(context, 'healthedit');
-            },
-            onDelete: () {
-              Navigator.pushNamed(context, 'servicio_eliminar_general');
-            },
-          ),
-          ServiceListItem(
-            title: 'Vacunación contra la fiebre amarilla',
-            location: 'Plaza principal',
-            schedule: 'Sábados 8 AM',
-            dueDate: '05/10/2024',
-            description:
-                'Vacunación para prevenir la fiebre amarilla en zonas de alto riesgo.',
-            image: 'assets/service_vacunacion.jpg',
-            onEdit: () {
-              Navigator.pushNamed(context, 'healthedit');
-            },
-            onDelete: () {
-              Navigator.pushNamed(context, 'servicio_eliminar_general');
-            },
-          ),
-          // Agrega más elementos de la lista según sea necesario
-        ],
+      body: FutureBuilder<List<SocialService>>(
+        future: _futureServicios,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay servicios disponibles.'));
+          } else {
+            final servicios = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: servicios.length,
+              itemBuilder: (context, index) {
+                final service = servicios[index];
+                return ServiceListItem(
+                  title: service.resumen,
+                  location: service.lugar,
+                  schedule: service.hora,
+                  dueDate: service.fecha,
+                  description: service.descripcion,
+                  //image: Image.network('https://definicion.de/wp-content/uploads/2012/01/imagen-vectorial.png'),
+                  onEdit: () {
+                    Navigator.pushNamed(context, 'healthedit');
+                  },
+                  onDelete: () {
+                    Navigator.pushNamed(context, 'servicio_eliminar_general');
+                  },
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
 }
+
 
 class ServiceListItem extends StatelessWidget {
   final String title;
@@ -68,7 +95,7 @@ class ServiceListItem extends StatelessWidget {
   final String schedule;
   final String dueDate;
   final String description;
-  final String image;
+  //final String image;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -78,129 +105,133 @@ class ServiceListItem extends StatelessWidget {
     required this.schedule,
     required this.dueDate,
     required this.description,
-    required this.image,
+    //required this.image,
     required this.onEdit,
     required this.onDelete,
   });
 
   @override
-Widget build(BuildContext context) {
-  return Card(
-    margin: const EdgeInsets.symmetric(vertical: 8),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    color: const Color(0xFF00BBC9),
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Título centrado
-          Center(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: const Color(0xFF00BBC9),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Título centrado
+            Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-          // Imagen con ancho completo
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              image,
-              width: double.infinity,  // Hacer que la imagen ocupe todo el ancho disponible
-              height: 150,             // Ajusta la altura según sea necesario
-              fit: BoxFit.cover,
+            // Imagen con ancho completo
+            /*ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                image,
+                width: double.infinity,  // Hacer que la imagen ocupe todo el ancho disponible
+                height: 150,             // Ajusta la altura según sea necesario
+                fit: BoxFit.cover,
+              ),
+            ),*/
+            const SizedBox(height: 10),
+
+            // Lugar
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Lugar: $location',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
 
-          // Lugar
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Text(
-              'Lugar: $location',
-style: const TextStyle(
-  color: Colors.black,
-  fontSize: 16, // Ajusta este valor para cambiar el tamaño del texto
-),            ),
-          ),
+            // Row con la fecha y hora, alineando cada uno a los lados
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Hora alineada a la izquierda
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Hora: $schedule',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                // Fecha alineada a la derecha
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Fecha: $dueDate',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
-          // Row con la fecha y hora, alineando cada uno a los lados
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Hora alineada a la izquierda
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text(
-                  'Hora: $schedule',
-style: const TextStyle(
-  color: Colors.black,
-  fontSize: 16, // Ajusta este valor para cambiar el tamaño del texto
-),                 ),
+            // Descripción
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Descripción: $description',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
               ),
-              // Fecha alineada a la derecha
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text(
-                  'Fecha: $dueDate',
-style: const TextStyle(
-  color: Colors.black,
-  fontSize: 16, // Ajusta este valor para cambiar el tamaño del texto
-),                 ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
 
-          // Descripción
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Text(
-              'Descripción: $description',
-style: const TextStyle(
-  color: Colors.black,
-  fontSize: 16, // Ajusta este valor para cambiar el tamaño del texto
-),             ),
-          ),
-          const SizedBox(height: 10),
-
-          // Botones Eliminar y Editar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton(
-                onPressed: onDelete,
-                child: const Text(
-                  'Eliminar',
-style: const TextStyle(
-    fontWeight: FontWeight.bold,
-
-  color: Colors.white,
-  fontSize: 15, // Ajusta este valor para cambiar el tamaño del texto
-),                    ),
-              ),
-              const VerticalDivider(color: Colors.white),
-              TextButton(
-                onPressed: onEdit,
-                child: const Text(
-                  'Editar',
-style: const TextStyle(
-  fontWeight: FontWeight.bold,
-  color: Colors.white,
-  fontSize: 15, // Ajusta este valor para cambiar el tamaño del texto
-),                 ),
-              ),
-            ],
-          ),
-        ],
+            // Botones Eliminar y Editar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: onDelete,
+                  child: const Text(
+                    'Eliminar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                const VerticalDivider(color: Colors.white),
+                TextButton(
+                  onPressed: onEdit,
+                  child: const Text(
+                    'Editar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

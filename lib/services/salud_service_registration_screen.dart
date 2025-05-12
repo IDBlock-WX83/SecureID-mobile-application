@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Para manejar archivos de imagen
+import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
 class SaludServiceRegistrationScreen extends StatefulWidget {
   const SaludServiceRegistrationScreen({Key? key}) : super(key: key);
@@ -26,6 +28,19 @@ class _SaludServiceRegistrationScreenState
   final TextEditingController _fechaController = TextEditingController();
 
   final TextEditingController _timeController = TextEditingController();
+
+//Inicialización para el API
+ late ApiService apiService;
+  late SocialServicesService socialServicesService;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    apiService = ApiService(); // Aquí inicializas ApiService
+    socialServicesService = SocialServicesService(apiService: apiService); // Aquí inicializas SocialServicesService
+  }
+
 
   // Función para seleccionar la hora
   Future<void> _selectTime(BuildContext context) async {
@@ -65,7 +80,7 @@ class _SaludServiceRegistrationScreenState
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900), // Fecha mínima
-      lastDate: DateTime.now(), // Fecha máxima
+    lastDate: DateTime(9999), // Fecha máxima: fecha lejana en el futuro
     );
 
     if (selectedDate != null) {
@@ -77,34 +92,63 @@ class _SaludServiceRegistrationScreenState
     }
   }
 
-  void _goToSecondScreen() {
-    // Verifica que todos los campos estén completos
-    if (_titulocamapaniaController.text.trim().isEmpty ||
-        _fechaController.text.trim().isEmpty ||
-        _timeController.text.trim().isEmpty ||
-        _lugarcamapaniaController.text.trim().isEmpty ||
-        _descripcioncamapaniaController.text.trim().isEmpty) {
-      // Verifica que el estado civil no esté vacío
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Por favor, complete todos los campos")),
-      );
-      return;
-    }
 
-    // Consolidar los datos del primer formulario
-    /*final firstData = {
-      "preNombres": _nameController.text.trim(),
-      "apellidoPaterno": _paternalSurnameController.text.trim(),
-      "apellidoMaterno": _maternalSurnameController.text.trim(),
-      "fechaNacimiento": _birthDateController.text.trim(),
-      "fechaInscripcion": _inscriptionDateController.text.trim(),
-      "sexo": _selectedSexo,
-      "estadoCivil": _selectedEstadoCivil,
-    };*/
-
-    // Navegar al segundo formulario enviando los datos
-    Navigator.pushNamed(context, 'servicio_creado_general');
+// Función para enviar los datos del formulario al backend
+Future<void> _submitForm() async {
+  if (_titulocamapaniaController.text.trim().isEmpty ||
+      _fechaController.text.trim().isEmpty ||
+      _timeController.text.trim().isEmpty ||
+      _lugarcamapaniaController.text.trim().isEmpty ||
+      _descripcioncamapaniaController.text.trim().isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Por favor, complete todos los campos")),
+    );
+    return;
   }
+
+  // 1. Formatear la fecha a 'yyyy-MM-dd'
+  DateTime fechaSeleccionada = DateFormat('dd/MM/yyyy').parse(_fechaController.text.trim());
+  String formattedFecha = DateFormat('yyyy-MM-dd').format(fechaSeleccionada);
+
+  // 2. Convertir la hora a formato de 24 horas (HH:mm:ss)
+  // Tomamos el valor de la hora que es en formato de 12 horas y lo convertimos
+  String hora = _timeController.text.trim();
+  DateFormat inputFormat = DateFormat.jm(); // "12:45 AM"
+  DateFormat outputFormat = DateFormat("HH:mm:ss"); // "14:14:00"
+  DateTime parsedTime = inputFormat.parse(hora);
+  String formattedHora = outputFormat.format(parsedTime);
+
+  // Crear el objeto con los datos del formulario
+  final socialServiceData = {
+    "resumen": _titulocamapaniaController.text.trim(),
+    "lugar": _lugarcamapaniaController.text.trim(),
+    "fecha": formattedFecha, // Fecha en formato yyyy-MM-dd
+    "hora": formattedHora,   // Hora en formato 24 horas HH:mm:ss
+    "descripcion": _descripcioncamapaniaController.text.trim(),
+    "socialServicesType": 'SALUD',
+    // Si quieres incluir imágenes, deberás agregar lógica adicional para convertirlas en formato adecuado
+  };
+
+  // Imprimir los datos en consola para ver el formato antes de enviarlos
+  print("Datos a enviar al backend: $socialServiceData");
+
+  try {
+    // Llamar al servicio para enviar los datos
+    final response = await socialServicesService.createSocialService(socialServiceData);
+    if (response != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Servicio guardado exitosamente")),
+      );
+      // Navegar a la siguiente pantalla
+      Navigator.pushNamed(context, 'servicio_creado_general');
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error al guardar el servicio: $e")),
+    );
+  }
+}
+
 
   // Variables para almacenar las imágenes seleccionadas
   File? _image1;
@@ -425,7 +469,7 @@ class _SaludServiceRegistrationScreenState
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: _goToSecondScreen,
+                  onPressed: _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BBC9),
                     shape: RoundedRectangleBorder(
