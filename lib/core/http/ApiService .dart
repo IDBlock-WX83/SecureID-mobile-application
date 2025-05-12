@@ -5,19 +5,21 @@ import 'dart:isolate';  // Importa Isolate
 
 class ApiService {
   final String baseUrl = ApiConfig.baseUrl;
-  // Método GET para obtener datos (devuelve lista directa)
   Future<List<dynamic>> get(String endpoint) async {
-    final response = await http.get(
-      Uri.parse(baseUrl + endpoint),
-      headers: {'Content-Type': 'application/json'},
-    );
+  final response = await http.get(
+    Uri.parse(baseUrl + endpoint),
+    headers: {'Content-Type': 'application/json'},
+  );
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body); // Retorna una lista
-    } else {
-      throw Exception('Failed to fetch data');
-    }
-  } 
+  if (response.statusCode == 200) {
+    // ✅ Decodifica correctamente con UTF-8
+    final decoded = utf8.decode(response.bodyBytes);
+    return json.decode(decoded); // Ya sin problemas con la ñ o tildes
+  } else {
+    throw Exception('Failed to fetch data');
+  }
+}
+
 
   // Método POST para enviar datos
   Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> data) async {

@@ -30,17 +30,17 @@ class _SaludServiceRegistrationScreenState
   final TextEditingController _timeController = TextEditingController();
 
 //Inicialización para el API
- late ApiService apiService;
+  late ApiService apiService;
   late SocialServicesService socialServicesService;
 
   @override
   void initState() {
     super.initState();
-    
-    apiService = ApiService(); // Aquí inicializas ApiService
-    socialServicesService = SocialServicesService(apiService: apiService); // Aquí inicializas SocialServicesService
-  }
 
+    apiService = ApiService(); // Aquí inicializas ApiService
+    socialServicesService = SocialServicesService(
+        apiService: apiService); // Aquí inicializas SocialServicesService
+  }
 
   // Función para seleccionar la hora
   Future<void> _selectTime(BuildContext context) async {
@@ -80,7 +80,7 @@ class _SaludServiceRegistrationScreenState
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900), // Fecha mínima
-    lastDate: DateTime(9999), // Fecha máxima: fecha lejana en el futuro
+      lastDate: DateTime(9999), // Fecha máxima: fecha lejana en el futuro
     );
 
     if (selectedDate != null) {
@@ -92,63 +92,63 @@ class _SaludServiceRegistrationScreenState
     }
   }
 
-
 // Función para enviar los datos del formulario al backend
-Future<void> _submitForm() async {
-  if (_titulocamapaniaController.text.trim().isEmpty ||
-      _fechaController.text.trim().isEmpty ||
-      _timeController.text.trim().isEmpty ||
-      _lugarcamapaniaController.text.trim().isEmpty ||
-      _descripcioncamapaniaController.text.trim().isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Por favor, complete todos los campos")),
-    );
-    return;
-  }
-
-  // 1. Formatear la fecha a 'yyyy-MM-dd'
-  DateTime fechaSeleccionada = DateFormat('dd/MM/yyyy').parse(_fechaController.text.trim());
-  String formattedFecha = DateFormat('yyyy-MM-dd').format(fechaSeleccionada);
-
-  // 2. Convertir la hora a formato de 24 horas (HH:mm:ss)
-  // Tomamos el valor de la hora que es en formato de 12 horas y lo convertimos
-  String hora = _timeController.text.trim();
-  DateFormat inputFormat = DateFormat.jm(); // "12:45 AM"
-  DateFormat outputFormat = DateFormat("HH:mm:ss"); // "14:14:00"
-  DateTime parsedTime = inputFormat.parse(hora);
-  String formattedHora = outputFormat.format(parsedTime);
-
-  // Crear el objeto con los datos del formulario
-  final socialServiceData = {
-    "resumen": _titulocamapaniaController.text.trim(),
-    "lugar": _lugarcamapaniaController.text.trim(),
-    "fecha": formattedFecha, // Fecha en formato yyyy-MM-dd
-    "hora": formattedHora,   // Hora en formato 24 horas HH:mm:ss
-    "descripcion": _descripcioncamapaniaController.text.trim(),
-    "socialServicesType": 'SALUD',
-    // Si quieres incluir imágenes, deberás agregar lógica adicional para convertirlas en formato adecuado
-  };
-
-  // Imprimir los datos en consola para ver el formato antes de enviarlos
-  print("Datos a enviar al backend: $socialServiceData");
-
-  try {
-    // Llamar al servicio para enviar los datos
-    final response = await socialServicesService.createSocialService(socialServiceData);
-    if (response != null) {
+  Future<void> _submitForm() async {
+    if (_titulocamapaniaController.text.trim().isEmpty ||
+        _fechaController.text.trim().isEmpty ||
+        _timeController.text.trim().isEmpty ||
+        _lugarcamapaniaController.text.trim().isEmpty ||
+        _descripcioncamapaniaController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Servicio guardado exitosamente")),
+        SnackBar(content: Text("Por favor, complete todos los campos")),
       );
-      // Navegar a la siguiente pantalla
-      Navigator.pushNamed(context, 'servicio_creado_general');
+      return;
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error al guardar el servicio: $e")),
-    );
-  }
-}
 
+    // 1. Formatear la fecha a 'yyyy-MM-dd'
+    DateTime fechaSeleccionada =
+        DateFormat('dd/MM/yyyy').parse(_fechaController.text.trim());
+    String formattedFecha = DateFormat('yyyy-MM-dd').format(fechaSeleccionada);
+
+    // 2. Convertir la hora a formato de 24 horas (HH:mm:ss)
+    // Tomamos el valor de la hora que es en formato de 12 horas y lo convertimos
+    String hora = _timeController.text.trim();
+    DateFormat inputFormat = DateFormat.jm(); // "12:45 AM"
+    DateFormat outputFormat = DateFormat("HH:mm:ss"); // "14:14:00"
+    DateTime parsedTime = inputFormat.parse(hora);
+    String formattedHora = outputFormat.format(parsedTime);
+
+    // Crear el objeto con los datos del formulario
+    final socialServiceData = {
+      "resumen": _titulocamapaniaController.text.trim(),
+      "lugar": _lugarcamapaniaController.text.trim(),
+      "fecha": formattedFecha, // Fecha en formato yyyy-MM-dd
+      "hora": formattedHora, // Hora en formato 24 horas HH:mm:ss
+      "descripcion": _descripcioncamapaniaController.text.trim(),
+      "socialServicesType": 'SALUD',
+      // Si quieres incluir imágenes, deberás agregar lógica adicional para convertirlas en formato adecuado
+    };
+
+    // Imprimir los datos en consola para ver el formato antes de enviarlos
+    print("Datos a enviar al backend: $socialServiceData");
+
+    try {
+      // Llamar al servicio para enviar los datos
+      final response =
+          await socialServicesService.createSocialService(socialServiceData);
+      if (response != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Servicio guardado exitosamente")),
+        );
+        // Navegar a la siguiente pantalla
+        Navigator.pushNamed(context, 'servicio_creado_general');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al guardar el servicio: $e")),
+      );
+    }
+  }
 
   // Variables para almacenar las imágenes seleccionadas
   File? _image1;
@@ -172,6 +172,8 @@ Future<void> _submitForm() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
         backgroundColor: const Color(0xFF00747C),
         leading: IconButton(
@@ -190,7 +192,8 @@ Future<void> _submitForm() async {
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0), // Ajuste de padding
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16.0), // Ajuste de padding
 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -382,88 +385,92 @@ Future<void> _submitForm() async {
                       ),
                       const SizedBox(height: 10),
 // Botón para adjuntar una foto
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                'Cargar imagen',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Botón para cargar o tomar una foto
-            ElevatedButton(
-              onPressed: () async {
-                // Mostrar un diálogo para elegir entre tomar una foto o seleccionar de la galería
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Seleccionar fuente'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            title: const Text('Tomar foto'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              _pickImage(
-                                  2,
-                                  ImageSource
-                                      .camera); // Asignar imagen a _image1
-                            },
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Cargar imagen',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          ListTile(
-                            title: const Text('Seleccionar de la galería'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              _pickImage(
-                                  2,
-                                  ImageSource
-                                      .gallery); // Asignar imagen a _image1
-                            },
-                          ),
-                        ],
+                        ),
                       ),
-                    );
-                  },
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD9D9D9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                minimumSize: Size(double.infinity, 50),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.photo, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Cargar imagen', style: TextStyle(color: Colors.black)),
-                  ],
-                ),
-              ),
-            ),const SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      // Botón para cargar o tomar una foto
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Mostrar un diálogo para elegir entre tomar una foto o seleccionar de la galería
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Seleccionar fuente'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      title: const Text('Tomar foto'),
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                        _pickImage(
+                                            2,
+                                            ImageSource
+                                                .camera); // Asignar imagen a _image1
+                                      },
+                                    ),
+                                    ListTile(
+                                      title: const Text(
+                                          'Seleccionar de la galería'),
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                        _pickImage(
+                                            2,
+                                            ImageSource
+                                                .gallery); // Asignar imagen a _image1
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD9D9D9),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 20),
+                          minimumSize: Size(double.infinity, 50),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.photo, color: Colors.black),
+                              SizedBox(width: 10),
+                              Text('Cargar imagen',
+                                  style: TextStyle(color: Colors.black)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
 
-            // Mostrar la imagen seleccionada (si existe)
-            if (_image2 != null)
-              Image.file(
-                _image2!,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit
-                    .contain, // Ajusta la imagen sin recortarla, manteniendo la proporción
-              ),
+                      // Mostrar la imagen seleccionada (si existe)
+                      if (_image2 != null)
+                        Image.file(
+                          _image2!,
+                          height: 150,
+                          width: double.infinity,
+                          fit: BoxFit
+                              .contain, // Ajusta la imagen sin recortarla, manteniendo la proporción
+                        ),
                     ],
                   ),
                 ),

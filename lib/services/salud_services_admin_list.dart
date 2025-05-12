@@ -3,6 +3,8 @@ import 'package:ztech_mobile_application/core/http/ApiService .dart'; // Importa
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; // Importa SocialServicesService
 import 'dart:async'; // Importa para usar TimeoutException
 import 'package:ztech_mobile_application/services/social_service.dart';
+import 'package:intl/intl.dart';
+
 class HealthServiceListScreen extends StatefulWidget {
   const HealthServiceListScreen({Key? key}) : super(key: key);
 
@@ -88,14 +90,12 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
   }
 }
 
-
 class ServiceListItem extends StatelessWidget {
   final String title;
   final String location;
   final String schedule;
   final String dueDate;
   final String description;
-  //final String image;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -105,13 +105,30 @@ class ServiceListItem extends StatelessWidget {
     required this.schedule,
     required this.dueDate,
     required this.description,
-    //required this.image,
     required this.onEdit,
     required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Formateo de fecha y hora
+    String fechaFormateada;
+    String horaFormateada;
+
+    try {
+      final fecha = DateTime.parse(dueDate); // yyyy-MM-dd
+      fechaFormateada = DateFormat('dd/MM/yyyy').format(fecha);
+    } catch (e) {
+      fechaFormateada = dueDate;
+    }
+
+    try {
+      final hora = DateFormat('HH:mm').parse(schedule); // HH:mm
+      horaFormateada = DateFormat('hh:mm a').format(hora); // 12:00 AM
+    } catch (e) {
+      horaFormateada = schedule;
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -121,7 +138,6 @@ class ServiceListItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Título centrado
             Center(
               child: Text(
                 title,
@@ -133,20 +149,6 @@ class ServiceListItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Imagen con ancho completo
-            /*ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                image,
-                width: double.infinity,  // Hacer que la imagen ocupe todo el ancho disponible
-                height: 150,             // Ajusta la altura según sea necesario
-                fit: BoxFit.cover,
-              ),
-            ),*/
-            const SizedBox(height: 10),
-
-            // Lugar
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Text(
@@ -157,27 +159,23 @@ class ServiceListItem extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Row con la fecha y hora, alineando cada uno a los lados
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Hora alineada a la izquierda
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    'Hora: $schedule',
+                    'Hora: $horaFormateada',
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
                     ),
                   ),
                 ),
-                // Fecha alineada a la derecha
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    'Fecha: $dueDate',
+                    'Fecha: $fechaFormateada',
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -186,8 +184,6 @@ class ServiceListItem extends StatelessWidget {
                 ),
               ],
             ),
-
-            // Descripción
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Text(
@@ -199,8 +195,6 @@ class ServiceListItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Botones Eliminar y Editar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
