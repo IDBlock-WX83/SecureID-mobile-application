@@ -35,6 +35,7 @@ import 'package:ztech_mobile_application/InAppServices/views/services_screen.dar
 import 'package:ztech_mobile_application/menu/successregister_popup.dart';
 import 'package:ztech_mobile_application/services/successregister_Salud_popup.dart';
 import 'package:ztech_mobile_application/services/deleteregister_Salud_popup.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +51,16 @@ class MyApp extends StatelessWidget {
     final blockchain = Blockchain();
 
     return MaterialApp(
+      locale: const Locale('es'), // <- Español
+  supportedLocales: const [
+    Locale('es'), // Español
+    Locale('en'), // Inglés (opcional)
+  ],
+  localizationsDelegates: const [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
       title: 'Ztech',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
