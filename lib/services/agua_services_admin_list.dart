@@ -1,39 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:ztech_mobile_application/InAppServices/Api/Services/social_sevice_api.dart';
-import 'package:ztech_mobile_application/InAppServices/Api/models/SocialServicesResponseDto.dart';
-import 'package:ztech_mobile_application/services/agua_service_edit.dart';
+import 'package:ztech_mobile_application/core/http/ApiService .dart'; // Importa ApiService
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; // Importa SocialServicesService
+import 'dart:async'; // Importa para usar TimeoutException
+import 'package:ztech_mobile_application/services/social_service.dart';
+import 'package:intl/intl.dart';
+import 'dart:typed_data'; // Para manejar los datos binarios
+import 'dart:convert'; // Para la conversión base64
 
 class WaterServiceListScreen extends StatefulWidget {
+  const WaterServiceListScreen({Key? key}) : super(key: key);
+
   @override
   _WaterServiceListScreenState createState() => _WaterServiceListScreenState();
 }
 
 class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
-  late Future<List<SocialServiceResponse>> servicesFuture;
+  final ApiService apiService = ApiService();
+  late SocialServicesService socialServicesService;
+  late Future<List<SocialService>> _futureServicios;
 
   @override
   void initState() {
     super.initState();
-    servicesFuture = _fetchServices();
+    socialServicesService = SocialServicesService(apiService: apiService);
+    _futureServicios = _fetchServicios();
   }
 
-  Future<List<SocialServiceResponse>> _fetchServices() async {
-    return await SocialServiceApi().getSocialServicesByTypeAndNotExpired("water");
-  }
-
-  Future<void> _deleteService(int id) async {
+  Future<List<SocialService>> _fetchServicios() async {
     try {
-      await SocialServiceApi().deleteSocialService(id);
-      setState(() {
-        servicesFuture = _fetchServices();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Servicio eliminado exitosamente')),
-      );
+      final servicios = await socialServicesService.getSocialServicesByTypeAndNotExpired('ALIMENTACION');
+      return servicios;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al eliminar el servicio: $e')),
-      );
+      throw Exception('Error al cargar servicios: $e');
     }
   }
 
@@ -41,12 +39,22 @@ class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Servicio: Agua Potable'),
         backgroundColor: const Color(0xFF00747C),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushNamed(context, 'servicios_administrador');
+          },
+        ),
+        title: const Text(
+          'Servicio: Salud',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<SocialServiceResponse>>(
-        future: servicesFuture,
+      backgroundColor: const Color(0xFFC7C7CC),
+      body: FutureBuilder<List<SocialService>>(
+        future: _futureServicios,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -55,41 +63,24 @@ class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No hay servicios disponibles.'));
           } else {
-            final services = snapshot.data!;
+            final servicios = snapshot.data!;
             return ListView.builder(
               padding: const EdgeInsets.all(10),
-              itemCount: services.length,
+              itemCount: servicios.length,
               itemBuilder: (context, index) {
-                final service = services[index];
+                final service = servicios[index];
                 return ServiceListItem(
-                  title: service.title,
-                  location: service.location,
-                  schedule: service.schedule,
-                  dueDate: service.expirationDate.toLocal().toShortDateString(),
-                  image: service.imageUrl,
-                  onEdit: () async {
-                    final updated = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WaterCampaignEditScreen(
-                          id: service.id,
-                          title: service.title,
-                          location: service.location,
-                          schedule: service.schedule,
-                          dueDate: service.expirationDate.toLocal().toShortDateString(),
-                          image: service.imageUrl,
-                        ),
-                      ),
-                    );
-
-                    if (updated != null && updated) {
-                      setState(() {
-                        servicesFuture = _fetchServices();
-                      });
-                    }
+                  title: service.resumen,
+                  location: service.lugar,
+                  schedule: service.hora,
+                  dueDate: service.fecha,
+                  description: service.descripcion,
+                  imageBase64: service.imagen,  // Pasar imagen base64
+                  onEdit: () {
+                    Navigator.pushNamed(context, 'healthedit');
                   },
                   onDelete: () {
-                    _showDeleteConfirmationDialog(service.id);
+                    Navigator.pushNamed(context, 'servicio_eliminar_general');
                   },
                 );
               },
@@ -99,41 +90,6 @@ class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
       ),
     );
   }
-
-  // Mostrar el diálogo de confirmación
-  Future<void> _showDeleteConfirmationDialog(int id) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Eliminar Servicio'),
-          content: const Text('¿Estás seguro de que deseas eliminar este servicio?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () async {
-                await _deleteService(id); 
-                Navigator.of(context).pop(); 
-                
-              },
-              child: const Text('Sí'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-extension DateTimeExtension on DateTime {
-  String toShortDateString() {
-    return '${this.day}/${this.month}/${this.year}';
-  }
 }
 
 class ServiceListItem extends StatelessWidget {
@@ -141,7 +97,8 @@ class ServiceListItem extends StatelessWidget {
   final String location;
   final String schedule;
   final String dueDate;
-  final String image;
+  final String description;
+  final String? imageBase64;  // Recibimos la imagen en base64
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -150,60 +107,116 @@ class ServiceListItem extends StatelessWidget {
     required this.location,
     required this.schedule,
     required this.dueDate,
-    required this.image,
+    required this.description,
     required this.onEdit,
     required this.onDelete,
+    this.imageBase64,  // Recibimos la imagen en base64
   });
 
   @override
   Widget build(BuildContext context) {
+    // Formateo de fecha y hora
+    String fechaFormateada;
+    String horaFormateada;
+
+    try {
+      final fecha = DateTime.parse(dueDate); // yyyy-MM-dd
+      fechaFormateada = DateFormat('dd/MM/yyyy').format(fecha);
+    } catch (e) {
+      fechaFormateada = dueDate;
+    }
+
+    try {
+      final hora = DateFormat('HH:mm').parse(schedule); // HH:mm
+      horaFormateada = DateFormat('hh:mm a').format(hora); // 12:00 AM
+    } catch (e) {
+      horaFormateada = schedule;
+    }
+
+    // Decodificar la imagen base64 a bytes
+    Uint8List? imageBytes;
+    if (imageBase64 != null) {
+      imageBytes = base64Decode(imageBase64!);
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: const Color(0xFF00A7A7),
+      color: const Color(0xFF00BBC9),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Image.network(image,
-                      height: 100, width: 100, fit: BoxFit.cover),
+            Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        location,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        schedule,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        'Vence $dueDate',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Lugar: $location',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Hora: $horaFormateada',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Fecha: $fechaFormateada',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ],
             ),
-            const Divider(color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Descripción: $description',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (imageBytes != null) 
+  ClipRRect(
+    borderRadius: BorderRadius.circular(12.0),  // Establecer el radio de los bordes
+    child: Image.memory(
+      imageBytes,
+      height: 150,
+      width: double.infinity,  // Asegura que la imagen ocupe todo el ancho
+      fit: BoxFit.cover,  // Ajusta la imagen para cubrir todo el espacio sin distorsionarla
+    ),
+  ),
+
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -211,7 +224,11 @@ class ServiceListItem extends StatelessWidget {
                   onPressed: onDelete,
                   child: const Text(
                     'Eliminar',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
                 const VerticalDivider(color: Colors.white),
@@ -219,7 +236,11 @@ class ServiceListItem extends StatelessWidget {
                   onPressed: onEdit,
                   child: const Text(
                     'Editar',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ],
@@ -230,3 +251,4 @@ class ServiceListItem extends StatelessWidget {
     );
   }
 }
+

@@ -4,6 +4,8 @@ import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; 
 import 'dart:async'; // Importa para usar TimeoutException
 import 'package:ztech_mobile_application/services/social_service.dart';
 import 'package:intl/intl.dart';
+import 'dart:typed_data'; // Para manejar los datos binarios
+import 'dart:convert'; // Para la conversión base64
 
 class HealthServiceListScreen extends StatefulWidget {
   const HealthServiceListScreen({Key? key}) : super(key: key);
@@ -26,7 +28,7 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
 
   Future<List<SocialService>> _fetchServicios() async {
     try {
-      final servicios = await socialServicesService.getAllSocialServices();
+      final servicios = await socialServicesService.getSocialServicesByTypeAndNotExpired('SALUD');
       return servicios;
     } catch (e) {
       throw Exception('Error al cargar servicios: $e');
@@ -73,7 +75,7 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
                   schedule: service.hora,
                   dueDate: service.fecha,
                   description: service.descripcion,
-                  //image: Image.network('https://definicion.de/wp-content/uploads/2012/01/imagen-vectorial.png'),
+                  imageBase64: service.imagen,  // Pasar imagen base64
                   onEdit: () {
                     Navigator.pushNamed(context, 'healthedit');
                   },
@@ -96,6 +98,7 @@ class ServiceListItem extends StatelessWidget {
   final String schedule;
   final String dueDate;
   final String description;
+  final String? imageBase64;  // Recibimos la imagen en base64
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -107,6 +110,7 @@ class ServiceListItem extends StatelessWidget {
     required this.description,
     required this.onEdit,
     required this.onDelete,
+    this.imageBase64,  // Recibimos la imagen en base64
   });
 
   @override
@@ -127,6 +131,12 @@ class ServiceListItem extends StatelessWidget {
       horaFormateada = DateFormat('hh:mm a').format(hora); // 12:00 AM
     } catch (e) {
       horaFormateada = schedule;
+    }
+
+    // Decodificar la imagen base64 a bytes
+    Uint8List? imageBytes;
+    if (imageBase64 != null) {
+      imageBytes = base64Decode(imageBase64!);
     }
 
     return Card(
@@ -194,6 +204,18 @@ class ServiceListItem extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 10),
+            if (imageBytes != null) 
+  ClipRRect(
+    borderRadius: BorderRadius.circular(12.0),  // Establecer el radio de los bordes
+    child: Image.memory(
+      imageBytes,
+      height: 150,
+      width: double.infinity,  // Asegura que la imagen ocupe todo el ancho
+      fit: BoxFit.cover,  // Ajusta la imagen para cubrir todo el espacio sin distorsionarla
+    ),
+  ),
+
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

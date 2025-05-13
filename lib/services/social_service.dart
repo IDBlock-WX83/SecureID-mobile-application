@@ -4,6 +4,7 @@ class SocialService {
   final String hora;
   final String fecha;
   final String descripcion;
+  final String? imagen;  // Nuevo campo para la imagen (en formato base64 o URL)
 
   SocialService({
     required this.resumen,
@@ -11,6 +12,7 @@ class SocialService {
     required this.hora,
     required this.fecha,
     required this.descripcion,
+    this.imagen,  // El campo imagen es opcional
   });
 
   factory SocialService.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class SocialService {
       hora: json['hora'],
       fecha: json['fecha'],
       descripcion: json['descripcion'],
+      imagen: json['imagen'],  // Asegúrate de que el campo 'imagen' esté presente en el JSON
     );
   }
 }

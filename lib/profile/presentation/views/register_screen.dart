@@ -160,7 +160,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // Primer Apellido
             Align(
               alignment: Alignment.centerLeft,
@@ -191,7 +191,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             // Segundo Apellido
             Align(
               alignment: Alignment.centerLeft,
@@ -222,7 +222,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             // Fecha de Nacimiento
             Align(
               alignment: Alignment.centerLeft,
@@ -259,7 +259,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             // Sexo Dropdown
             Align(
               alignment: Alignment.centerLeft,
@@ -301,7 +301,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             // Estado Civil Dropdown
             Align(
               alignment: Alignment.centerLeft,
@@ -359,7 +359,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             // Fecha de Inscripción
             Align(
               alignment: Alignment.centerLeft,

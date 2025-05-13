@@ -5,6 +5,7 @@ import 'dart:isolate';  // Importa Isolate
 
 class ApiService {
   final String baseUrl = ApiConfig.baseUrl;
+
   Future<List<dynamic>> get(String endpoint) async {
   final response = await http.get(
     Uri.parse(baseUrl + endpoint),

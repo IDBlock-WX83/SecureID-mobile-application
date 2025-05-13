@@ -181,7 +181,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
@@ -212,7 +212,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
@@ -243,7 +243,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
@@ -274,7 +274,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
@@ -320,7 +320,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               },
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
 // Botón para adjuntar una foto
             Align(
               alignment: Alignment.centerLeft,
@@ -406,7 +406,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     .contain, // Ajusta la imagen sin recortarla, manteniendo la proporción
               ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 // Botón para adjuntar una foto
             Align(
               alignment: Alignment.centerLeft,

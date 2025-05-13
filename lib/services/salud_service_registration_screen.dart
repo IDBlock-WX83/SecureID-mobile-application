@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Para manejar archivos de imagen
 import 'package:ztech_mobile_application/core/http/ApiService .dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
+import 'dart:convert'; // Necesario para la codificación en Base64
 
 class SaludServiceRegistrationScreen extends StatefulWidget {
   const SaludServiceRegistrationScreen({Key? key}) : super(key: key);
@@ -29,9 +30,12 @@ class _SaludServiceRegistrationScreenState
 
   final TextEditingController _timeController = TextEditingController();
 
-//Inicialización para el API
+  // Inicialización para el API
   late ApiService apiService;
   late SocialServicesService socialServicesService;
+
+  // Variable para almacenar la imagen seleccionada
+  File? _image;
 
   @override
   void initState() {
@@ -79,7 +83,7 @@ class _SaludServiceRegistrationScreenState
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(1900), // Fecha mínima
+      firstDate: DateTime.now(), // Fecha mínima
       lastDate: DateTime(9999), // Fecha máxima: fecha lejana en el futuro
     );
 
@@ -92,15 +96,18 @@ class _SaludServiceRegistrationScreenState
     }
   }
 
-// Función para enviar los datos del formulario al backend
+  // Función para enviar los datos del formulario al backend
   Future<void> _submitForm() async {
+    // Verifica si los campos obligatorios están completos
     if (_titulocamapaniaController.text.trim().isEmpty ||
         _fechaController.text.trim().isEmpty ||
         _timeController.text.trim().isEmpty ||
         _lugarcamapaniaController.text.trim().isEmpty ||
         _descripcioncamapaniaController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Por favor, complete todos los campos")),
+        SnackBar(
+            content: Text(
+                "Por favor, complete todos los campos.")),
       );
       return;
     }
@@ -111,12 +118,18 @@ class _SaludServiceRegistrationScreenState
     String formattedFecha = DateFormat('yyyy-MM-dd').format(fechaSeleccionada);
 
     // 2. Convertir la hora a formato de 24 horas (HH:mm:ss)
-    // Tomamos el valor de la hora que es en formato de 12 horas y lo convertimos
     String hora = _timeController.text.trim();
     DateFormat inputFormat = DateFormat.jm(); // "12:45 AM"
     DateFormat outputFormat = DateFormat("HH:mm:ss"); // "14:14:00"
     DateTime parsedTime = inputFormat.parse(hora);
     String formattedHora = outputFormat.format(parsedTime);
+
+    // 3. Convertir la imagen a un array de bytes, solo si la imagen ha sido seleccionada
+    String? encodedImage;
+    if (_image != null) {
+      List<int> imageBytes = await _image!.readAsBytes();
+      encodedImage = base64Encode(imageBytes); // Si hay imagen, la codificamos a base64
+    }
 
     // Crear el objeto con los datos del formulario
     final socialServiceData = {
@@ -126,7 +139,7 @@ class _SaludServiceRegistrationScreenState
       "hora": formattedHora, // Hora en formato 24 horas HH:mm:ss
       "descripcion": _descripcioncamapaniaController.text.trim(),
       "socialServicesType": 'SALUD',
-      // Si quieres incluir imágenes, deberás agregar lógica adicional para convertirlas en formato adecuado
+      "imagen": encodedImage, // La imagen será null si no se selecciona
     };
 
     // Imprimir los datos en consola para ver el formato antes de enviarlos
@@ -150,30 +163,56 @@ class _SaludServiceRegistrationScreenState
     }
   }
 
-  // Variables para almacenar las imágenes seleccionadas
-  File? _image1;
-  File? _image2;
+  // Variables para almacenar la imagen seleccionada
   final ImagePicker _picker = ImagePicker();
+
   // Función para seleccionar o tomar una foto
-  Future<void> _pickImage(int imageNumber, ImageSource source) async {
-    final XFile? pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        // Asignar la imagen seleccionada a la variable correspondiente
-        if (imageNumber == 1) {
-          _image1 = File(pickedFile.path);
-        } else if (imageNumber == 2) {
-          _image2 = File(pickedFile.path);
-        }
-      });
-    }
+  Future<void> _pickImage() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleccionar fuente'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('Tomar foto'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  final XFile? pickedFile =
+                      await _picker.pickImage(source: ImageSource.camera);
+                  if (pickedFile != null) {
+                    setState(() {
+                      _image = File(pickedFile.path);
+                    });
+                  }
+                },
+              ),
+              ListTile(
+                title: const Text('Seleccionar de la galería'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  final XFile? pickedFile =
+                      await _picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    setState(() {
+                      _image = File(pickedFile.path);
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-
       appBar: AppBar(
         backgroundColor: const Color(0xFF00747C),
         leading: IconButton(
@@ -216,7 +255,7 @@ class _SaludServiceRegistrationScreenState
                       Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Título de campaña',
+                          '*Título de campaña',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -248,7 +287,7 @@ class _SaludServiceRegistrationScreenState
                       Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Lugar',
+                          '*Lugar',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -280,7 +319,7 @@ class _SaludServiceRegistrationScreenState
                       Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Fecha',
+                          '*Fecha',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -318,7 +357,7 @@ class _SaludServiceRegistrationScreenState
                       Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Hora',
+                          '*Hora',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -355,7 +394,7 @@ class _SaludServiceRegistrationScreenState
                       Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Descripción',
+                          '*Descripción',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -384,7 +423,6 @@ class _SaludServiceRegistrationScreenState
                         ),
                       ),
                       const SizedBox(height: 10),
-// Botón para adjuntar una foto
                       Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
@@ -397,45 +435,10 @@ class _SaludServiceRegistrationScreenState
                         ),
                       ),
                       const SizedBox(height: 10),
+
                       // Botón para cargar o tomar una foto
                       ElevatedButton(
-                        onPressed: () async {
-                          // Mostrar un diálogo para elegir entre tomar una foto o seleccionar de la galería
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Seleccionar fuente'),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ListTile(
-                                      title: const Text('Tomar foto'),
-                                      onTap: () {
-                                        Navigator.of(context).pop();
-                                        _pickImage(
-                                            2,
-                                            ImageSource
-                                                .camera); // Asignar imagen a _image1
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: const Text(
-                                          'Seleccionar de la galería'),
-                                      onTap: () {
-                                        Navigator.of(context).pop();
-                                        _pickImage(
-                                            2,
-                                            ImageSource
-                                                .gallery); // Asignar imagen a _image1
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                        onPressed: _pickImage,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFD9D9D9),
                           shape: RoundedRectangleBorder(
@@ -445,13 +448,13 @@ class _SaludServiceRegistrationScreenState
                               vertical: 15, horizontal: 20),
                           minimumSize: Size(double.infinity, 50),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 0),
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Icon(Icons.photo, color: Colors.black),
                               SizedBox(width: 10),
                               Text('Cargar imagen',
@@ -463,18 +466,23 @@ class _SaludServiceRegistrationScreenState
                       const SizedBox(height: 10),
 
                       // Mostrar la imagen seleccionada (si existe)
-                      if (_image2 != null)
-                        Image.file(
-                          _image2!,
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit
-                              .contain, // Ajusta la imagen sin recortarla, manteniendo la proporción
+                      if (_image != null)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              12.0), // Establecer el radio de los bordes
+                          child: Image.file(
+                            _image!,
+                            height: 150,
+                            width: double
+                                .infinity, // Asegura que la imagen ocupe todo el ancho
+                            fit: BoxFit
+                                .cover, // Mantiene la proporción sin recortar la imagen
+                          ),
                         ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: _submitForm,
                   style: ElevatedButton.styleFrom(
@@ -492,6 +500,7 @@ class _SaludServiceRegistrationScreenState
                     ),
                   ),
                 ),
+                const SizedBox(height: 15),
               ],
             ),
           ),

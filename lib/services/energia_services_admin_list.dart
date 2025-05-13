@@ -1,50 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/core/http/ApiService .dart'; // Importa ApiService
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; // Importa SocialServicesService
+import 'dart:async'; // Importa para usar TimeoutException
+import 'package:ztech_mobile_application/services/social_service.dart';
+import 'package:intl/intl.dart';
+import 'dart:typed_data'; // Para manejar los datos binarios
+import 'dart:convert'; // Para la conversión base64
 
-class EnergyServiceListScreen extends StatelessWidget {
-
+class EnergyServiceListScreen extends StatefulWidget {
   const EnergyServiceListScreen({Key? key}) : super(key: key);
+
+  @override
+  _EnergyServiceListScreenState createState() => _EnergyServiceListScreenState();
+}
+
+class _EnergyServiceListScreenState extends State<EnergyServiceListScreen> {
+  final ApiService apiService = ApiService();
+  late SocialServicesService socialServicesService;
+  late Future<List<SocialService>> _futureServicios;
+
+  @override
+  void initState() {
+    super.initState();
+    socialServicesService = SocialServicesService(apiService: apiService);
+    _futureServicios = _fetchServicios();
+  }
+
+  Future<List<SocialService>> _fetchServicios() async {
+    try {
+      final servicios = await socialServicesService.getSocialServicesByTypeAndNotExpired('SOCIAL');
+      return servicios;
+    } catch (e) {
+      throw Exception('Error al cargar servicios: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Servicio: Energia'),
         backgroundColor: const Color(0xFF00747C),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushNamed(context, 'servicios_administrador');
+          },
+        ),
+        title: const Text(
+          'Servicio: Salud',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(10),
-        children: [
-          ServiceListItem(
-            title: 'Atención para adultos mayores',
-            location: 'Posta médica',
-            schedule: 'Lunes 7 am a 1 pm',
-            dueDate: '10/12/14',
-            image: 'assets/service_adultos_mayores.jpg',
-            onEdit: () {
-              // Navegar a la pantalla de edición
-              Navigator.pushNamed(context, 'energyedit');
-            },
-            onDelete: () {
-              // Lógica para eliminar el servicio
-            },
-          ),
-          ServiceListItem(
-            title: 'Vacunación contra la fiebre amarilla',
-            location: 'Plaza principal',
-            schedule: 'Sábados 8 am a 1 pm',
-            dueDate: '05/10/2024',
-            image: 'assets/service_vacunacion.jpg',
-            onEdit: () {
-              // Navegar a la pantalla de edición
-              Navigator.pushNamed(context, 'energyedit');
-            },
-            onDelete: () {
-              // Lógica para eliminar el servicio
-            },
-          ),
-          // Agrega más elementos de la lista según sea necesario
-        ],
+      backgroundColor: const Color(0xFFC7C7CC),
+      body: FutureBuilder<List<SocialService>>(
+        future: _futureServicios,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay servicios disponibles.'));
+          } else {
+            final servicios = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: servicios.length,
+              itemBuilder: (context, index) {
+                final service = servicios[index];
+                return ServiceListItem(
+                  title: service.resumen,
+                  location: service.lugar,
+                  schedule: service.hora,
+                  dueDate: service.fecha,
+                  description: service.descripcion,
+                  imageBase64: service.imagen,  // Pasar imagen base64
+                  onEdit: () {
+                    Navigator.pushNamed(context, 'healthedit');
+                  },
+                  onDelete: () {
+                    Navigator.pushNamed(context, 'servicio_eliminar_general');
+                  },
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
@@ -55,7 +97,8 @@ class ServiceListItem extends StatelessWidget {
   final String location;
   final String schedule;
   final String dueDate;
-  final String image;
+  final String description;
+  final String? imageBase64;  // Recibimos la imagen en base64
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -64,62 +107,116 @@ class ServiceListItem extends StatelessWidget {
     required this.location,
     required this.schedule,
     required this.dueDate,
-    required this.image,
+    required this.description,
     required this.onEdit,
     required this.onDelete,
+    this.imageBase64,  // Recibimos la imagen en base64
   });
 
   @override
   Widget build(BuildContext context) {
+    // Formateo de fecha y hora
+    String fechaFormateada;
+    String horaFormateada;
+
+    try {
+      final fecha = DateTime.parse(dueDate); // yyyy-MM-dd
+      fechaFormateada = DateFormat('dd/MM/yyyy').format(fecha);
+    } catch (e) {
+      fechaFormateada = dueDate;
+    }
+
+    try {
+      final hora = DateFormat('HH:mm').parse(schedule); // HH:mm
+      horaFormateada = DateFormat('hh:mm a').format(hora); // 12:00 AM
+    } catch (e) {
+      horaFormateada = schedule;
+    }
+
+    // Decodificar la imagen base64 a bytes
+    Uint8List? imageBytes;
+    if (imageBase64 != null) {
+      imageBytes = base64Decode(imageBase64!);
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: const Color(0xFF00A7A7),
+      color: const Color(0xFF00BBC9),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Image.asset(
-                  image,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
+            Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        location,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        schedule,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        'Vence $dueDate',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Lugar: $location',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Hora: $horaFormateada',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Fecha: $fechaFormateada',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ],
             ),
-            const Divider(color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Descripción: $description',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (imageBytes != null) 
+  ClipRRect(
+    borderRadius: BorderRadius.circular(12.0),  // Establecer el radio de los bordes
+    child: Image.memory(
+      imageBytes,
+      height: 150,
+      width: double.infinity,  // Asegura que la imagen ocupe todo el ancho
+      fit: BoxFit.cover,  // Ajusta la imagen para cubrir todo el espacio sin distorsionarla
+    ),
+  ),
+
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -127,7 +224,11 @@ class ServiceListItem extends StatelessWidget {
                   onPressed: onDelete,
                   child: const Text(
                     'Eliminar',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
                 const VerticalDivider(color: Colors.white),
@@ -135,7 +236,11 @@ class ServiceListItem extends StatelessWidget {
                   onPressed: onEdit,
                   child: const Text(
                     'Editar',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ],
