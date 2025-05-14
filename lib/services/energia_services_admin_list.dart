@@ -47,7 +47,7 @@ class _EnergyServiceListScreenState extends State<EnergyServiceListScreen> {
           },
         ),
         title: const Text(
-          'Servicio: Salud',
+          'Servicio: Social',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -70,6 +70,7 @@ class _EnergyServiceListScreenState extends State<EnergyServiceListScreen> {
               itemBuilder: (context, index) {
                 final service = servicios[index];
                 return ServiceListItem(
+                  id:service.id,
                   title: service.resumen,
                   location: service.lugar,
                   schedule: service.hora,
@@ -80,8 +81,25 @@ class _EnergyServiceListScreenState extends State<EnergyServiceListScreen> {
                     Navigator.pushNamed(context, 'healthedit');
                   },
                   onDelete: () {
-                    Navigator.pushNamed(context, 'servicio_eliminar_general');
-                  },
+  // Imprimir el serviceId en consola
+  print("Eliminando servicio con ID: ${service.id}");
+
+  // Navegar a la pantalla de eliminación y esperar un resultado
+  Navigator.pushNamed(
+    context,
+    'servicio_eliminar_general',
+    arguments: service.id, // Pasar el serviceId como argumento
+  ).then((value) {
+    // Comprobar si se ha confirmado la eliminación
+    if (value != null && value == true) {
+      // Recargar la lista de servicios si se eliminó el servicio
+      setState(() {
+        _futureServicios = _fetchServicios();
+      });
+    }
+  });
+},
+
                 );
               },
             );
@@ -93,6 +111,8 @@ class _EnergyServiceListScreenState extends State<EnergyServiceListScreen> {
 }
 
 class ServiceListItem extends StatelessWidget {
+    final int id;
+
   final String title;
   final String location;
   final String schedule;
@@ -103,6 +123,8 @@ class ServiceListItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   ServiceListItem({
+        required this.id,
+
     required this.title,
     required this.location,
     required this.schedule,

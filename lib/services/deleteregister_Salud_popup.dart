@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/services/social_service.dart';
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
 class DeleteRegisterSaludPopup extends StatelessWidget {
   final VoidCallback onProfileClick;
+  final int serviceId; // ID del servicio social a eliminar
+  final SocialServicesService socialServicesService;
 
-  const DeleteRegisterSaludPopup({Key? key, required this.onProfileClick})
-      : super(key: key);
+  const DeleteRegisterSaludPopup({
+    Key? key,
+    required this.onProfileClick,
+    required this.serviceId, // Se pasa el ID para eliminar
+    required this.socialServicesService,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,34 +27,41 @@ class DeleteRegisterSaludPopup extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20), // Espacio antes del texto clickeable
-
-          // Row para alinear los botones
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Botón Aceptar
               TextButton(
-                onPressed: () {
-                  onProfileClick(); // Llama a la función proporcionada
-                  Navigator.of(context).pop(); // Cierra el diálogo
-                  Navigator.pushNamed(context, 'healthlistadmin');
-                },
+                onPressed: () async {
+  // Llamar al método DELETE del servicio
+  try {
+    await socialServicesService.deleteSocialService(serviceId);
+    onProfileClick(); // Llama a la función proporcionada
+    Navigator.of(context).pop(true); // Regresa a la pantalla anterior con el valor true
+  } catch (e) {
+    // Manejar error
+    print('Error al eliminar: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al eliminar el servicio.')),
+    );
+  }
+},
+
                 child: Text(
                   'Aceptar',
-                  style: TextStyle(color: Color(0xFF0C59A2), fontSize: 16), // Color del texto clickeable
+                  style: TextStyle(color: Color(0xFF0C59A2), fontSize: 16),
                 ),
               ),
-
-              // Botón Eliminar al costado de "Aceptar"
+              // Botón Cancelar
               TextButton(
                 onPressed: () {
                   onProfileClick(); // Llama a la función proporcionada
                   Navigator.of(context).pop(); // Cierra el diálogo
-                  Navigator.pushNamed(context, 'healthlistadmin');
+
                 },
                 child: Text(
                   'Cancelar',
-                  style: TextStyle(color: Color(0xFFA20C0C), fontSize: 16), // Color rojo para "Eliminar"
+                  style: TextStyle(color: Color(0xFFA20C0C), fontSize: 16),
                 ),
               ),
             ],

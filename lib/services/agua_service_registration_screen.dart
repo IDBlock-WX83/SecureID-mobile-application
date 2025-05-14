@@ -222,7 +222,7 @@ class _WaterServiceRegistrationScreenState
           },
         ),
         title: const Text(
-          'Salud',
+          'Alimentación',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

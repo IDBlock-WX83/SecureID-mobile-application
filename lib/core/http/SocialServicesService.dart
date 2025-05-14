@@ -10,6 +10,12 @@ class SocialServicesService {
     final response = await apiService.get('/social-services');
     return response.map<SocialService>((json) => SocialService.fromJson(json)).toList();
   }*/
+Future<SocialService> getSocialServiceById(int id) async {
+  final response = await apiService.get('/social-services/id/$id');
+  return SocialService.fromJson(response[0]); // Accedemos al primer objeto de la lista
+}
+
+
 
   // Obtener todos los servicios sociales por tipo (retorna lista)
 Future<List<SocialService>> getSocialServicesByTypeAndNotExpired(String type) async {
@@ -22,5 +28,10 @@ Future<List<SocialService>> getSocialServicesByTypeAndNotExpired(String type) as
   // Crear un nuevo servicio social
   Future<Map<String, dynamic>> createSocialService(Map<String, dynamic> socialServiceData) async {
     return await apiService.post('/social-services', socialServiceData); // Usamos el endpoint específico
+  }
+
+   // Método DELETE para eliminar un servicio social
+  Future<void> deleteSocialService(int id) async {
+    await apiService.delete('/social-services/$id'); // Usamos el endpoint DELETE
   }
 }

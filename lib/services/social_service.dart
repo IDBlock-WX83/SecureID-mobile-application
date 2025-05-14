@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 class SocialService {
+  final int id;
   final String resumen;
   final String lugar;
   final String hora;
@@ -7,6 +10,8 @@ class SocialService {
   final String? imagen;  // Nuevo campo para la imagen (en formato base64 o URL)
 
   SocialService({
+        required this.id,
+
     required this.resumen,
     required this.lugar,
     required this.hora,
@@ -17,6 +22,7 @@ class SocialService {
 
   factory SocialService.fromJson(Map<String, dynamic> json) {
     return SocialService(
+            id: json['id'],
       resumen: json['resumen'],
       lugar: json['lugar'],
       hora: json['hora'],

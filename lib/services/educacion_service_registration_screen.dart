@@ -222,7 +222,7 @@ class _EducationServiceRegistrationScreenState
           },
         ),
         title: const Text(
-          'Salud',
+          'Educación',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

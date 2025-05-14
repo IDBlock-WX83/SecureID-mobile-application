@@ -36,4 +36,18 @@ class ApiService {
       throw Exception('Failed to send data');
     }
   }
+
+
+  // Método DELETE para eliminar un servicio social
+  Future<void> delete(String endpoint) async {
+    final response = await http.delete(
+      Uri.parse(baseUrl + endpoint),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode != 204) {
+      print(response.statusCode);
+      throw Exception('Failed to delete data');
+    }
+  }
 }

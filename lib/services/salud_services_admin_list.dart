@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/core/http/ApiService .dart'; // Importa ApiService
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; // Importa SocialServicesService
@@ -70,6 +72,7 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
               itemBuilder: (context, index) {
                 final service = servicios[index];
                 return ServiceListItem(
+                  id:service.id,
                   title: service.resumen,
                   location: service.lugar,
                   schedule: service.hora,
@@ -77,11 +80,31 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
                   description: service.descripcion,
                   imageBase64: service.imagen,  // Pasar imagen base64
                   onEdit: () {
-                    Navigator.pushNamed(context, 'healthedit');
-                  },
+Navigator.pushNamed(
+  context,
+  'healthedit',
+  arguments: service.id, // Pasar el serviceId como argumento
+);
+     },
                   onDelete: () {
-                    Navigator.pushNamed(context, 'servicio_eliminar_general');
-                  },
+  // Imprimir el serviceId en consola
+  print("Eliminando servicio con ID: ${service.id}");
+
+  // Navegar a la pantalla de eliminación y esperar un resultado
+  Navigator.pushNamed(
+    context,
+    'servicio_eliminar_general',
+    arguments: service.id, // Pasar el serviceId como argumento
+  ).then((value) {
+    // Comprobar si se ha confirmado la eliminación
+    if (value != null && value == true) {
+      // Recargar la lista de servicios si se eliminó el servicio
+      setState(() {
+        _futureServicios = _fetchServicios();
+      });
+    }
+  });
+},
                 );
               },
             );
@@ -93,6 +116,8 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
 }
 
 class ServiceListItem extends StatelessWidget {
+  final int id;
+
   final String title;
   final String location;
   final String schedule;
@@ -103,6 +128,7 @@ class ServiceListItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   ServiceListItem({
+        required this.id,
     required this.title,
     required this.location,
     required this.schedule,

@@ -222,7 +222,7 @@ class _EnergyServiceRegistrationScreenState
           },
         ),
         title: const Text(
-          'Salud',
+          'Social',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

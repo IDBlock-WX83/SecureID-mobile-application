@@ -36,6 +36,8 @@ import 'package:ztech_mobile_application/menu/successregister_popup.dart';
 import 'package:ztech_mobile_application/services/successregister_Salud_popup.dart';
 import 'package:ztech_mobile_application/services/deleteregister_Salud_popup.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,15 +54,15 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       locale: const Locale('es'), // <- Español
-  supportedLocales: const [
-    Locale('es'), // Español
-    Locale('en'), // Inglés (opcional)
-  ],
-  localizationsDelegates: const [
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
+      supportedLocales: const [
+        Locale('es'), // Español
+        Locale('en'), // Inglés (opcional)
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       title: 'Ztech',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -68,18 +70,24 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),//Carga de pantalla completo
-        'welcome': (context) => WelcomeScreen(),//Pantalla de bienvenida completo
-        'registro_exitoso': (context) => SuccessPopup(onProfileClick: () {  },),
-        'upload_front_dni': (context) =>  UploadFrontDNIScreen(),
-        'upload_back_dni': (context) =>  UploadBackDNIScreen(),
+        '/': (context) => const SplashScreen(), //Carga de pantalla completo
+        'welcome': (context) =>
+            WelcomeScreen(), //Pantalla de bienvenida completo
+        'registro_exitoso': (context) => SuccessPopup(
+              onProfileClick: () {},
+            ),
+        'upload_front_dni': (context) => UploadFrontDNIScreen(),
+        'upload_back_dni': (context) => UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
-'register2': (context) => SignUpScreen2(firstData: {}), // Envía un mapa vacío o los datos reales
- 'servicios_administrador': (context) => ServicesAdminScreen(),// services para editores
+        'register2': (context) => SignUpScreen2(
+            firstData: {}), // Envía un mapa vacío o los datos reales
+        'servicios_administrador': (context) =>
+            ServicesAdminScreen(), // services para editores
         'registerhealth': (context) => SaludServiceRegistrationScreen(),
         'registerenergy': (context) => EnergyServiceRegistrationScreen(),
         'registereducation': (context) => EducationServiceRegistrationScreen(),
-        'registerwater': (ServicesScreencontext) => WaterServiceRegistrationScreen(),
+        'registerwater': (ServicesScreencontext) =>
+            WaterServiceRegistrationScreen(),
         'healthlistadmin': (context) => HealthServiceListScreen(),
         'energylistadmin': (context) => EnergyServiceListScreen(),
         'educationlistadmin': (context) => EducationServiceListScreen(),
@@ -87,20 +95,42 @@ class MyApp extends StatelessWidget {
         'healthedit': (context) => HealthCampaignEditScreen(),
         'energyedit': (context) => EnergyCampaignEditScreen(),
         'educationedit': (context) => EducationCampaignEditScreen(),
-        'upload_face_capture': (context) =>  FaceCaptureScreen(),
-        'menu_residentes': (context) =>  MenuScreen(),
-        'identificacion': (context) =>  IdentityScreen(),
-        'user_dni': (context) =>  DNIScreen(),
-        'menu': (context) => MenuScreenAutoridades(blockchain: blockchain), // Pasar la instancia de Blockchain aquí
+        'upload_face_capture': (context) => FaceCaptureScreen(),
+        'menu_residentes': (context) => MenuScreen(),
+        'identificacion': (context) => IdentityScreen(),
+        'user_dni': (context) => DNIScreen(),
+        'menu': (context) => MenuScreenAutoridades(
+            blockchain: blockchain), // Pasar la instancia de Blockchain aquí
         'resident_screen': (context) => ResidentsScreen(),
-        'record_screen': (context) => TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
+        'record_screen': (context) =>
+            TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
         'servicios_residentes': (context) => ServicesScreen(),
-        'registro_exitoso_adulto_mayor': (context) => SuccessRegisterPopup(onProfileClick: () {  },),
-        'servicio_creado_general': (context) => SuccessRegisterSaludPopup(onProfileClick: () {  },),
-        'servicio_eliminar_general': (context) => DeleteRegisterSaludPopup(onProfileClick: () {  },),
+        'registro_exitoso_adulto_mayor': (context) => SuccessRegisterPopup(
+              onProfileClick: () {},
+            ),
+        'servicio_creado_general': (context) => SuccessRegisterSaludPopup(
+              onProfileClick: () {},
+            ),
+        'servicio_eliminar_general': (context) {
+          // Obtener el serviceId que se pasó desde la pantalla anterior
+          final int serviceId =
+              ModalRoute.of(context)?.settings.arguments as int;
 
+          // Crear la instancia del servicio, o utilizar la existente
+          final socialServicesService =
+              SocialServicesService(apiService: ApiService());
+
+          // Devolver la vista de eliminación con los parámetros requeridos
+          return DeleteRegisterSaludPopup(
+            onProfileClick: () {
+              // Acción a realizar cuando se confirma la eliminación
+            },
+            serviceId: serviceId, // Pasar el serviceId
+            socialServicesService:
+                socialServicesService, // Pasar la instancia del servicio
+          );
+        },
       },
-      
     );
   }
 }
