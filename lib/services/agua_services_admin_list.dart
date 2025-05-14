@@ -78,7 +78,18 @@ class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
                   description: service.descripcion,
                   imageBase64: service.imagen,  // Pasar imagen base64
                   onEdit: () {
-                    Navigator.pushNamed(context, 'healthedit');
+                    Navigator.pushNamed(
+                      context,
+                      'healthedit',
+                      arguments: service.id,
+                    ).then((value) {
+                      if (value == true) {
+                        // Si hubo cambio, recarga la lista
+                        setState(() {
+                          _futureServicios = _fetchServicios();
+                        });
+                      }
+                    });
                   },
                   onDelete: () {
   // Imprimir el serviceId en consola

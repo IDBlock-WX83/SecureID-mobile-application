@@ -13,7 +13,8 @@ class HealthServiceListScreen extends StatefulWidget {
   const HealthServiceListScreen({Key? key}) : super(key: key);
 
   @override
-  _HealthServiceListScreenState createState() => _HealthServiceListScreenState();
+  _HealthServiceListScreenState createState() =>
+      _HealthServiceListScreenState();
 }
 
 class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
@@ -30,7 +31,8 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
 
   Future<List<SocialService>> _fetchServicios() async {
     try {
-      final servicios = await socialServicesService.getSocialServicesByTypeAndNotExpired('SALUD');
+      final servicios = await socialServicesService
+          .getSocialServicesByTypeAndNotExpired('SALUD');
       return servicios;
     } catch (e) {
       throw Exception('Error al cargar servicios: $e');
@@ -72,39 +74,47 @@ class _HealthServiceListScreenState extends State<HealthServiceListScreen> {
               itemBuilder: (context, index) {
                 final service = servicios[index];
                 return ServiceListItem(
-                  id:service.id,
+                  id: service.id,
                   title: service.resumen,
                   location: service.lugar,
                   schedule: service.hora,
                   dueDate: service.fecha,
                   description: service.descripcion,
-                  imageBase64: service.imagen,  // Pasar imagen base64
+                  imageBase64: service.imagen, // Pasar imagen base64
                   onEdit: () {
-Navigator.pushNamed(
-  context,
-  'healthedit',
-  arguments: service.id, // Pasar el serviceId como argumento
-);
-     },
+                    Navigator.pushNamed(
+                      context,
+                      'healthedit',
+                      arguments: service.id,
+                    ).then((value) {
+                      if (value == true) {
+                        // Si hubo cambio, recarga la lista
+                        setState(() {
+                          _futureServicios = _fetchServicios();
+                        });
+                      }
+                    });
+                  },
                   onDelete: () {
-  // Imprimir el serviceId en consola
-  print("Eliminando servicio con ID: ${service.id}");
+                    // Imprimir el serviceId en consola
+                    print("Eliminando servicio con ID: ${service.id}");
 
-  // Navegar a la pantalla de eliminación y esperar un resultado
-  Navigator.pushNamed(
-    context,
-    'servicio_eliminar_general',
-    arguments: service.id, // Pasar el serviceId como argumento
-  ).then((value) {
-    // Comprobar si se ha confirmado la eliminación
-    if (value != null && value == true) {
-      // Recargar la lista de servicios si se eliminó el servicio
-      setState(() {
-        _futureServicios = _fetchServicios();
-      });
-    }
-  });
-},
+                    // Navegar a la pantalla de eliminación y esperar un resultado
+                    Navigator.pushNamed(
+                      context,
+                      'servicio_eliminar_general',
+                      arguments:
+                          service.id, // Pasar el serviceId como argumento
+                    ).then((value) {
+                      // Comprobar si se ha confirmado la eliminación
+                      if (value != null && value == true) {
+                        // Recargar la lista de servicios si se eliminó el servicio
+                        setState(() {
+                          _futureServicios = _fetchServicios();
+                        });
+                      }
+                    });
+                  },
                 );
               },
             );
@@ -123,12 +133,12 @@ class ServiceListItem extends StatelessWidget {
   final String schedule;
   final String dueDate;
   final String description;
-  final String? imageBase64;  // Recibimos la imagen en base64
+  final String? imageBase64; // Recibimos la imagen en base64
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   ServiceListItem({
-        required this.id,
+    required this.id,
     required this.title,
     required this.location,
     required this.schedule,
@@ -136,7 +146,7 @@ class ServiceListItem extends StatelessWidget {
     required this.description,
     required this.onEdit,
     required this.onDelete,
-    this.imageBase64,  // Recibimos la imagen en base64
+    this.imageBase64, // Recibimos la imagen en base64
   });
 
   @override
@@ -231,17 +241,19 @@ class ServiceListItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            if (imageBytes != null) 
-  ClipRRect(
-    borderRadius: BorderRadius.circular(12.0),  // Establecer el radio de los bordes
-    child: Image.memory(
-      imageBytes,
-      height: 150,
-      width: double.infinity,  // Asegura que la imagen ocupe todo el ancho
-      fit: BoxFit.cover,  // Ajusta la imagen para cubrir todo el espacio sin distorsionarla
-    ),
-  ),
-
+            if (imageBytes != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(
+                    12.0), // Establecer el radio de los bordes
+                child: Image.memory(
+                  imageBytes,
+                  height: 150,
+                  width: double
+                      .infinity, // Asegura que la imagen ocupe todo el ancho
+                  fit: BoxFit
+                      .cover, // Ajusta la imagen para cubrir todo el espacio sin distorsionarla
+                ),
+              ),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
