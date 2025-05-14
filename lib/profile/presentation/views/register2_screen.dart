@@ -87,6 +87,22 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       );
       return;
     }
+
+if (_image1 == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Por favor, cargue una foto")),
+    );
+    return;
+  }
+
+  if (_image2 == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Por favor, cargue una firma")),
+    );
+    return;
+  }
+
+
     Navigator.pushNamed(context, 'menu');
 
     // Consolidar los datos del primer y segundo formulario
@@ -154,7 +170,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Dirección',
+                '*Dirección',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -185,7 +201,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Departamento',
+                '*Departamento',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -216,7 +232,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Provincia',
+                '*Provincia',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -247,7 +263,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Distrito',
+                '*Distrito',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -278,7 +294,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Teléfono celular (opcional)',
+                'Teléfono celular',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -297,7 +313,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ],
               decoration: InputDecoration(
                 filled: true,
-                hintText: 'Teléfono celular (opcional)',
+                hintText: 'Teléfono celular',
                 hintStyle: const TextStyle(
                   color: Colors.black45,
                   fontWeight: FontWeight.bold,
@@ -325,7 +341,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Cargar foto',
+                '*Cargar foto',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -395,23 +411,20 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
             ),
             const SizedBox(height: 10),
+if (_image1 != null)
+  CircleAvatar(
+    radius: 120, // radio = mitad del tamaño (150 / 2)
+    backgroundImage: FileImage(_image1!),
+    backgroundColor: Colors.transparent,
+  ),
 
-            // Mostrar la imagen seleccionada (si existe)
-            if (_image1 != null)
-              Image.file(
-                _image1!,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit
-                    .contain, // Ajusta la imagen sin recortarla, manteniendo la proporción
-              ),
 
             const SizedBox(height: 10),
 // Botón para adjuntar una foto
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Cargar firma',
+                '*Cargar firma',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -485,21 +498,25 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
             // Mostrar la imagen seleccionada (si existe)
             if (_image2 != null)
-              Image.file(
-                _image2!,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit
-                    .contain, // Ajusta la imagen sin recortarla, manteniendo la proporción
-              ),
+            ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              12.0), // Establecer el radio de los bordes
+                          child: Image.file(
+                            _image2!,
+                            height: 100,
+                            width: double
+                                .infinity, // Asegura que la imagen ocupe todo el ancho
+                            fit: BoxFit
+                                .cover, // Mantiene la proporción sin recortar la imagen
+                          ),
+                        ),
+              
 
             const SizedBox(height: 20),
             // Selector de género
 
             ElevatedButton(
-              onPressed: (){
-                 Navigator.pushNamed(context, 'registro_exitoso_adulto_mayor');
-              },//_submitForm,
+              onPressed: _submitForm,//_submitForm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00C2CB),
                 padding:

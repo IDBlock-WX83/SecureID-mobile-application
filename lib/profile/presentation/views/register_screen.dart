@@ -98,6 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "estadoCivil": _selectedEstadoCivil,
     };
 
+  print( firstData);
     // Navegar al segundo formulario enviando los datos
     Navigator.push(
       context,
@@ -134,7 +135,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Pre Nombres',
+                '*Pre Nombres',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -165,7 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Primer Apellido',
+                '*Primer Apellido',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -196,7 +197,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Segundo Apellido',
+                '*Segundo Apellido',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -227,7 +228,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Fecha de Nacimiento',
+                '*Fecha de Nacimiento',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -264,7 +265,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Sexo',
+                '*Sexo',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -278,11 +279,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               hint: const Text("Seleccione Sexo"),
               items: const [
                 DropdownMenuItem(
-                  value: 'M',
+                  value: 'Masculino',
                   child: Text('Masculino'),
                 ),
                 DropdownMenuItem(
-                  value: 'F',
+                  value: 'Femenino',
                   child: Text('Femenino'),
                 ),
               ],
@@ -306,7 +307,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Estado Civil',
+                '*Estado Civil',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -364,7 +365,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Fecha de Inscripción',
+                '*Fecha de Inscripción',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
