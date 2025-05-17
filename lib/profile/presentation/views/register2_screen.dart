@@ -6,6 +6,8 @@ import '../../infrastructure/BlockchainApiService.dart'; // Importar el servicio
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart'; // Para acceder a LengthLimitingTextInputFormatter
 import 'dart:convert'; // Para usar base64Encode
+import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
 class SignUpScreen2 extends StatefulWidget {
   final Map<String, dynamic> firstData; // Recibe los datos del primer registro
@@ -25,6 +27,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   final TextEditingController _provinciaController = TextEditingController();
   final TextEditingController _distritoController = TextEditingController();
   final TextEditingController _telefonoCelularController = TextEditingController();
+
+
+  // Inicialización para el API
+  late ApiService apiService;
+  late SocialServicesService socialServicesService;
 
   // Variables para almacenar las imágenes seleccionadas
   File? _image1;
@@ -50,26 +57,16 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   String _gender = "M"; // Género por defecto
 
 
-/*
+
   @override
   void initState() {
     super.initState();
-    // Prellenar datos con `firstData` si están disponibles
-    if (widget.firstData.containsKey("direccion")) {
-      _direccionController.text = widget.firstData["direccion"] ?? "";
-    }
-    if (widget.firstData.containsKey("province")) {
-      _provinciaController.text = widget.firstData["province"] ?? "";
-    }
-    if (widget.firstData.containsKey("district")) {
-      _distritoController.text = widget.firstData["district"] ?? "";
-    }
-    if (widget.firstData.containsKey("phone")) {
-      _telefonoCelularController.text = widget.firstData["phone"] ?? "";
-    }
+     apiService = ApiService(); // Aquí inicializas ApiService
+    socialServicesService = SocialServicesService(
+        apiService: apiService); // Aquí inicializas SocialServicesService
 
     
-  }*/
+  }
 
   @override
   void dispose() {
@@ -81,19 +78,21 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     super.dispose();
   }
 
-  Future<void> _submitForm() async {
-    // Verificar si todos los campos están completos
-    if (_direccionController.text.trim().isEmpty ||
-        _provinciaController.text.trim().isEmpty ||
-        _departamentoController.text.trim().isEmpty ||
-        _distritoController.text.trim().isEmpty ) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Por favor, complete todos los campos")),
-      );
-      return;
-    }
+ Future<void> _submitForm() async {
+  // Validaciones previas
+  if (_direccionController.text.trim().isEmpty ||
+      _provinciaController.text.trim().isEmpty ||
+      _departamentoController.text.trim().isEmpty ||
+      _distritoController.text.trim().isEmpty) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Por favor, complete todos los campos")),
+    );
+    return;
+  }
 
-if (_image1 == null) {
+  if (_image1 == null) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Por favor, cargue una foto")),
     );
@@ -101,71 +100,62 @@ if (_image1 == null) {
   }
 
   if (_image2 == null) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Por favor, cargue una firma")),
     );
     return;
   }
-// Convertir imágenes a base64
-final String image1Base64 = base64Encode(await _image1!.readAsBytes());
-final String image2Base64 = base64Encode(await _image2!.readAsBytes());
-// Validar teléfono celular
-String? telefonoCelular = _telefonoCelularController.text.trim();
 
-if (telefonoCelular.isNotEmpty && telefonoCelular.length < 9) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("El teléfono celular debe tener 9 dígitos")),
-  );
-  return;
-}
+  // Codificar imágenes en base64
+  String encodedImage1 = base64Encode(await _image1!.readAsBytes());
+  String encodedImage2 = base64Encode(await _image2!.readAsBytes());
 
-// Si está vacío, lo convertimos a null
-telefonoCelular = telefonoCelular.isEmpty ? null : telefonoCelular;
+  // Validar teléfono celular
+  String telefonoCelular = _telefonoCelularController.text.trim();
+  if (telefonoCelular.isNotEmpty && telefonoCelular.length < 9) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("El teléfono celular debe tener 9 dígitos")),
+    );
+    return;
+  }
+  if (telefonoCelular.isEmpty) telefonoCelular = '';
 
+  // Consolidar datos
+  final consolidatedData = {
+    ...widget.firstData,
+    "direccion": _direccionController.text.trim(),
+    "departamento": _departamentoController.text.trim(),
+    "provincia": _provinciaController.text.trim(),
+    "distrito": _distritoController.text.trim(),
+    "telefonoCelular": telefonoCelular.isEmpty ? null : telefonoCelular,
+    "foto": encodedImage1,
+    "firma": encodedImage2,
+    "idDigital": "92820192",
+  };
 
+  try {
+    final response = await socialServicesService.createIdentification(consolidatedData);
 
-    // Consolidar los datos del primer y segundo formulario
-    final consolidatedData = {
-      ...widget.firstData, // Datos del primer formulario
-      "direccion": _direccionController.text.trim(),
-      "departamento": _departamentoController.text.trim(),
-      "provincia": _provinciaController.text.trim(),
-      "distrito": _distritoController.text.trim(),
-      "telefonoCelular": telefonoCelular,
-      "foto": image1Base64,
-      "firma": image2Base64,
-      "idDigital": "92820192",
-    };
+    if (!mounted) return;
 
-    // Simular envío de datos al backend
-    print("Datos consolidados: $consolidatedData");
-
-    //Navigator.pushNamed(context, 'menu');
-
-
-    /*try {
-      final response = await _apiService.addIdentification(consolidatedData);
-
+    if (response != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Registro exitoso: ${response['message']}")),
       );
 
-      // Guardar datos en SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('idDigital', consolidatedData["idDigital"]);
-
-      // Redirigir al usuario a la siguiente pantalla
-
-    } catch (error) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('idDigital', consolidatedData["idDigital"]);
-      Navigator.pushNamed(context, 'user_menu');
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al registrar: $error")),
-
-      );*/
-    }*/
+      // Navegar a la pantalla de éxito
+      Navigator.pushNamed(context, 'registro_exitoso_adulto_mayor');
+    }
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error al guardar la identificación: $e")),
+    );
   }
+}
+
 
 
 

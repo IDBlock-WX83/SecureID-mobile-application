@@ -36,41 +36,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  // Método para mostrar el DatePicker y seleccionar la fecha de nacimiento
-  Future<void> _selectBirthDate(BuildContext context) async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900), // Fecha mínima
-      lastDate: DateTime.now(), // Fecha máxima
-    );
+  // Agrega estas variables para guardar las fechas en formato yyyy-MM-dd
+String? _birthDateIso;
+String? _inscriptionDateIso;
 
-    if (selectedDate != null) {
-      String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
-      setState(() {
-        _birthDateController.text =
-            formattedDate; // Actualiza el TextField con la fecha seleccionada
-      });
-    }
+// Método para seleccionar la fecha de nacimiento
+Future<void> _selectBirthDate(BuildContext context) async {
+  DateTime? selectedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(1900),
+    lastDate: DateTime.now(),
+  );
+
+  if (selectedDate != null) {
+    setState(() {
+      _birthDateIso = DateFormat('yyyy-MM-dd').format(selectedDate); // formato correcto para guardar
+      _birthDateController.text = DateFormat('dd/MM/yyyy').format(selectedDate); // visual
+    });
   }
+}
 
-  // Método para mostrar el DatePicker y seleccionar la fecha de inscripción
-  Future<void> _selectInscriptionDate(BuildContext context) async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900), // Fecha mínima
-      lastDate: DateTime.now(), // Fecha máxima
-    );
+// Método para seleccionar la fecha de inscripción
+Future<void> _selectInscriptionDate(BuildContext context) async {
+  DateTime? selectedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(1900),
+    lastDate: DateTime.now(),
+  );
 
-    if (selectedDate != null) {
-      String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
-      setState(() {
-        _inscriptionDateController.text =
-            formattedDate; // Actualiza el TextField con la fecha seleccionada
-      });
-    }
+  if (selectedDate != null) {
+    setState(() {
+      _inscriptionDateIso = DateFormat('yyyy-MM-dd').format(selectedDate); // formato correcto para guardar
+      _inscriptionDateController.text = DateFormat('dd/MM/yyyy').format(selectedDate); // visual
+    });
   }
+}
+
+
+
+
 
   void _goToSecondScreen() {
     // Verifica que todos los campos estén completos
@@ -92,10 +98,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "preNombres": _nameController.text.trim(),
       "primerApellido": _paternalSurnameController.text.trim(),
       "segundoApellido": _maternalSurnameController.text.trim(),
-      "fechaNacimiento": _birthDateController.text.trim(),
+  "fechaNacimiento": _birthDateIso ?? '',
       "sexo": _selectedSexo,
       "estadoCivil": _selectedEstadoCivil,
-      "fechaInscripcion": _inscriptionDateController.text.trim(),
+  "fechaInscripcion": _inscriptionDateIso ?? '',
     };
 
   print( firstData);

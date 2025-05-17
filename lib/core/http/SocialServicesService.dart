@@ -39,4 +39,9 @@ Future<List<SocialService>> getSocialServicesByTypeAndNotExpired(String type) as
 Future<Map<String, dynamic>> updateSocialService(int id, Map<String, dynamic> socialServiceData) async {
   return await apiService.putById('/social-services/$id', socialServiceData);
 }
+
+  // Crear un nuevo servicio social
+  Future<Map<String, dynamic>> createIdentification(Map<String, dynamic> identificationData) async {
+    return await apiService.post('/blockchain/addIdentification', identificationData); // Usamos el endpoint específico
+  }
 }
