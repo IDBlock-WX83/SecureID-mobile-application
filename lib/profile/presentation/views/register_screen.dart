@@ -90,12 +90,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Consolidar los datos del primer formulario
     final firstData = {
       "preNombres": _nameController.text.trim(),
-      "apellidoPaterno": _paternalSurnameController.text.trim(),
-      "apellidoMaterno": _maternalSurnameController.text.trim(),
+      "primerApellido": _paternalSurnameController.text.trim(),
+      "segundoApellido": _maternalSurnameController.text.trim(),
       "fechaNacimiento": _birthDateController.text.trim(),
-      "fechaInscripcion": _inscriptionDateController.text.trim(),
       "sexo": _selectedSexo,
       "estadoCivil": _selectedEstadoCivil,
+      "fechaInscripcion": _inscriptionDateController.text.trim(),
     };
 
   print( firstData);

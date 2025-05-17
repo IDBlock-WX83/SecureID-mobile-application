@@ -5,6 +5,7 @@ import 'dart:io'; // Para manejar archivos de imagen
 import '../../infrastructure/BlockchainApiService.dart'; // Importar el servicio
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart'; // Para acceder a LengthLimitingTextInputFormatter
+import 'dart:convert'; // Para usar base64Encode
 
 class SignUpScreen2 extends StatefulWidget {
   final Map<String, dynamic> firstData; // Recibe los datos del primer registro
@@ -19,11 +20,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   final BlockchainApiService _apiService =
       BlockchainApiService(); // Instancia del servicio
 
-  final TextEditingController _directionController = TextEditingController();
-  final TextEditingController _regionController = TextEditingController();
-  final TextEditingController _provinceController = TextEditingController();
-  final TextEditingController _districtController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _direccionController = TextEditingController();
+  final TextEditingController _departamentoController = TextEditingController();
+  final TextEditingController _provinciaController = TextEditingController();
+  final TextEditingController _distritoController = TextEditingController();
+  final TextEditingController _telefonoCelularController = TextEditingController();
 
   // Variables para almacenar las imágenes seleccionadas
   File? _image1;
@@ -44,44 +45,48 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     }
   }
 
+
+
   String _gender = "M"; // Género por defecto
 
+
+/*
   @override
   void initState() {
     super.initState();
     // Prellenar datos con `firstData` si están disponibles
-    if (widget.firstData.containsKey("region")) {
-      _regionController.text = widget.firstData["region"] ?? "";
+    if (widget.firstData.containsKey("direccion")) {
+      _direccionController.text = widget.firstData["direccion"] ?? "";
     }
     if (widget.firstData.containsKey("province")) {
-      _provinceController.text = widget.firstData["province"] ?? "";
+      _provinciaController.text = widget.firstData["province"] ?? "";
     }
     if (widget.firstData.containsKey("district")) {
-      _districtController.text = widget.firstData["district"] ?? "";
+      _distritoController.text = widget.firstData["district"] ?? "";
     }
     if (widget.firstData.containsKey("phone")) {
-      _phoneController.text = widget.firstData["phone"] ?? "";
+      _telefonoCelularController.text = widget.firstData["phone"] ?? "";
     }
 
     
-  }
+  }*/
 
   @override
   void dispose() {
-    _regionController.dispose();
-    _provinceController.dispose();
-    _districtController.dispose();
-    _phoneController.dispose();
-    _directionController.dispose();
+    _direccionController.dispose();
+    _provinciaController.dispose();
+    _distritoController.dispose();
+    _telefonoCelularController.dispose();
+    _departamentoController.dispose();
     super.dispose();
   }
 
   Future<void> _submitForm() async {
     // Verificar si todos los campos están completos
-    if (_regionController.text.isEmpty ||
-        _provinceController.text.isEmpty ||
-        _directionController.text.isEmpty ||
-        _districtController.text.isEmpty ) {
+    if (_direccionController.text.trim().isEmpty ||
+        _provinciaController.text.trim().isEmpty ||
+        _departamentoController.text.trim().isEmpty ||
+        _distritoController.text.trim().isEmpty ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Por favor, complete todos los campos")),
       );
@@ -101,23 +106,42 @@ if (_image1 == null) {
     );
     return;
   }
+// Convertir imágenes a base64
+final String image1Base64 = base64Encode(await _image1!.readAsBytes());
+final String image2Base64 = base64Encode(await _image2!.readAsBytes());
+// Validar teléfono celular
+String? telefonoCelular = _telefonoCelularController.text.trim();
+
+if (telefonoCelular.isNotEmpty && telefonoCelular.length < 9) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("El teléfono celular debe tener 9 dígitos")),
+  );
+  return;
+}
+
+// Si está vacío, lo convertimos a null
+telefonoCelular = telefonoCelular.isEmpty ? null : telefonoCelular;
 
 
-    Navigator.pushNamed(context, 'menu');
 
     // Consolidar los datos del primer y segundo formulario
     final consolidatedData = {
       ...widget.firstData, // Datos del primer formulario
-      "region": _regionController.text,
-      "provincia": _provinceController.text,
-      "distrito": _districtController.text,
-      "phone": _phoneController.text,
-      "sexo": _gender,
-      "active": false,
+      "direccion": _direccionController.text.trim(),
+      "departamento": _departamentoController.text.trim(),
+      "provincia": _provinciaController.text.trim(),
+      "distrito": _distritoController.text.trim(),
+      "telefonoCelular": telefonoCelular,
+      "foto": image1Base64,
+      "firma": image2Base64,
+      "idDigital": "92820192",
     };
 
     // Simular envío de datos al backend
     print("Datos consolidados: $consolidatedData");
+
+    //Navigator.pushNamed(context, 'menu');
+
 
     /*try {
       final response = await _apiService.addIdentification(consolidatedData);
@@ -143,6 +167,9 @@ if (_image1 == null) {
     }*/
   }
 
+
+
+
   // Método para mostrar el DatePicker y seleccionar la fecha de inscripción
 
   @override
@@ -154,9 +181,18 @@ if (_image1 == null) {
         backgroundColor: const Color(0xFF00747C),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+           onPressed: () async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Guardamos temporalmente los datos
+    await prefs.setString('direccion_temp', _direccionController.text);
+    await prefs.setString('departamento_temp', _departamentoController.text);
+    await prefs.setString('provincia_temp', _provinciaController.text);
+    await prefs.setString('distrito_temp', _distritoController.text);
+    await prefs.setString('telefono_temp', _telefonoCelularController.text);
+
+    Navigator.of(context).pop();
+  },
         ),
         title: const Text('Registro',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -180,7 +216,7 @@ if (_image1 == null) {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _directionController,
+              controller: _direccionController,
               decoration: InputDecoration(
                 filled: true,
                 hintText: 'Dirección',
@@ -211,7 +247,7 @@ if (_image1 == null) {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _regionController,
+              controller: _departamentoController,
               decoration: InputDecoration(
                 filled: true,
                 hintText: 'Departamento',
@@ -242,7 +278,7 @@ if (_image1 == null) {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _provinceController,
+              controller: _provinciaController,
               decoration: InputDecoration(
                 filled: true,
                 hintText: 'Provincia',
@@ -273,7 +309,7 @@ if (_image1 == null) {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _districtController,
+              controller: _distritoController,
               decoration: InputDecoration(
                 filled: true,
                 hintText: 'Distrito',
@@ -304,7 +340,7 @@ if (_image1 == null) {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _phoneController,
+              controller: _telefonoCelularController,
               keyboardType:
                   TextInputType.number, // Establece el teclado numérico
               inputFormatters: [
@@ -328,9 +364,9 @@ if (_image1 == null) {
               ),
               onTap: () {
                 // Esto asegura que el texto inicial siempre sea '9' al tocar el campo
-                if (_phoneController.text.isEmpty) {
-                  _phoneController.text = '9'; // Preestablece el número 9
-                  _phoneController.selection = TextSelection.collapsed(
+                if (_telefonoCelularController.text.trim().isEmpty) {
+                  _telefonoCelularController.text = '9'; // Preestablece el número 9
+                  _telefonoCelularController.selection = TextSelection.collapsed(
                       offset: 1); // Mueve el cursor al final
                 }
               },
