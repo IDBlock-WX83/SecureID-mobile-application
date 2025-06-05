@@ -132,7 +132,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     "telefonoCelular": telefonoCelular.isEmpty ? null : telefonoCelular,
     "foto": encodedImage1,
     "firma": encodedImage2,
-    "idDigital": "09174019",
+    //"idDigital": "09174019",
   };
 
   try {
@@ -141,9 +141,9 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     if (!mounted) return;
 
     if (response != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      /*ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Registro exitoso: ${response['message']}")),
-      );
+      );*/
 
       // Navegar a la pantalla de éxito
       Navigator.pushNamed(context, 'registro_exitoso_adulto_mayor');

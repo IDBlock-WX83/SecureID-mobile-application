@@ -56,7 +56,7 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
           child: Column(
             children: [
               CircleAvatar(
-                radius: 70,
+                radius: 100,
                 backgroundColor: Colors.grey[400],
                 child: (widget.resident.foto != null &&
                         widget.resident.foto.isNotEmpty)
@@ -65,8 +65,8 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
                           base64Decode(widget
                               .resident.foto), // decodificar base64 a bytes
                           fit: BoxFit.cover,
-                          width: 140,
-                          height: 140,
+                          width: 200,
+                          height: 200,
                         ),
                       )
                     : const Icon(Icons.person, size: 28, color: Colors.white),
