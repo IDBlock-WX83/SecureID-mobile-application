@@ -1,5 +1,5 @@
 
-class Resident {
+/*class Resident {
   String name;
   String paternalSurname;
   String maternalSurname;
@@ -174,3 +174,4 @@ class LocalResidentPersistence {
     residents.removeWhere((r) => r.idDigital == id);
   }
 }
+*/

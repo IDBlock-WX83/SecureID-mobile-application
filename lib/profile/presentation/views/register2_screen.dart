@@ -132,7 +132,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     "telefonoCelular": telefonoCelular.isEmpty ? null : telefonoCelular,
     "foto": encodedImage1,
     "firma": encodedImage2,
-    "idDigital": "92820192",
+    "idDigital": "09174019",
   };
 
   try {

@@ -1,5 +1,6 @@
 import 'package:ztech_mobile_application/core/http/ApiService .dart';
 import 'package:ztech_mobile_application/services/social_service.dart';
+import 'package:ztech_mobile_application/services/resident_service.dart';
 
 class SocialServicesService {
   final ApiService apiService;
@@ -42,6 +43,15 @@ Future<Map<String, dynamic>> updateSocialService(int id, Map<String, dynamic> so
 
   // Crear un nuevo servicio social
   Future<Map<String, dynamic>> createIdentification(Map<String, dynamic> identificationData) async {
-    return await apiService.post('/blockchain/addIdentification', identificationData); // Usamos el endpoint específico
+    return await apiService.post('/identification', identificationData); // Usamos el endpoint específico
   }
+
+
+
+Future<List<Resident>> getAllSIdentifications() async {
+  final response = await apiService.get('/identification');
+  return response.map<Resident>((json) => Resident.fromJson(json)).toList();
+}
+
+  
 }

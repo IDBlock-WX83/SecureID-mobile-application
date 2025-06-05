@@ -104,7 +104,7 @@ Future<void> _selectInscriptionDate(BuildContext context) async {
   "fechaInscripcion": _inscriptionDateIso ?? '',
     };
 
-  print( firstData);
+  print(firstData);
     // Navegar al segundo formulario enviando los datos
     Navigator.push(
       context,

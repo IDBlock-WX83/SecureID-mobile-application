@@ -79,7 +79,7 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
             _buildMenuOption(
               title: 'Residentes',
               onTap: () {
-                Navigator.pushNamed(context, 'servicesAdmin');
+                Navigator.pushNamed(context, 'resident_screen');
                 print('Residentes');
               },
             ),
