@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 import 'package:ztech_mobile_application/core/http/ApiService .dart';
 import 'package:ztech_mobile_application/services/resident_service.dart';
+import 'package:ztech_mobile_application/menu/identity/identity_admin_screen.dart';
+
 import 'dart:convert'; // Asegúrate que esté importado también
 import 'dart:typed_data';
 
@@ -96,6 +98,10 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
                       .where((r) =>
                           r.preNombres
                               .toLowerCase()
+                              .contains(searchQuery.toLowerCase()) ||r.primerApellido
+                              .toLowerCase()
+                              .contains(searchQuery.toLowerCase()) ||r.segundoApellido
+                              .toLowerCase()
                               .contains(searchQuery.toLowerCase()) ||
                           r.idDigital.contains(searchQuery))
                       .toList();
@@ -145,6 +151,13 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
                                 const Icon(Icons.arrow_forward_ios, size: 18),
                             onTap: () {
                               // Acción al tocar el elemento (por ejemplo, navegar a detalle)
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      IdentityAdminScreen(resident: resident),
+                                ),
+                              );
                             },
                           ),
                         ),

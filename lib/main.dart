@@ -5,6 +5,8 @@ import 'package:ztech_mobile_application/profile/presentation/views/menu_screen.
 import 'package:ztech_mobile_application/menu/identity/DNI_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
+import 'package:ztech_mobile_application/menu/identity/identity_admin_screen.dart';
+
 import 'package:ztech_mobile_application/menu/menu_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/resident_detail_screen.dart';
@@ -98,6 +100,8 @@ class MyApp extends StatelessWidget {
         'upload_face_capture': (context) => FaceCaptureScreen(),
         'menu_residentes': (context) => MenuScreen(),
         'identificacion': (context) => IdentityScreen(),
+                //'identificacion_admin': (context) => IdentityAdminScreen(),
+
         'user_dni': (context) => DNIScreen(),
         'menu': (context) => MenuScreenAutoridades(
             blockchain: blockchain), // Pasar la instancia de Blockchain aquí
