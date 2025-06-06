@@ -58,7 +58,12 @@ class _EducationServiceScreenState extends State<EducationServiceScreen> {
       ),
       backgroundColor: const Color(0xFFC7C7CC),
       body: _servicios.isEmpty // Si la lista está vacía, muestra un indicador de carga o un mensaje
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+        child: Text(
+          'No hay servicios disponibles',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
+        ),
+      )
           : ListView.builder(
               padding: const EdgeInsets.all(10),
               itemCount: _servicios.length,

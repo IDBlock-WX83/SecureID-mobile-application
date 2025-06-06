@@ -1,13 +1,8 @@
-import 'dart:convert'; 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle; 
-import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
-import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
-import 'package:ztech_mobile_application/menu/identity/identity_screen.dart';
-import 'identity/DNI_screen.dart';
-import 'success_popup.dart'; 
-import 'package:flutter/services.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
+import 'dart:convert'; // Para base64Decode
 
 class MenuScreen extends StatefulWidget {
   @override
@@ -15,22 +10,57 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+
+    if (userId != null) {
+      try {
+        final service = SocialServicesService(apiService: ApiService());
+        final data = await service.getIdentificationById(userId);
+        setState(() {
+          userData = data;
+          isLoading = false;
+        });
+      } catch (e) {
+        print('Error al cargar datos del usuario: $e');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else {
+      // No hay sesión válida, redirige
+      Navigator.pushReplacementNamed(context, 'welcome');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF00747C),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFF00747C),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF00747C),
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Menú',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -38,28 +68,36 @@ class _MenuScreenState extends State<MenuScreen> {
         ),
         centerTitle: true,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            onTap: () {
-              print('Avatar presionado');
-              Navigator.pushNamed(context, 'identificacion');
-            },
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 20,
-              child: Icon(Icons.person, color: Colors.black),
-            ),
-          ),
-        ),
+  padding: const EdgeInsets.all(8.0),
+  child: GestureDetector(
+    onTap: () {
+      Navigator.pushNamed(context, 'identificacion');
+    },
+    child: CircleAvatar(
+      radius: 20,
+      backgroundColor: Colors.white,
+      backgroundImage: (userData != null &&
+              userData!['foto'] != null &&
+              userData!['foto'].toString().isNotEmpty)
+          ? MemoryImage(base64Decode(userData!['foto']))
+          : null,
+      child: (userData == null ||
+              userData!['foto'] == null ||
+              userData!['foto'].toString().isEmpty)
+          ? const Icon(Icons.person, color: Colors.black)
+          : null,
+    ),
+  ),
+),
+
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
-              size: 30,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, 'welcome');
+            icon: const Icon(Icons.exit_to_app, color: Colors.white, size: 30),
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.clear(); // Cierra sesión
+              Navigator.pushNamedAndRemoveUntil(
+                  context, 'welcome', (route) => false);
             },
           ),
         ],
@@ -71,7 +109,11 @@ class _MenuScreenState extends State<MenuScreen> {
             _buildMenuOption(
               title: 'Identificación',
               onTap: () {
-                Navigator.pushNamed(context, 'identificacion');
+Navigator.pushNamed(
+  context,
+  'identificacion',
+  arguments: userData,
+);
               },
             ),
             _buildMenuOption(
@@ -106,7 +148,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold, // 👉 Aquí agregué la negrita
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const Icon(Icons.arrow_forward_ios, color: Colors.black),

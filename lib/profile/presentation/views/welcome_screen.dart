@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
+import 'package:ztech_mobile_application/core/http/ApiService .dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -13,58 +15,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _idController = TextEditingController();
 
-  Future<void> _saveIdDigital(String idDigital) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('idDigital', idDigital);
-    print('ID Digital guardado: $idDigital');
-  }
-
-  Future<bool> _validateIdDigital(String idDigital) async {
-    final String url =
-        "http://10.0.2.2:8080/api/blockchain/identification/exists/$idDigital";
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
-      );
-
-      if (response.statusCode == 200) {
-        final result = jsonDecode(response.body);
-        return result == true;
-      } else {
-        print("Error al validar ID Digital: ${response.statusCode}");
-        return false;
-      }
-    } catch (error) {
-      print("Error al conectar con la API: $error");
-      return false;
-    }
-  }
-
-  Future<Map<String, dynamic>?> _getIdentificationDetails(
-      String idDigital) async {
-    final String url =
-        "http://10.0.2.2:8080/api/blockchain/identification/$idDigital";
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
-      );
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        print(
-            "Error al obtener los detalles de la identificación: ${response.statusCode}");
-        return null;
-      }
-    } catch (error) {
-      print("Error al conectar con la API: $error");
-      return null;
-    }
-  }
+  final socialServicesService = SocialServicesService(apiService: ApiService());
 
   @override
   Widget build(BuildContext context) {
@@ -135,57 +86,49 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   onPressed: () async {
                     final idDigital = _idController.text.trim();
 
-                    if (idDigital.isNotEmpty) {
-                      if (idDigital == 'ADMIN') {
-                        // Si el ID es ADMIN, redirige a la pestaña de ADMIN
-                        Navigator.pushNamed(context, 'menu');
-                      } else {
-                        // Si el ID no es ADMIN, redirige a la pestaña de residentes
-                        Navigator.pushNamed(context, 'menu_residentes');
-                      }
-                    } else {
+                    if (idDigital.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text('Por favor, ingresa un ID Digital.')),
                       );
+                      return;
+                    }
+
+                    try {
+                      final userData = await socialServicesService
+                          .loginByIdDigital(idDigital);
+
+                      if (userData == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Ingresa un ID Digital válido.')),
+                        );
+                        return;
+                      }
+
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setInt(
+                          'userId', userData['id']); // Guarda el id interno
+                      await prefs.setString('idDigital',
+                          userData['idDigital']); // Guarda el idDigital
+                      await prefs.setBool('isAdmin',
+                          userData['isAdmin'] ?? false); // Guarda el rol
+
+                      if (userData['isAdmin'] == true) {
+                        Navigator.pushReplacementNamed(
+                            context, 'menu'); // Página admin
+                      } else {
+                        Navigator.pushReplacementNamed(
+                            context, 'menu_residentes'); // Página usuario
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al iniciar sesión: $e')),
+                      );
                     }
                   },
 
-                  /*onPressed: () 
-                  async {
-                    final idDigital = _idController.text.trim();
-
-                    if (idDigital.isNotEmpty) {
-                      bool isValid = await _validateIdDigital(idDigital);
-
-                      if (isValid) {
-                        await _saveIdDigital(idDigital);
-
-                        final details = await _getIdentificationDetails(idDigital);
-
-                        if (details != null) {
-                          if (details['active'] == true) {
-                            Navigator.pushNamed(context, 'menu');
-                          } else {
-                            //Navigator.pushNamed(context, 'menu_residentes');
-                            Navigator.pushNamed(context, 'menu_residentes');
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Error al obtener detalles de la identificación.')),
-                          );
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('ID Digital no existe.')),
-                        );
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Por favor, ingresa un ID Digital.')),
-                      );
-                    }
-                  },*/
+                 
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BBC9),
                     padding: const EdgeInsets.symmetric(

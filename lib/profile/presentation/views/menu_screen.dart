@@ -52,9 +52,11 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
               color: Colors.white,
               size: 30,
             ),
-            onPressed: ()  {
-              Navigator.pushNamed(context, 'welcome');
-            },
+            onPressed: ()  async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear(); // Elimina todos los datos guardados
+  Navigator.pushNamedAndRemoveUntil(context, 'welcome', (route) => false);
+}
             /*async {
               // Limpiar el ID Digital de SharedPreferences
               final prefs = await SharedPreferences.getInstance();

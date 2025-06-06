@@ -53,5 +53,25 @@ Future<List<Resident>> getAllSIdentifications() async {
   return response.map<Resident>((json) => Resident.fromJson(json)).toList();
 }
 
+
+// En tu servicio donde manejas identification, por ejemplo SocialServicesService o IdentificationService
+
+Future<Map<String, dynamic>?> loginByIdDigital(String idDigital) async {
+  try {
+    final response = await apiService.post('/identification/login', {
+      'idDigital': idDigital,
+    });
+    return response;  // Esperamos JSON con los datos del usuario, incluyendo isAdmin
+  } catch (e) {
+    if (e.toString().contains('404')) {
+      return null;  // No existe idDigital
+    }
+    rethrow;  // Otros errores
+  }
+}
+
+Future<Map<String, dynamic>> getIdentificationById(int id) async {
+  return await apiService.getById('/identification/id/$id');
+}
   
 }
