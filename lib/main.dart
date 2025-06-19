@@ -38,7 +38,7 @@ import 'package:ztech_mobile_application/menu/successregister_popup.dart';
 import 'package:ztech_mobile_application/services/successregister_Salud_popup.dart';
 import 'package:ztech_mobile_application/services/deleteregister_Salud_popup.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
 void main() async {

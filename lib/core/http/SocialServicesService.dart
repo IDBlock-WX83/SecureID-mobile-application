@@ -1,4 +1,4 @@
-import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/services/social_service.dart';
 import 'package:ztech_mobile_application/services/resident_service.dart';
 

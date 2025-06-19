@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // Para manejar archivos de imagen
-import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 import 'dart:convert'; // Necesario para la codificación en Base64
 import 'dart:typed_data'; // <-- Importa para Uint8List

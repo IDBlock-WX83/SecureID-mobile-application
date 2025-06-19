@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:ztech_mobile_application/core/http/ApiConfig .dart';
+import 'package:ztech_mobile_application/core/http/ApiConfig.dart';
 import 'dart:isolate'; // Importa Isolate
 
 class ApiService {

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
-import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/ApiService.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

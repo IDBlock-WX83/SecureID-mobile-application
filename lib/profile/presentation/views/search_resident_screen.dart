@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
-import 'package:ztech_mobile_application/core/http/ApiService .dart';
+import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/services/resident_service.dart';
 import 'package:ztech_mobile_application/menu/identity/identity_admin_screen.dart';
 
@@ -34,6 +34,7 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
       }
       return residents;
     } catch (e) {
+      
       print('Error al cargar residentes: $e');
       throw Exception('Error al cargar residentes: $e');
     }

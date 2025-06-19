@@ -49,7 +49,7 @@ class Resident {
       departamento: json['departamento'],
       provincia: json['provincia'],
       distrito: json['distrito'],
-      telefonoCelular: json['telefonoCelular'],
+      telefonoCelular: json['telefonoCelular']??'',
       firma: json['firma'],
       idDigital: json['idDigital'],
       foto: json['foto'],

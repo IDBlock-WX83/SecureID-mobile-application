@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ztech_mobile_application/core/http/ApiService .dart'; // Importa ApiService
+import 'package:ztech_mobile_application/core/http/ApiService.dart'; // Importa ApiService
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart'; // Importa SocialServicesService
 import 'package:ztech_mobile_application/services/social_service.dart';
 import 'package:intl/intl.dart';
