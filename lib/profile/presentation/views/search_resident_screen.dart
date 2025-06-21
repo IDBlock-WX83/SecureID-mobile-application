@@ -25,20 +25,21 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
     _futureResidents = _fetchResidents();
   }
 
-  Future<List<Resident>> _fetchResidents() async {
-    try {
-      final residents = await socialServicesService.getAllSIdentifications();
-      print('📦 Datos obtenidos de la API:');
-      for (var r in residents) {
-        print('➡️ ${r.preNombres} - ID Digital: ${r.idDigital}');
-      }
-      return residents;
-    } catch (e) {
-      
-      print('Error al cargar residentes: $e');
-      throw Exception('Error al cargar residentes: $e');
+ Future<List<Resident>> _fetchResidents() async {
+  try {
+    final residents = await socialServicesService.getAllSIdentifications();
+    print('📦 Datos obtenidos de la API:');
+    for (var r in residents) {
+      print('➡️ ${r.preNombres} - ID Digital: ${r.idDigital}');
     }
+    return residents;
+  } catch (e) {
+    print('Error al cargar residentes: $e');
+    throw Exception('Error al cargar residentes: $e');
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

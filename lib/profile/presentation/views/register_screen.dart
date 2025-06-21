@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:flutter/services.dart';
+import 'package:ztech_mobile_application/core/http/EstadoCivilService.dart';
+import 'package:ztech_mobile_application/core/http/SexoService.dart';
 import 'register2_screen.dart'; // Importa la pantalla del segundo registro
+import 'package:ztech_mobile_application/core/http/ApiService.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -24,6 +27,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String _selectedSexo = ''; // Valor inicial vacío para el Dropdown de Sexo
   String _selectedEstadoCivil = ''; // Valor inicial vacío para el Dropdown de Estado Civil
+
+
+
+ // Inicialización para el API
+  late ApiService apiService;
+  late EstadoCivilService estadoCivilService;
+  late SexoService sexoService;
+
+ @override
+  void initState() {
+    super.initState();
+    apiService = ApiService(); // Aquí inicializas ApiService
+   
+estadoCivilService = EstadoCivilService(apiService: apiService);
+sexoService = SexoService(apiService: apiService);
+
+  _fetchEstadosCivil();
+    _fetchSexos();
+
+  }
+
+    List<Map<String, dynamic>> estadosCivil = [];
+List<Map<String, dynamic>> sexos = [];
+
+  // Variables de selección
+ String? _selectedEstadoCivilId;
+String? _selectedEstadoCivilName;
+
+  // Variables de selección
+ String? _selectedSexosId;
+String? _selectedSexosName;
+
+// Cargar todos los departamentos
+  _fetchEstadosCivil() async {
+    try {
+      var data = await estadoCivilService.getEstadosCivil();
+      setState(() {
+        estadosCivil = data;
+      });
+    } catch (e) {
+      print("Error al cargar los estados civil: $e");
+    }
+  }
+
+    _fetchSexos() async {
+    try {
+      var data = await sexoService.getSexos();
+      setState(() {
+        sexos = data;
+      });
+    } catch (e) {
+      print("Error al cargar los sexos: $e");
+    }
+  }
+
+
 
   // Libera los controladores cuando ya no son necesarios
   @override
@@ -85,8 +144,9 @@ Future<void> _selectInscriptionDate(BuildContext context) async {
         _maternalSurnameController.text.trim().isEmpty ||
         _birthDateController.text.trim().isEmpty ||
         _inscriptionDateController.text.trim().isEmpty ||
-        _selectedSexo.isEmpty || // Verifica que el sexo no esté vacío
-        _selectedEstadoCivil.isEmpty) { // Verifica que el estado civil no esté vacío
+        
+        _selectedEstadoCivilId == null|| // Verifica que el sexo no esté vacío
+        _selectedSexosId == null) { // Verifica que el estado civil no esté vacío
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Por favor, complete todos los campos")),
       );
@@ -99,10 +159,17 @@ Future<void> _selectInscriptionDate(BuildContext context) async {
       "primerApellido": _paternalSurnameController.text.trim(),
       "segundoApellido": _maternalSurnameController.text.trim(),
   "fechaNacimiento": _birthDateIso ?? '',
-      "sexo": _selectedSexo,
-      "estadoCivil": _selectedEstadoCivil,
+      "sexo":{
+        "id": _selectedSexosId
+       
+    },
+      "estadoCivil": {
+        "id": _selectedEstadoCivilId
+       
+    },
   "fechaInscripcion": _inscriptionDateIso ?? '',
     };
+
 
   print(firstData);
     // Navegar al segundo formulario enviando los datos
@@ -283,21 +350,22 @@ Future<void> _selectInscriptionDate(BuildContext context) async {
             DropdownButtonFormField<String>(
               value: _selectedSexo.isEmpty ? null : _selectedSexo,
               hint: const Text("Seleccione Sexo"),
-              items: const [
-                DropdownMenuItem(
-                  value: 'Masculino',
-                  child: Text('Masculino'),
-                ),
-                DropdownMenuItem(
-                  value: 'Femenino',
-                  child: Text('Femenino'),
-                ),
-              ],
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedSexo = newValue!;
-                });
-              },
+              items: sexos.map((department) {
+    return DropdownMenuItem<String>(
+      value: department['id'].toString(),
+      child: Text(department['sexo']),
+    );
+  }).toList(),
+  onChanged: (String? newValue) {
+    setState(() {
+      _selectedSexosId = newValue;
+      _selectedSexosName = estadosCivil
+          .firstWhere((element) => element['id'].toString() == newValue)
+          ['sexo'];
+ 
+    });
+   
+  },
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
@@ -325,37 +393,22 @@ Future<void> _selectInscriptionDate(BuildContext context) async {
             DropdownButtonFormField<String>(
               value: _selectedEstadoCivil.isEmpty ? null : _selectedEstadoCivil,
               hint: const Text("Seleccione Estado Civil"),
-              items: const [
-                DropdownMenuItem(
-                  value: 'Soltero',
-                  child: Text('Soltero'),
-                ),
-                DropdownMenuItem(
-                  value: 'Casado',
-                  child: Text('Casado'),
-                ),
-                DropdownMenuItem(
-                  value: 'Viudo',
-                  child: Text('Viudo'),
-                ),
-                DropdownMenuItem(
-                  value: 'Divorciado',
-                  child: Text('Divorciado'),
-                ),
-                DropdownMenuItem(
-                  value: 'Separado',
-                  child: Text('Separado'),
-                ),
-                DropdownMenuItem(
-                  value: 'Conviviente',
-                  child: Text('Conviviente'),
-                ),
-              ],
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedEstadoCivil = newValue!;
-                });
-              },
+              items: estadosCivil.map((department) {
+    return DropdownMenuItem<String>(
+      value: department['id'].toString(),
+      child: Text(department['estadoCivil']),
+    );
+  }).toList(),
+  onChanged: (String? newValue) {
+    setState(() {
+      _selectedEstadoCivilId = newValue;
+      _selectedEstadoCivilName = estadosCivil
+          .firstWhere((element) => element['id'].toString() == newValue)
+          ['estado_civil'];
+ 
+    });
+   
+  },
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),

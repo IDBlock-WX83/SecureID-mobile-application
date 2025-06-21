@@ -98,9 +98,9 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
                 'Fecha de Nacimiento',
                 formatDate(widget.resident.fechaNacimiento),
                 'Sexo',
-                widget.resident.sexo,
+                widget.resident.sexo.sexo,
                 'Estado civil',
-                widget.resident.estadoCivil,
+                widget.resident.estadoCivil.estadoCivil,
               ),
               const Divider(
                 thickness: 2,
@@ -146,7 +146,7 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
                             12), // Bordes redondeados también aquí
                         child: Image.memory(
                           base64Decode(widget.resident.firma),
-                          fit: BoxFit.contain,
+                          fit: BoxFit.fill,
                         ),
                       )
                     : const Center(child: Text('Sin firma')),

@@ -149,7 +149,7 @@ class _IdentityScreenState extends State<IdentityScreen> {
                             12), // Bordes redondeados también aquí
                         child: Image.memory(
                           base64Decode(userData['firma']),
-                          fit: BoxFit.contain,
+                          fit: BoxFit.fill,
                         ),
                       )
                     : const Center(child: Text('Sin firma')),

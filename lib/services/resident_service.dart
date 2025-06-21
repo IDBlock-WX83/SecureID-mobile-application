@@ -1,11 +1,14 @@
+import 'package:ztech_mobile_application/services/estado_civil.dart.dart';
+import 'package:ztech_mobile_application/services/sexo.dart';
+
 class Resident {
   final int id;
   final String preNombres;
   final String primerApellido;
   final String segundoApellido;
   final String fechaNacimiento;
-  final String sexo;
-  final String estadoCivil;
+  final Sexo sexo;
+  final EstadoCivil estadoCivil;  // Cambiar a tipo EstadoCivil
   final String fechaInscripcion;
   final String direccion;
   final String departamento;
@@ -23,7 +26,7 @@ class Resident {
     required this.segundoApellido,
     required this.fechaNacimiento,
     required this.sexo,
-    required this.estadoCivil,
+    required this.estadoCivil,  // Cambiar a tipo EstadoCivil
     required this.fechaInscripcion,
     required this.direccion,
     required this.departamento,
@@ -42,14 +45,14 @@ class Resident {
       primerApellido: json['primerApellido'],
       segundoApellido: json['segundoApellido'],
       fechaNacimiento: json['fechaNacimiento'],
-      sexo: json['sexo'],
-      estadoCivil: json['estadoCivil'],
+      sexo: Sexo.fromJson(json['sexo']),  
+      estadoCivil: EstadoCivil.fromJson(json['estadoCivil']),  // Parseo de estadoCivil
       fechaInscripcion: json['fechaInscripcion'],
       direccion: json['direccion'],
       departamento: json['departamento'],
       provincia: json['provincia'],
       distrito: json['distrito'],
-      telefonoCelular: json['telefonoCelular']??'',
+      telefonoCelular: json['telefonoCelular'] ?? '',
       firma: json['firma'],
       idDigital: json['idDigital'],
       foto: json['foto'],
