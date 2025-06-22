@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../success_popup.dart';
+import '../soporte_registro.dart';
 
 class FaceCaptureScreen extends StatelessWidget {
   @override
