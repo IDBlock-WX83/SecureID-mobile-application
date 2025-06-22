@@ -15,9 +15,9 @@ import 'package:ztech_mobile_application/menu/menu_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/resident_detail_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/search_resident_screen.dart';
-import 'package:ztech_mobile_application/profile/presentation/views/splash_screen.dart';
+import 'package:ztech_mobile_application/profile/presentation/views/pantalla_carga.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/transaction_history_screen.dart';
-import 'package:ztech_mobile_application/profile/presentation/views/welcome_screen.dart';
+import 'package:ztech_mobile_application/profile/presentation/views/inicio_sesion.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/upload_front_DNI_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/upload_back_DNI_screen.dart';
 
@@ -36,7 +36,7 @@ import 'package:ztech_mobile_application/services/salud_services_admin_list.dart
 import 'services/services_admin_screen.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/register2_screen.dart';
 import 'package:ztech_mobile_application/common/utils/blockchain_record.dart'; // Asegúrate de importar tu clase Blockchain
-import 'package:ztech_mobile_application/menu/success_popup.dart';
+import 'package:ztech_mobile_application/menu/soporte_registro.dart';
 import 'package:ztech_mobile_application/InAppServices/views/services_screen.dart';
 import 'package:ztech_mobile_application/menu/successregister_popup.dart';
 import 'package:ztech_mobile_application/services/successregister_Salud_popup.dart';
