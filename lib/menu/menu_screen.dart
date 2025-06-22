@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
-import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
+import 'package:ztech_mobile_application/core/http/ResidenteService.dart';
 import 'dart:convert'; // Para base64Decode
 
 class MenuScreen extends StatefulWidget {
@@ -25,7 +25,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
     if (userId != null) {
       try {
-        final service = SocialServicesService(apiService: ApiService());
+        final service = ResidenteService(apiService: ApiService());
         final data = await service.getIdentificationById(userId);
         setState(() {
           userData = data;
@@ -71,7 +71,11 @@ class _MenuScreenState extends State<MenuScreen> {
   padding: const EdgeInsets.all(8.0),
   child: GestureDetector(
     onTap: () {
-      Navigator.pushNamed(context, 'identificacion');
+      Navigator.pushNamed(
+  context,
+  'identificacion',
+  arguments: userData,
+);
     },
     child: CircleAvatar(
       radius: 20,

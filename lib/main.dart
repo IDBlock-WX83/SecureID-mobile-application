@@ -1,6 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ztech_mobile_application/firebase_options.dart';
+import 'package:ztech_mobile_application/profile/presentation/views/distrito_servicio_alimentacion.dart';
+import 'package:ztech_mobile_application/profile/presentation/views/distrito_servicio_educacion.dart';
+import 'package:ztech_mobile_application/profile/presentation/views/distrito_servicio_salud.dart';
+import 'package:ztech_mobile_application/profile/presentation/views/distrito_servicio_social.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/menu_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/DNI_screen.dart';
 import 'package:ztech_mobile_application/menu/identity/face_capture_screen.dart';
@@ -99,6 +103,12 @@ class MyApp extends StatelessWidget {
         'educationedit': (context) => EducationCampaignEditScreen(),
         'upload_face_capture': (context) => FaceCaptureScreen(),
         'menu_residentes': (context) => MenuScreen(),
+
+        'distrito_servicio_salud': (context) => DistritoServicioSalud(),
+        'distrito_servicio_social': (context) => DistritoServicioSocial(),
+        'distrito_servicio_educacion': (context) => DistritoServicioEducacion(),
+        'distrito_servicio_alimentacion': (context) => DistritoServicioAlimentacion(),
+
         'identificacion': (context) => IdentityScreen(),
                 //'identificacion_admin': (context) => IdentityAdminScreen(),
 

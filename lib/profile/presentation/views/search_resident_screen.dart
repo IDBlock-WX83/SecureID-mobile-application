@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ztech_mobile_application/core/http/ResidenteService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/services/resident_service.dart';
@@ -14,20 +15,20 @@ class ResidentsScreen extends StatefulWidget {
 
 class _ResidentsScreenState extends State<ResidentsScreen> {
   final ApiService apiService = ApiService();
-  late SocialServicesService socialServicesService;
+  late ResidenteService residenteService;
   late Future<List<Resident>> _futureResidents;
   String searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    socialServicesService = SocialServicesService(apiService: apiService);
+    residenteService = ResidenteService(apiService: apiService);
     _futureResidents = _fetchResidents();
   }
 
  Future<List<Resident>> _fetchResidents() async {
   try {
-    final residents = await socialServicesService.getAllSIdentifications();
+    final residents = await residenteService.getAllSIdentifications();
     print('📦 Datos obtenidos de la API:');
     for (var r in residents) {
       print('➡️ ${r.preNombres} - ID Digital: ${r.idDigital}');

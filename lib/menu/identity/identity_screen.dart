@@ -101,9 +101,9 @@ class _IdentityScreenState extends State<IdentityScreen> {
                 'Fecha de Nacimiento',
                 formatDate('${userData['fechaNacimiento'] ?? '---'}'),
                 'Sexo',
-                '${userData['sexo'] ?? '---'}',
+                '${userData['sexo']?['sexo'] ?? '---'}',
                 'Estado civil',
-                '${userData['estadoCivil'] ?? '---'}',
+                '${userData['estadoCivil']?['estadoCivil'] ?? '---'}',
               ),
               const Divider(
                 thickness: 2,
@@ -121,11 +121,11 @@ class _IdentityScreenState extends State<IdentityScreen> {
               ),
               _buildTripleRow(
                 'Departamento',
-                '${userData['departamento'] ?? '---'}',
+                '${userData['distrito']?['provincia']?['departamento']?['departamento'] ?? '---'}',
                 'Provincia',
-                '${userData['provincia'] ?? '---'}',
+                '${userData['distrito']?['provincia']?['provincia'] ?? '---'}',
                 'Distrito',
-                '${userData['distrito'] ?? '---'}',
+                '${userData['distrito']?['distrito'] ?? '---'}',
               ),
               const Divider(
                 thickness: 2,

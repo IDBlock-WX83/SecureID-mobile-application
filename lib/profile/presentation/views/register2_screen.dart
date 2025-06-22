@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:image_picker/image_picker.dart';
+import 'package:ztech_mobile_application/core/http/ResidenteService.dart';
 import 'dart:io'; // Para manejar archivos de imagen
 import '../../infrastructure/BlockchainApiService.dart'; // Importar el servicio
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,7 +33,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
   // Inicialización para el API
   late ApiService apiService;
-  late SocialServicesService socialServicesService;
+  late ResidenteService residenteService;
   late LocationService locationService;
 
   // Variables para almacenar las imágenes seleccionadas
@@ -60,7 +61,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   void initState() {
     super.initState();
     apiService = ApiService(); // Aquí inicializas ApiService
-    socialServicesService = SocialServicesService(
+    residenteService = ResidenteService(
         apiService: apiService); // Aquí inicializas SocialServicesService
     locationService = LocationService(apiService: apiService);
     _fetchDepartments(); // Cargar departamentos al inicio
@@ -169,9 +170,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     final consolidatedData = {
       ...widget.firstData,
       "direccion": _direccionController.text.trim(),
-      "departamento": _selectedDepartamentoName,
-      "provincia": _selectedProvinciaName,
-      "distrito": _selectedDistritoName,
+      //"departamento": _selectedDepartamentoName,
+      //"provincia": _selectedProvinciaName,
+      "distrito": {
+        "id": _selectedDistritoId
+       
+    },
       "telefonoCelular": telefonoCelular.isEmpty ? null : telefonoCelular,
       "foto": encodedImage1,
       "firma": encodedImage2,
@@ -181,7 +185,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
     try {
       final response =
-          await socialServicesService.createIdentification(consolidatedData);
+          await residenteService.createIdentification(consolidatedData);
 
       if (!mounted) return;
 

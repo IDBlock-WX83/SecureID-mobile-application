@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:ztech_mobile_application/core/http/AutoridadService.dart';
+import 'package:ztech_mobile_application/core/http/ResidenteService.dart';
 import 'dart:convert';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
@@ -15,7 +17,8 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _idController = TextEditingController();
 
-  final socialServicesService = SocialServicesService(apiService: ApiService());
+  final residenteService = ResidenteService(apiService: ApiService());
+  final autoridadService = Autoridadservice(apiService: ApiService());
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +89,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   onPressed: () async {
                     final idDigital = _idController.text.trim();
 
+                    // Validación de si el ID Digital está vacío
                     if (idDigital.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -94,9 +98,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       return;
                     }
 
+                    // Validación de si el ID Digital tiene una longitud menor a 8
+                    if (idDigital.length < 8) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'El ID Digital debe tener al menos 8 dígitos.')),
+                      );
+                      return;
+                    }
+
                     try {
-                      final userData = await socialServicesService
-                          .loginByIdDigital(idDigital);
+                      // Lógica para determinar si es residente o autoridad
+                      var userData;
+
+                      if (idDigital.length == 8) {
+                        // Si tiene exactamente 8 dígitos, consulta la API para residentes
+                        userData = await residenteService
+                            .loginByIdDigital(idDigital);
+                      } else if (idDigital.length > 8) {
+                        // Si tiene más de 8 dígitos, consulta la API para autoridades
+                        userData =
+                            await autoridadService.loginByIdDigital(idDigital);
+                      }
 
                       if (userData == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -106,20 +130,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         return;
                       }
 
+                      // Guardar los datos en SharedPreferences
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setInt(
                           'userId', userData['id']); // Guarda el id interno
                       await prefs.setString('idDigital',
                           userData['idDigital']); // Guarda el idDigital
-                      await prefs.setBool('isAdmin',
-                          userData['isAdmin'] ?? false); // Guarda el rol
 
-                      if (userData['isAdmin'] == true) {
+                      // Redirigir dependiendo de la longitud del ID Digital
+                      if (userData['idDigital'].length == 8) {
                         Navigator.pushReplacementNamed(
-                            context, 'menu'); // Página admin
-                      } else {
+                            context, 'menu_residentes'); // Página de residentes
+                      } else if (userData['idDigital'].length == 10) {
                         Navigator.pushReplacementNamed(
-                            context, 'menu_residentes'); // Página usuario
+                            context, 'menu'); // Página de autoridades
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -127,8 +151,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       );
                     }
                   },
-
-                 
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BBC9),
                     padding: const EdgeInsets.symmetric(

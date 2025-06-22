@@ -35,8 +35,7 @@ class _MenuScreenState extends State<MenuScreenAutoridades> {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () {
-              print('Avatar presionado');
-              Navigator.pushNamed(context, 'identificacion');
+             Navigator.pushNamed(context, 'register');
             },
             child: CircleAvatar(
               backgroundColor: Colors.white,

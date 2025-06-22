@@ -2,7 +2,7 @@ import 'package:ztech_mobile_application/services/distrito.dart';
 import 'package:ztech_mobile_application/services/estado_civil.dart.dart';
 import 'package:ztech_mobile_application/services/sexo.dart';
 
-class Resident {
+class Autoridad {
   final int id;
   final String preNombres;
   final String primerApellido;
@@ -14,11 +14,9 @@ class Resident {
   final String direccion;
   final Distrito distrito;
   final String telefonoCelular;
-  final String firma;
   final String idDigital;
-  final String foto;
 
-  Resident({
+  Autoridad({
     required this.id,
     required this.preNombres,
     required this.primerApellido,
@@ -30,13 +28,11 @@ class Resident {
     required this.direccion,
     required this.distrito,
     required this.telefonoCelular,
-    required this.firma,
     required this.idDigital,
-    required this.foto,
   });
 
-  factory Resident.fromJson(Map<String, dynamic> json) {
-    return Resident(
+  factory Autoridad.fromJson(Map<String, dynamic> json) {
+    return Autoridad(
       id: json['id'],
       preNombres: json['preNombres'],
       primerApellido: json['primerApellido'],
@@ -48,9 +44,7 @@ class Resident {
       direccion: json['direccion'],
       distrito: Distrito.fromJson(json['distrito']),  // Parseo del Distrito
       telefonoCelular: json['telefonoCelular'] ?? '',
-      firma: json['firma'],
       idDigital: json['idDigital'],
-      foto: json['foto'],
     );
   }
 }

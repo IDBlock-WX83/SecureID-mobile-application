@@ -118,11 +118,11 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
               ),
               _buildTripleRow(
                 'Departamento',
-                widget.resident.departamento,
+                widget.resident.distrito.provincia.departamento.departamento,
                 'Provincia',
-                widget.resident.provincia,
+                widget.resident.distrito.provincia.provincia,
                 'Distrito',
-                widget.resident.distrito,
+                widget.resident.distrito.distrito,
               ),
               const Divider(
                 thickness: 2,

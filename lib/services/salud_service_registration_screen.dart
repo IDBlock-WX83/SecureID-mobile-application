@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io'; // Para manejar archivos de imagen
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
@@ -130,6 +131,15 @@ class _SaludServiceRegistrationScreenState
       List<int> imageBytes = await _image!.readAsBytes();
       encodedImage = base64Encode(imageBytes); // Si hay imagen, la codificamos a base64
     }
+// Recuperamos el valor del ID del distrito
+    final String distritoId = ModalRoute.of(context)?.settings.arguments as String;
+
+
+     // Obtenemos una instancia de SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+
+  // Recuperamos un valor. Si no existe, retornamos un valor por defecto (null o cualquier otro valor predeterminado).
+  int? autoridadId = prefs.getInt('userId');
 
     // Crear el objeto con los datos del formulario
     final socialServiceData = {
@@ -140,6 +150,14 @@ class _SaludServiceRegistrationScreenState
       "descripcion": _descripcioncamapaniaController.text.trim(),
       "socialServicesType": 'SALUD',
       "imagen": encodedImage, // La imagen será null si no se selecciona
+      "distrito": {
+        "id": distritoId
+       
+    },
+    "autoridad": {
+        "id": autoridadId
+       
+    }
     };
 
     // Imprimir los datos en consola para ver el formato antes de enviarlos
