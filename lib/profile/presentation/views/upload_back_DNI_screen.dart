@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-import '../../../menu/success_popup.dart'; // Para manejar archivos de imagen
+import '../../../menu/soporte_registro.dart'; // Para manejar archivos de imagen
 
 class UploadBackDNIScreen extends StatefulWidget {
   const UploadBackDNIScreen({super.key});
