@@ -177,15 +177,35 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
        
     },
       "telefonoCelular": telefonoCelular.isEmpty ? null : telefonoCelular,
-      "foto": encodedImage1,
-      "firma": encodedImage2,
-      "isAdmin": false,
+        //"telefonoCelular": "930987621",
+      //"fotoHash": encodedImage1,
+      //"firmaHash": encodedImage2,
+      "fotoHash": "",
+      "firmaHash": "",
+      //"isAdmin": false,
       //"idDigital": "09174019",
     };
 
     try {
       final response =
           await residenteService.createIdentification(consolidatedData);
+
+           // print('Respuesta: $response');
+
+   // Acceder al 'idDigital' de la respuesta
+      String idDigital = response['idDigital'];
+
+           
+      final consolidatedSaveImages = {
+      
+      "fotoHash": encodedImage1,
+      "firmaHash": encodedImage2,
+ 
+      "idDigital": idDigital,
+    };     
+
+   await residenteService.saveImages(consolidatedSaveImages);
+
 
       if (!mounted) return;
 

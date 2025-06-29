@@ -114,24 +114,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                       if (idDigital.length == 8) {
                         // Si tiene exactamente 8 dígitos, consulta la API para residentes
-                        userData = await residenteService
-                            .loginByIdDigital(idDigital);
+                        userData =
+                            await residenteService.loginByIdDigital(idDigital);
                       } else if (idDigital.length > 8) {
                         // Si tiene más de 8 dígitos, consulta la API para autoridades
                         userData =
                             await autoridadService.loginByIdDigital(idDigital);
-                                print('ID ingresado: $idDigital');
-
+                        print('ID ingresado: $idDigital');
                       }
 
-                        if (userData == null || userData['idDigital'] != idDigital) {
-    print('ID ingresado: $idDigital');
-    print('ID esperado: ${userData?['idDigital']}');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ingresa un ID Digital válido.')),
-    );
-    return;
-  }
+                      if (userData == null ||
+                          userData['idDigital'] != idDigital) {
+                        print('ID ingresado: $idDigital');
+                        print('ID esperado: ${userData?['idDigital']}');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Ingresa un ID Digital válido.')),
+                        );
+                        return;
+                      }
 
                       if (userData == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -140,7 +141,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         );
                         return;
                       }
-
 
                       // Guardar los datos en SharedPreferences
                       final prefs = await SharedPreferences.getInstance();
@@ -154,7 +154,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         Navigator.pushReplacementNamed(
                             context, 'menu_residentes'); // Página de residentes
                       } else if (userData['idDigital'].length == 10) {
-                                    print('ID esperado: ${userData?['idDigital']}');
+                        print('ID esperado: ${userData?['idDigital']}');
 
                         Navigator.pushReplacementNamed(
                             context, 'menu'); // Página de autoridades

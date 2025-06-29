@@ -14,9 +14,10 @@ class Resident {
   final String direccion;
   final Distrito distrito;
   final String telefonoCelular;
-  final String firma;
+  final String firmaHash;
   final String idDigital;
-  final String foto;
+  final String fotoHash;
+  final String txHash;
 
   Resident({
     required this.id,
@@ -30,9 +31,10 @@ class Resident {
     required this.direccion,
     required this.distrito,
     required this.telefonoCelular,
-    required this.firma,
+    required this.firmaHash,
     required this.idDigital,
-    required this.foto,
+    required this.fotoHash,
+    required this.txHash,
   });
 
   factory Resident.fromJson(Map<String, dynamic> json) {
@@ -47,10 +49,12 @@ class Resident {
       fechaInscripcion: json['fechaInscripcion'],
       direccion: json['direccion'],
       distrito: Distrito.fromJson(json['distrito']),  // Parseo del Distrito
-      telefonoCelular: json['telefonoCelular'] ?? '',
-      firma: json['firma'],
       idDigital: json['idDigital'],
-      foto: json['foto'],
+      telefonoCelular: json['telefonoCelular'] ?? '',
+      fotoHash: json['fotoHash'] ?? '',
+      firmaHash: json['firmaHash'] ?? '',
+      txHash: json['txHash']?? '',
+
     );
   }
 }

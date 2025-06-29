@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "274254356089",
-    "project_id": "ztech-1d0e3",
-    "storage_bucket": "ztech-1d0e3.appspot.com"
+    "project_number": "144385939861",
+    "project_id": "tp1-id",
+    "storage_bucket": "tp1-id.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:274254356089:android:4f6b74a157903a23c13ea8",
+        "mobilesdk_app_id": "1:144385939861:android:9edfde3231a0b18955be9c",
         "android_client_info": {
           "package_name": "com.example.ztech_mobile_application"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCLYfNeixjO4aTY5BdHXbYiCbpcWRe6Vxw"
+          "current_key": "AIzaSyAA4y70N-HmMc5OyOrsV3-apThv5Ln7vqg"
         }
       ],
       "services": {

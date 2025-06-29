@@ -62,11 +62,11 @@ class _IdentityScreenState extends State<IdentityScreen> {
               CircleAvatar(
                 radius: 100,
                 backgroundColor: Colors.grey[400],
-                child: (userData['foto']!= null &&
-                        userData['foto'].isNotEmpty)
+                child: (userData['fotoHash']!= null &&
+                        userData['fotoHash'].isNotEmpty)
                     ? ClipOval(
                         child: Image.memory(
-                          base64Decode(userData['foto']), // decodificar base64 a bytes
+                          base64Decode(userData['fotoHash']), // decodificar base64 a bytes
                           fit: BoxFit.cover,
                           width: 200,
                           height: 200,
@@ -143,12 +143,12 @@ class _IdentityScreenState extends State<IdentityScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12), // Bordes redondeados
                 ),
-                child: userData['firma']!= null
+                child: userData['firmaHash']!= null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(
                             12), // Bordes redondeados también aquí
                         child: Image.memory(
-                          base64Decode(userData['firma']),
+                          base64Decode(userData['firmaHash']),
                           fit: BoxFit.fill,
                         ),
                       )

@@ -29,12 +29,10 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
  Future<List<Resident>> _fetchResidents() async {
   try {
     final residents = await residenteService.getAllSIdentifications();
-    print('📦 Datos obtenidos de la API:');
-    for (var r in residents) {
-      print('➡️ ${r.preNombres} - ID Digital: ${r.idDigital}');
-    }
+   
     return residents;
   } catch (e) {
+
     print('Error al cargar residentes: $e');
     throw Exception('Error al cargar residentes: $e');
   }
@@ -126,12 +124,12 @@ class _ResidentsScreenState extends State<ResidentsScreen> {
                             leading: CircleAvatar(
                               radius: 28,
                               backgroundColor: Colors.grey[400],
-                              child: (resident.foto != null &&
-                                      resident.foto.isNotEmpty)
+                              child: (resident.fotoHash != null &&
+                                      resident.fotoHash.isNotEmpty)
                                   ? ClipOval(
                                       child: Image.memory(
                                         base64Decode(resident
-                                            .foto), // decodificar base64 a bytes
+                                            .fotoHash), // decodificar base64 a bytes
                                         fit: BoxFit.cover,
                                         width: 56,
                                         height: 56,

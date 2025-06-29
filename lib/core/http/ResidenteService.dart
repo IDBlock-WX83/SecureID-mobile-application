@@ -18,6 +18,10 @@ class ResidenteService {
   }
 
 
+ Future<Map<String, dynamic>> saveImages(Map<String, dynamic> saveDataImages) async {
+    return await apiService.post('/residente/save-images', saveDataImages); // Usamos el endpoint específico
+  }
+
 
 Future<List<Resident>> getAllSIdentifications() async {
   final response = await apiService.get('/residente');

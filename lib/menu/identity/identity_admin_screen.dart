@@ -58,12 +58,12 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
               CircleAvatar(
                 radius: 100,
                 backgroundColor: Colors.grey[400],
-                child: (widget.resident.foto != null &&
-                        widget.resident.foto.isNotEmpty)
+                child: (widget.resident.fotoHash != null &&
+                        widget.resident.fotoHash.isNotEmpty)
                     ? ClipOval(
                         child: Image.memory(
                           base64Decode(widget
-                              .resident.foto), // decodificar base64 a bytes
+                              .resident.fotoHash), // decodificar base64 a bytes
                           fit: BoxFit.cover,
                           width: 200,
                           height: 200,
@@ -140,12 +140,12 @@ class _IdentityAdminScreenState extends State<IdentityAdminScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12), // Bordes redondeados
                 ),
-                child: widget.resident.firma != null
+                child: widget.resident.firmaHash != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(
                             12), // Bordes redondeados también aquí
                         child: Image.memory(
-                          base64Decode(widget.resident.firma),
+                          base64Decode(widget.resident.firmaHash),
                           fit: BoxFit.fill,
                         ),
                       )

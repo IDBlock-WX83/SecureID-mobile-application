@@ -81,13 +81,13 @@ class _MenuScreenState extends State<MenuScreen> {
       radius: 20,
       backgroundColor: Colors.white,
       backgroundImage: (userData != null &&
-              userData!['foto'] != null &&
-              userData!['foto'].toString().isNotEmpty)
-          ? MemoryImage(base64Decode(userData!['foto']))
+              userData!['fotoHash'] != null &&
+              userData!['fotoHash'].toString().isNotEmpty)
+          ? MemoryImage(base64Decode(userData!['fotoHash']))
           : null,
       child: (userData == null ||
-              userData!['foto'] == null ||
-              userData!['foto'].toString().isEmpty)
+              userData!['fotoHash'] == null ||
+              userData!['fotoHash'].toString().isEmpty)
           ? const Icon(Icons.person, color: Colors.black)
           : null,
     ),
