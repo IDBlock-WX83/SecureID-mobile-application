@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  firebase_messaging: ^15.2.10
+  flutter_local_notifications: ^19.4.0
   crypto: ^3.0.0
   http: ^1.1.0
   image_picker: ^1.1.2
