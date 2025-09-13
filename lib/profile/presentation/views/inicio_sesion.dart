@@ -20,6 +20,118 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final residenteService = ResidenteService(apiService: ApiService());
   final autoridadService = Autoridadservice(apiService: ApiService());
 
+  bool _isLoading = false;
+
+  // ===== OverlayEntry: fondo gris + spinner a pantalla completa =====
+  OverlayEntry? _loader;
+  void _showFullScreenLoader() {
+    if (_loader != null) return;
+    _loader = OverlayEntry(
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false, // bloquea back mientras carga
+        child: Stack(
+          children: const [
+            Positioned.fill(
+              child: ModalBarrier(
+                dismissible: false,
+                color: Colors.black45, // fondo gris oscuro
+              ),
+            ),
+            Center(
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: CircularProgressIndicator(
+                  strokeWidth: 5,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    Overlay.of(context, rootOverlay: true).insert(_loader!);
+  }
+
+  void _hideFullScreenLoader() {
+    try {
+      _loader?.remove();
+    } catch (_) {}
+    _loader = null;
+  }
+  // ================================================================
+
+  @override
+  void dispose() {
+    _hideFullScreenLoader();
+    _idController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    final idDigital = _idController.text.trim();
+
+    // Validaciones
+    if (idDigital.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, ingresa un ID Digital.')),
+      );
+      return;
+    }
+    if (idDigital.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El ID Digital debe tener al menos 8 dígitos.')),
+      );
+      return;
+    }
+
+    // Mostrar overlay y deshabilitar botón
+    if (mounted) {
+      setState(() => _isLoading = true);
+      _showFullScreenLoader();
+    }
+
+    try {
+      dynamic userData;
+      if (idDigital.length == 8) {
+        userData = await residenteService.loginByIdDigital(idDigital);
+      } else if (idDigital.length > 8) {
+        userData = await autoridadService.loginByIdDigital(idDigital);
+      }
+
+      if (userData == null || userData['idDigital'] != idDigital) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ingresa un ID Digital válido.')),
+        );
+        return;
+      }
+
+      // Guardar sesión
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('userId', userData['id']);
+      await prefs.setString('idDigital', userData['idDigital']);
+
+      // Navegar según tipo
+      if (!mounted) return;
+      if (userData['idDigital'].length == 8) {
+        Navigator.pushReplacementNamed(context, 'menu_residentes');
+      } else if (userData['idDigital'].length == 10) {
+        Navigator.pushReplacementNamed(context, 'menu');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al iniciar sesión: $e')),
+      );
+    } finally {
+      if (mounted) {
+        _hideFullScreenLoader();
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,14 +159,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
                 const SizedBox(height: 40),
 
-                // 👇 Aquí la parte adaptada a la imagen
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
                       'ID Digital',
                       style: TextStyle(
-                        color: Colors.white, // Texto blanco como fondo azul
+                        color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -64,10 +175,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       controller: _idController,
                       decoration: InputDecoration(
                         filled: true,
-                        hintText:
-                            'ID Digital', // 👈 Esto es el placeholder dentro
+                        hintText: 'ID Digital',
                         hintStyle: const TextStyle(
-                          color: Colors.black45, // Gris como tu imagen
+                          color: Colors.black45,
                           fontWeight: FontWeight.bold,
                         ),
                         fillColor: const Color(0xFFD9D9D9),
@@ -86,108 +196,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: () async {
-                    final idDigital = _idController.text.trim();
-
-                    // Validación de si el ID Digital está vacío
-                    if (idDigital.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Por favor, ingresa un ID Digital.')),
-                      );
-                      return;
-                    }
-
-                    // Validación de si el ID Digital tiene una longitud menor a 8
-                    if (idDigital.length < 8) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'El ID Digital debe tener al menos 8 dígitos.')),
-                      );
-                      return;
-                    }
-
-                    try {
-                      // Lógica para determinar si es residente o autoridad
-                      var userData;
-
-                      if (idDigital.length == 8) {
-                        // Si tiene exactamente 8 dígitos, consulta la API para residentes
-                        userData =
-                            await residenteService.loginByIdDigital(idDigital);
-                      } else if (idDigital.length > 8) {
-                        // Si tiene más de 8 dígitos, consulta la API para autoridades
-                        userData =
-                            await autoridadService.loginByIdDigital(idDigital);
-                        print('ID ingresado: $idDigital');
-                      }
-
-                      if (userData == null ||
-                          userData['idDigital'] != idDigital) {
-                        print('ID ingresado: $idDigital');
-                        print('ID esperado: ${userData?['idDigital']}');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Ingresa un ID Digital válido.')),
-                        );
-                        return;
-                      }
-
-                      if (userData == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Ingresa un ID Digital válido.')),
-                        );
-                        return;
-                      }
-
-                      // Guardar los datos en SharedPreferences
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setInt(
-                          'userId', userData['id']); // Guarda el id interno
-                      await prefs.setString('idDigital',
-                          userData['idDigital']); // Guarda el idDigital
-
-                      // Redirigir dependiendo de la longitud del ID Digital
-                      if (userData['idDigital'].length == 8) {
-                        Navigator.pushReplacementNamed(
-                            context, 'menu_residentes'); // Página de residentes
-                      } else if (userData['idDigital'].length == 10) {
-                        print('ID esperado: ${userData?['idDigital']}');
-
-                        Navigator.pushReplacementNamed(
-                            context, 'menu'); // Página de autoridades
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error al iniciar sesión: $e')),
-                      );
-                    }
-                  },
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BBC9),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: const Text(
-                    'Entrar',
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Entrar',
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
                 ),
                 const SizedBox(height: 5),
                 TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, 'registro_exitoso');
-                  },
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                          Navigator.pushNamed(context, 'registro_exitoso');
+                        },
                   child: const Text(
                     '¿No tienes cuenta?',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],

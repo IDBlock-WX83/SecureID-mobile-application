@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Necesario para formatear la fecha seleccionada
+import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ztech_mobile_application/core/http/ResidenteService.dart';
-import 'dart:io'; // Para manejar archivos de imagen
-import '../../infrastructure/BlockchainApiService.dart'; // Importar el servicio
+import 'dart:io';
+import '../../infrastructure/BlockchainApiService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart'; // Para acceder a LengthLimitingTextInputFormatter
-import 'dart:convert'; // Para usar base64Encode
+import 'package:flutter/services.dart';
+import 'dart:convert';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 import 'package:ztech_mobile_application/core/http/LocationService.dart';
 
 class SignUpScreen2 extends StatefulWidget {
-  final Map<String, dynamic> firstData; // Recibe los datos del primer registro
+  final Map<String, dynamic> firstData;
 
   const SignUpScreen2({super.key, required this.firstData});
 
@@ -21,31 +21,75 @@ class SignUpScreen2 extends StatefulWidget {
 }
 
 class _SignUpScreen2State extends State<SignUpScreen2> {
-  final BlockchainApiService _apiService =
-      BlockchainApiService(); // Instancia del servicio
+  final BlockchainApiService _apiService = BlockchainApiService();
 
   final TextEditingController _direccionController = TextEditingController();
   final TextEditingController _departamentoController = TextEditingController();
   final TextEditingController _provinciaController = TextEditingController();
   final TextEditingController _distritoController = TextEditingController();
-  final TextEditingController _telefonoCelularController =
-      TextEditingController();
+  final TextEditingController _telefonoCelularController = TextEditingController();
 
-  // Inicialización para el API
   late ApiService apiService;
   late ResidenteService residenteService;
   late LocationService locationService;
 
-  // Variables para almacenar las imágenes seleccionadas
   File? _image1;
   File? _image2;
   final ImagePicker _picker = ImagePicker();
-// Función para seleccionar o tomar una foto
+
+  bool _isLoading = false;
+
+  // ===== OverlayEntry para cubrir TODO (AppBar incluido) =====
+  OverlayEntry? _loader;
+  void _showFullScreenLoader() {
+    if (_loader != null) return;
+    _loader = OverlayEntry(
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false, // bloquear back
+        child: Stack(
+          children: const [
+            // Capa oscura que cubre absolutamente toda la pantalla
+            Positioned.fill(
+              child: ModalBarrier(
+                dismissible: false,
+                color: Colors.black45,
+              ),
+            ),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 64, height: 64,
+                    child: CircularProgressIndicator(strokeWidth: 5, color: Colors.white),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Registrando…',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    Overlay.of(context, rootOverlay: true).insert(_loader!);
+  }
+
+  void _hideFullScreenLoader() {
+    try {
+      _loader?.remove();
+    } catch (_) {}
+    _loader = null;
+  }
+  // ===========================================================
+
   Future<void> _pickImage(int imageNumber, ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        // Asignar la imagen seleccionada a la variable correspondiente
         if (imageNumber == 1) {
           _image1 = File(pickedFile.path);
         } else if (imageNumber == 2) {
@@ -55,19 +99,17 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     }
   }
 
-  String _gender = "M"; // Género por defecto
+  String _gender = "M";
 
   @override
   void initState() {
     super.initState();
-    apiService = ApiService(); // Aquí inicializas ApiService
-    residenteService = ResidenteService(
-        apiService: apiService); // Aquí inicializas SocialServicesService
+    apiService = ApiService();
+    residenteService = ResidenteService(apiService: apiService);
     locationService = LocationService(apiService: apiService);
-    _fetchDepartments(); // Cargar departamentos al inicio
+    _fetchDepartments();
   }
 
-// Cargar todos los departamentos
   _fetchDepartments() async {
     try {
       var data = await locationService.getDepartments();
@@ -79,20 +121,18 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     }
   }
 
-  // Cargar provincias según el departamento seleccionado
   _fetchProvinces(int departmentId) async {
     try {
       var data = await locationService.getProvincesByDepartment(departmentId);
       setState(() {
         provincias = data;
-        distritos.clear(); // Limpiar distritos al cambiar provincia
+        distritos.clear();
       });
     } catch (e) {
       print("Error al cargar las provincias: $e");
     }
   }
 
-  // Cargar distritos según la provincia seleccionada
   _fetchDistricts(int provinceId) async {
     try {
       var data = await locationService.getDistrictsByProvince(provinceId);
@@ -106,6 +146,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
   @override
   void dispose() {
+    _hideFullScreenLoader();
     _direccionController.dispose();
     _provinciaController.dispose();
     _distritoController.dispose();
@@ -115,17 +156,15 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   }
 
   Future<void> _submitForm() async {
-    // Validaciones previas
-
     if (_selectedDepartamentoId == null ||
         _selectedProvinciaId == null ||
         _selectedDistritoId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Por favor, complete todos los campos")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Por favor, complete todos los campos")),
+      );
       return;
     }
 
-    // Validar dirección
     if (_direccionController.text.trim().isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -150,71 +189,50 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       return;
     }
 
-    // Codificar imágenes en base64
     String encodedImage1 = base64Encode(await _image1!.readAsBytes());
     String encodedImage2 = base64Encode(await _image2!.readAsBytes());
 
-    // Validar teléfono celular
     String telefonoCelular = _telefonoCelularController.text.trim();
     if (telefonoCelular.isNotEmpty && telefonoCelular.length < 9) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("El teléfono celular debe tener 9 dígitos")),
+        const SnackBar(content: Text("El teléfono celular debe tener 9 dígitos")),
       );
       return;
     }
     if (telefonoCelular.isEmpty) telefonoCelular = '';
 
-    // Consolidar datos
     final consolidatedData = {
       ...widget.firstData,
       "direccion": _direccionController.text.trim(),
-      //"departamento": _selectedDepartamentoName,
-      //"provincia": _selectedProvinciaName,
-      "distrito": {
-        "id": _selectedDistritoId
-       
-    },
+      "distrito": {"id": _selectedDistritoId},
       "telefonoCelular": telefonoCelular.isEmpty ? null : telefonoCelular,
-        //"telefonoCelular": "930987621",
-      //"fotoHash": encodedImage1,
-      //"firmaHash": encodedImage2,
       "fotoHash": "",
       "firmaHash": "",
-      //"isAdmin": false,
-      //"idDigital": "09174019",
     };
 
+    // Mostrar overlay + deshabilitar botón
+    if (mounted) {
+      setState(() => _isLoading = true);
+      _showFullScreenLoader();
+    }
+
     try {
-      final response =
-          await residenteService.createIdentification(consolidatedData);
+      final response = await residenteService.createIdentification(consolidatedData);
 
-           // print('Respuesta: $response');
-
-   // Acceder al 'idDigital' de la respuesta
       String idDigital = response['idDigital'];
 
-           
       final consolidatedSaveImages = {
-      
-      "fotoHash": encodedImage1,
-      "firmaHash": encodedImage2,
- 
-      "idDigital": idDigital,
-    };     
+        "fotoHash": encodedImage1,
+        "firmaHash": encodedImage2,
+        "idDigital": idDigital,
+      };
 
-   await residenteService.saveImages(consolidatedSaveImages);
-
+      await residenteService.saveImages(consolidatedSaveImages);
 
       if (!mounted) return;
 
       if (response != null) {
-        /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Registro exitoso: ${response['message']}")),
-      );*/
-
-        // Navegar a la pantalla de éxito
         Navigator.pushNamed(context, 'registro_exitoso_adulto_mayor');
       }
     } catch (e) {
@@ -222,6 +240,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error al guardar la identificación: $e")),
       );
+    } finally {
+      if (mounted) {
+        _hideFullScreenLoader();
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -235,12 +258,9 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   String? _selectedDistritoId;
   String? _selectedDistritoName;
 
-  // Listas de departamentos, provincias y distritos
   List<Map<String, dynamic>> departamentos = [];
   List<Map<String, dynamic>> provincias = [];
   List<Map<String, dynamic>> distritos = [];
-
-  // Método para mostrar el DatePicker y seleccionar la fecha de inscripción
 
   @override
   Widget build(BuildContext context) {
@@ -252,18 +272,14 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () async {
+            if (_isLoading) return; // no permitir volver mientras carga
             final prefs = await SharedPreferences.getInstance();
-
-            // Guardamos temporalmente los datos
             await prefs.setString('direccion_temp', _direccionController.text);
-            await prefs.setString(
-                'departamento_temp', _departamentoController.text);
+            await prefs.setString('departamento_temp', _departamentoController.text);
             await prefs.setString('provincia_temp', _provinciaController.text);
             await prefs.setString('distrito_temp', _distritoController.text);
-            await prefs.setString(
-                'telefono_temp', _telefonoCelularController.text);
-
-            Navigator.of(context).pop();
+            await prefs.setString('telefono_temp', _telefonoCelularController.text);
+            if (mounted) Navigator.of(context).pop();
           },
         ),
         title: const Text('Registro',
@@ -275,15 +291,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         child: Column(
           children: [
             const SizedBox(height: 30),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 '*Dirección',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
@@ -292,13 +304,9 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               decoration: InputDecoration(
                 filled: true,
                 hintText: 'Dirección',
-                hintStyle: const TextStyle(
-                  color: Colors.black45,
-                  fontWeight: FontWeight.bold,
-                ),
+                hintStyle: const TextStyle(color: Colors.black45, fontWeight: FontWeight.bold),
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -306,15 +314,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ),
             ),
             const SizedBox(height: 10),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 '*Departamento',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
@@ -331,39 +335,31 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 setState(() {
                   _selectedDepartamentoId = newValue;
                   _selectedDepartamentoName = departamentos.firstWhere(
-                      (element) =>
-                          element['id'].toString() == newValue)['departamento'];
-                  _selectedProvinciaId = null; // Resetear provincia
-                  _selectedDistritoId = null; // Resetear distrito
+                    (e) => e['id'].toString() == newValue,
+                  )['departamento'];
+                  _selectedProvinciaId = null;
+                  _selectedDistritoId = null;
                 });
                 if (newValue != null) {
-                  _fetchProvinces(int.parse(newValue)); // Cargar provincias
+                  _fetchProvinces(int.parse(newValue));
                 }
               },
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-
-            /////////////////////////////////////////
-
             const SizedBox(height: 10),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 '*Provincia',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
@@ -379,40 +375,34 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedProvinciaId = newValue;
-                  _selectedProvinciaName = provincias.firstWhere((element) =>
-                      element['id'].toString() == newValue)['provincia'];
-                  _selectedDistritoId = null; // Resetear distrito
+                  _selectedProvinciaName = provincias.firstWhere(
+                    (e) => e['id'].toString() == newValue,
+                  )['provincia'];
+                  _selectedDistritoId = null;
                 });
                 if (newValue != null) {
-                  _fetchDistricts(int.parse(newValue)); // Cargar distritos
+                  _fetchDistricts(int.parse(newValue));
                 }
               },
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 '*Distrito',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
-
             DropdownButtonFormField<String>(
               value: _selectedDistritoId,
               hint: const Text("Seleccione Distrito"),
@@ -425,88 +415,64 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedDistritoId = newValue;
-                  _selectedDistritoName = distritos.firstWhere((element) =>
-                      element['id'].toString() == newValue)['distrito'];
+                  _selectedDistritoName = distritos.firstWhere(
+                    (e) => e['id'].toString() == newValue,
+                  )['distrito'];
                 });
               },
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 'Teléfono celular',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _telefonoCelularController,
-              keyboardType:
-                  TextInputType.number, // Establece el teclado numérico
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(
-                    9), // Limita el número de caracteres a 9
-              ],
+              keyboardType: TextInputType.number,
+              inputFormatters: [LengthLimitingTextInputFormatter(9)],
               decoration: InputDecoration(
                 filled: true,
                 hintText: 'Teléfono celular',
-                hintStyle: const TextStyle(
-                  color: Colors.black45,
-                  fontWeight: FontWeight.bold,
-                ),
+                hintStyle: const TextStyle(color: Colors.black45, fontWeight: FontWeight.bold),
                 fillColor: const Color(0xFFD9D9D9),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
               ),
               onTap: () {
-                // Esto asegura que el texto inicial siempre sea '9' al tocar el campo
                 if (_telefonoCelularController.text.trim().isEmpty) {
-                  _telefonoCelularController.text =
-                      '9'; // Preestablece el número 9
+                  _telefonoCelularController.text = '9';
                   _telefonoCelularController.selection =
-                      TextSelection.collapsed(
-                          offset: 1); // Mueve el cursor al final
+                      const TextSelection.collapsed(offset: 1);
                 }
               },
             ),
-
             const SizedBox(height: 10),
-// Botón para adjuntar una foto
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 '*Cargar foto',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
-            // Botón para cargar o tomar una foto
             ElevatedButton(
               onPressed: () async {
-                // Mostrar un diálogo para elegir entre tomar una foto o seleccionar de la galería
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -519,20 +485,14 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                             title: const Text('Tomar foto'),
                             onTap: () {
                               Navigator.of(context).pop();
-                              _pickImage(
-                                  1,
-                                  ImageSource
-                                      .camera); // Asignar imagen a _image1
+                              _pickImage(1, ImageSource.camera);
                             },
                           ),
                           ListTile(
                             title: const Text('Seleccionar de la galería'),
                             onTap: () {
                               Navigator.of(context).pop();
-                              _pickImage(
-                                  1,
-                                  ImageSource
-                                      .gallery); // Asignar imagen a _image1
+                              _pickImage(1, ImageSource.gallery);
                             },
                           ),
                         ],
@@ -543,24 +503,18 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD9D9D9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                minimumSize: const Size(double.infinity, 50),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.photo, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Cargar foto', style: TextStyle(color: Colors.black)),
-                  ],
-                ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.photo, color: Colors.black),
+                  SizedBox(width: 10),
+                  Text('Cargar foto', style: TextStyle(color: Colors.black)),
+                ],
               ),
             ),
             const SizedBox(height: 10),
@@ -568,39 +522,26 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               CircleAvatar(
                 radius: 100,
                 backgroundColor: Colors.grey[400],
-                child: (_image1 != null)
-                    ? ClipOval(
-                        child: Image.memory(
-                          _image1 != null
-                              ? _image1!.readAsBytesSync()
-                              : Uint8List(0),
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 200,
-                        ),
-                      )
-                    : const Icon(Icons.person, size: 28, color: Colors.white),
-              ),
-
-            const SizedBox(height: 10),
-// Botón para adjuntar una foto
-            Align(
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                '*Cargar firma',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                child: ClipOval(
+                  child: Image.memory(
+                    _image1!.readAsBytesSync(),
+                    fit: BoxFit.cover,
+                    width: 200,
+                    height: 200,
+                  ),
                 ),
+              ),
+            const SizedBox(height: 10),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '*Cargar firma',
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 10),
-
-            // Botón para cargar o tomar una foto
             ElevatedButton(
               onPressed: () async {
-                // Mostrar un diálogo para elegir entre tomar una foto o seleccionar de la galería
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -613,20 +554,14 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                             title: const Text('Tomar foto'),
                             onTap: () {
                               Navigator.of(context).pop();
-                              _pickImage(
-                                  2,
-                                  ImageSource
-                                      .camera); // Asignar imagen a _image1
+                              _pickImage(2, ImageSource.camera);
                             },
                           ),
                           ListTile(
                             title: const Text('Seleccionar de la galería'),
                             onTap: () {
                               Navigator.of(context).pop();
-                              _pickImage(
-                                  2,
-                                  ImageSource
-                                      .gallery); // Asignar imagen a _image1
+                              _pickImage(2, ImageSource.gallery);
                             },
                           ),
                         ],
@@ -637,68 +572,48 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD9D9D9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                minimumSize: const Size(double.infinity, 50),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.photo, color: Colors.black),
-                    SizedBox(width: 10),
-                    Text('Cargar firma', style: TextStyle(color: Colors.black)),
-                  ],
-                ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.photo, color: Colors.black),
+                  SizedBox(width: 10),
+                  Text('Cargar firma', style: TextStyle(color: Colors.black)),
+                ],
               ),
             ),
             const SizedBox(height: 10),
-
-            // Mostrar la imagen seleccionada (si existe)
             if (_image2 != null)
               Container(
                 height: 80,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: _image2 != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                            12), // Bordes redondeados también aquí
-                        child: Image.memory(
-                          _image2 != null
-                              ? _image2!.readAsBytesSync()
-                              : Uint8List(0),
-                          fit: BoxFit.fill,
-                        ),
-                      )
-                    : const Center(child: Text('Sin firma')),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    _image2!.readAsBytesSync(),
+                    fit: BoxFit.fill,
+                  ),
+                ),
               ),
-
             const SizedBox(height: 20),
-            // Selector de género
-
             ElevatedButton(
-              onPressed: _submitForm, //_submitForm,
+              onPressed: _isLoading ? null : _submitForm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00C2CB),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
               ),
-              child: const Text(
-                'Continuar',
-                style: TextStyle(color: Colors.black, fontSize: 16),
-              ),
+              child: _isLoading
+                  ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Text('Continuar', style: TextStyle(color: Colors.black, fontSize: 16)),
             ),
             const SizedBox(height: 25),
           ],
