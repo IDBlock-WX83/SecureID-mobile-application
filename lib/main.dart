@@ -1,5 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:ztech_mobile_application/firebase_options.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/distrito_servicio_alimentacion.dart';
 import 'package:ztech_mobile_application/profile/presentation/views/distrito_servicio_educacion.dart';
@@ -45,14 +50,110 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
-void main() async {
+// 🔹 Notificaciones locales
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+// 🔹 Handler para notificaciones en background
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("📩 Mensaje en background: ${message.notification?.title}");
+}
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(MyApp()); // No es necesario el 'const' aquí
+  // ✅ Crear canal de notificación (Android 8+)
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'default_channel',
+    'General Notifications',
+    description: 'Canal para notificaciones generales',
+    importance: Importance.high,
+  );
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  // ✅ Inicialización de notificaciones locales
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // ✅ Configuración Firebase Messaging
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // ✅ Suscribirse al topic
+  await FirebaseMessaging.instance.subscribeToTopic("services-basics");
+
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ Pedir permiso (Android 13+)
+    _requestNotificationPermission();
+
+    // Foreground (app abierta)
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("📩 Notificación foreground: ${message.notification?.title}");
+      _showLocalNotification(message);
+    });
+
+    // Cuando el usuario toca la notificación
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("👉 Usuario tocó la notificación: ${message.notification?.title}");
+      // Aquí podrías navegar a otra pantalla
+    });
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    NotificationSettings settings =
+        await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    print("🔔 Permiso notificaciones: ${settings.authorizationStatus}");
+  }
+
+  void _showLocalNotification(RemoteMessage message) {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'default_channel',
+      'General Notifications',
+      channelDescription: 'Canal para notificaciones generales',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    flutterLocalNotificationsPlugin.show(
+      message.hashCode,
+      message.notification?.title ?? "Sin título",
+      message.notification?.body ?? "Sin contenido",
+      platformChannelSpecifics,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Crear la instancia de Blockchain aquí
@@ -77,23 +178,17 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(), //Carga de pantalla completo
-        'welcome': (context) =>
-            WelcomeScreen(), //Pantalla de bienvenida completo
-        'registro_exitoso': (context) => SuccessPopup(
-              onProfileClick: () {},
-            ),
+        'welcome': (context) => WelcomeScreen(), //Pantalla de bienvenida completo
+        'registro_exitoso': (context) => SuccessPopup(onProfileClick: () {}),
         'upload_front_dni': (context) => UploadFrontDNIScreen(),
         'upload_back_dni': (context) => UploadBackDNIScreen(),
         'register': (context) => SignUpScreen(),
-        'register2': (context) => SignUpScreen2(
-            firstData: {}), // Envía un mapa vacío o los datos reales
-        'servicios_administrador': (context) =>
-            ServicesAdminScreen(), // services para editores
+        'register2': (context) => SignUpScreen2(firstData: {}), // Envía un mapa vacío o los datos reales
+        'servicios_administrador': (context) => ServicesAdminScreen(), // services para editores
         'registerhealth': (context) => SaludServiceRegistrationScreen(),
         'registerenergy': (context) => EnergyServiceRegistrationScreen(),
         'registereducation': (context) => EducationServiceRegistrationScreen(),
-        'registerwater': (ServicesScreencontext) =>
-            WaterServiceRegistrationScreen(),
+        'registerwater': (ServicesScreencontext) => WaterServiceRegistrationScreen(),
         'healthlistadmin': (context) => HealthServiceListScreen(),
         'energylistadmin': (context) => EnergyServiceListScreen(),
         'educationlistadmin': (context) => EducationServiceListScreen(),
@@ -113,26 +208,18 @@ class MyApp extends StatelessWidget {
                 //'identificacion_admin': (context) => IdentityAdminScreen(),
 
         'user_dni': (context) => DNIScreen(),
-        'menu': (context) => MenuScreenAutoridades(
-            blockchain: blockchain), // Pasar la instancia de Blockchain aquí
+        'menu': (context) => MenuScreenAutoridades(blockchain: blockchain), // Pasar la instancia de Blockchain aquí
         'resident_screen': (context) => ResidentsScreen(),
-        'record_screen': (context) =>
-            TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
+        'record_screen': (context) => TransactionHistoryScreen(), // Pasar la instancia de Blockchain aquí
         'servicios_residentes': (context) => ServicesScreen(),
-        'registro_exitoso_adulto_mayor': (context) => SuccessRegisterPopup(
-              onProfileClick: () {},
-            ),
-        'servicio_creado_general': (context) => SuccessRegisterSaludPopup(
-              onProfileClick: () {},
-            ),
+        'registro_exitoso_adulto_mayor': (context) => SuccessRegisterPopup(onProfileClick: () {}),
+        'servicio_creado_general': (context) => SuccessRegisterSaludPopup(onProfileClick: () {}),
         'servicio_eliminar_general': (context) {
           // Obtener el serviceId que se pasó desde la pantalla anterior
-          final int serviceId =
-              ModalRoute.of(context)?.settings.arguments as int;
+          final int serviceId = ModalRoute.of(context)?.settings.arguments as int;
 
           // Crear la instancia del servicio, o utilizar la existente
-          final socialServicesService =
-              SocialServicesService(apiService: ApiService());
+          final socialServicesService = SocialServicesService(apiService: ApiService());
 
           // Devolver la vista de eliminación con los parámetros requeridos
           return DeleteRegisterSaludPopup(
@@ -140,8 +227,7 @@ class MyApp extends StatelessWidget {
               // Acción a realizar cuando se confirma la eliminación
             },
             serviceId: serviceId, // Pasar el serviceId
-            socialServicesService:
-                socialServicesService, // Pasar la instancia del servicio
+            socialServicesService: socialServicesService, // Pasar la instancia del servicio
           );
         },
       },
