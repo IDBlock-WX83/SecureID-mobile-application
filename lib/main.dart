@@ -92,68 +92,53 @@ Future<void> main() async {
   // ✅ Suscribirse al topic
   await FirebaseMessaging.instance.subscribeToTopic("services-basics");
 
+  // ✅ Pedir permiso (Android 13+)
+  NotificationSettings settings =
+      await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  print("🔔 Permiso notificaciones: ${settings.authorizationStatus}");
+
+  // ✅ Foreground (app abierta)
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print("📩 Notificación foreground: ${message.notification?.title}");
+    _showLocalNotification(message);
+  });
+
+  // ✅ Cuando el usuario toca la notificación
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print("👉 Usuario tocó la notificación: ${message.notification?.title}");
+    // Aquí podrías navegar a otra pantalla
+  });
+
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  State<MyApp> createState() => _MyAppState();
+void _showLocalNotification(RemoteMessage message) {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'default_channel',
+    'General Notifications',
+    channelDescription: 'Canal para notificaciones generales',
+    importance: Importance.max,
+    priority: Priority.high,
+    ticker: 'ticker',
+  );
+
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  flutterLocalNotificationsPlugin.show(
+    message.hashCode,
+    message.notification?.title ?? "Sin título",
+    message.notification?.body ?? "Sin contenido",
+    platformChannelSpecifics,
+  );
 }
 
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-
-    // ✅ Pedir permiso (Android 13+)
-    _requestNotificationPermission();
-
-    // Foreground (app abierta)
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("📩 Notificación foreground: ${message.notification?.title}");
-      _showLocalNotification(message);
-    });
-
-    // Cuando el usuario toca la notificación
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("👉 Usuario tocó la notificación: ${message.notification?.title}");
-      // Aquí podrías navegar a otra pantalla
-    });
-  }
-
-  Future<void> _requestNotificationPermission() async {
-    NotificationSettings settings =
-        await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    print("🔔 Permiso notificaciones: ${settings.authorizationStatus}");
-  }
-
-  void _showLocalNotification(RemoteMessage message) {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'default_channel',
-      'General Notifications',
-      channelDescription: 'Canal para notificaciones generales',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-    );
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    flutterLocalNotificationsPlugin.show(
-      message.hashCode,
-      message.notification?.title ?? "Sin título",
-      message.notification?.body ?? "Sin contenido",
-      platformChannelSpecifics,
-    );
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Crear la instancia de Blockchain aquí
