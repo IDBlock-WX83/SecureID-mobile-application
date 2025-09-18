@@ -50,92 +50,103 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
 
-// 🔹 Notificaciones locales
+/// --- CONFIGURACIÓN NOTIFICACIONES ---
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-// 🔹 Handler para notificaciones en background
+const AndroidNotificationChannel defaultAndroidChannel = AndroidNotificationChannel(
+  'default_channel',
+  'General Notifications',
+  description: 'Canal por defecto para notificaciones generales',
+  importance: Importance.high,
+);
+
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("📩 Mensaje en background: ${message.notification?.title}");
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print("🔔 Mensaje en segundo plano: ${message.notification?.title}");
 }
 
-Future<void> main() async {
+Future<void> _initNotifications() async {
+  // Crear canal en Android
+  final android =
+      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+  await android?.createNotificationChannel(defaultAndroidChannel);
+
+  // Inicialización de plugin
+  const initAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const initSettings = InitializationSettings(android: initAndroid);
+  await flutterLocalNotificationsPlugin.initialize(
+    initSettings,
+    onDidReceiveNotificationResponse: (resp) {
+      // Si tu backend manda {"route": "resident_screen"} en data
+      final route = resp.payload;
+      if (route != null && route.isNotEmpty) {
+        navigatorKey.currentState?.pushNamed(route);
+      }
+    },
+  );
+
+  // Permisos
+  if (Platform.isAndroid) {
+    await android?.requestNotificationsPermission();
+  } else {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true, badge: true, sound: true,
+    );
+  }
+
+  // Notificación en primer plano
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    final notif = message.notification;
+    if (notif != null) {
+      flutterLocalNotificationsPlugin.show(
+        notif.hashCode,
+        notif.title,
+        notif.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'default_channel',
+            'General Notifications',
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+        ),
+        payload: message.data['route'], // opcional para navegación
+      );
+    }
+  });
+
+  // Click en notificación (cuando viene de background)
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    final route = message.data['route'];
+    if (route != null && route.isNotEmpty) {
+      navigatorKey.currentState?.pushNamed(route);
+    }
+  });
+
+  // Suscribir al topic del backend
+  await FirebaseMessaging.instance.subscribeToTopic('services-basics');
+  print("✅ Suscrito al topic services-basics");
+
+  // Token (para debug si lo necesitas)
+  final token = await FirebaseMessaging.instance.getToken();
+  print("🔑 FCM Token: $token");
+}
+
+/// --- NAVIGATOR GLOBAL KEY (para navegar desde fuera del contexto) ---
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // ✅ Crear canal de notificación (Android 8+)
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'default_channel',
-    'General Notifications',
-    description: 'Canal para notificaciones generales',
-    importance: Importance.high,
-  );
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  // ✅ Inicialización de notificaciones locales
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  // ✅ Configuración Firebase Messaging
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // ✅ Suscribirse al topic
-  await FirebaseMessaging.instance.subscribeToTopic("services-basics");
-
-  // ✅ Pedir permiso (Android 13+)
-  NotificationSettings settings =
-      await FirebaseMessaging.instance.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  print("🔔 Permiso notificaciones: ${settings.authorizationStatus}");
-
-  // ✅ Foreground (app abierta)
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("📩 Notificación foreground: ${message.notification?.title}");
-    _showLocalNotification(message);
-  });
-
-  // ✅ Cuando el usuario toca la notificación
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print("👉 Usuario tocó la notificación: ${message.notification?.title}");
-    // Aquí podrías navegar a otra pantalla
-  });
+  await _initNotifications();
 
   runApp(MyApp());
-}
-
-void _showLocalNotification(RemoteMessage message) {
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    'default_channel',
-    'General Notifications',
-    channelDescription: 'Canal para notificaciones generales',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
-  );
-
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-
-  flutterLocalNotificationsPlugin.show(
-    message.hashCode,
-    message.notification?.title ?? "Sin título",
-    message.notification?.body ?? "Sin contenido",
-    platformChannelSpecifics,
-  );
 }
 
 class MyApp extends StatelessWidget {
