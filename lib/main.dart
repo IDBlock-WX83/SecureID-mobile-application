@@ -49,6 +49,7 @@ import 'package:ztech_mobile_application/services/deleteregister_Salud_popup.dar
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ztech_mobile_application/core/http/ApiService.dart';
 import 'package:ztech_mobile_application/core/http/SocialServicesService.dart';
+import 'dart:io';
 
 /// --- CONFIGURACIÓN NOTIFICACIONES ---
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
