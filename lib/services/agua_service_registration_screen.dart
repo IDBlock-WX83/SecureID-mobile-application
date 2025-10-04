@@ -37,6 +37,7 @@ class _WaterServiceRegistrationScreenState
 
   // Variable para almacenar la imagen seleccionada
   File? _image;
+bool _isLoading = false;
 
   @override
   void initState() {
@@ -164,7 +165,9 @@ class _WaterServiceRegistrationScreenState
 
     // Imprimir los datos en consola para ver el formato antes de enviarlos
     print("Datos a enviar al backend: $socialServiceData");
-
+setState(() {
+  _isLoading = true; // ⏳ Empieza la carga
+});
     try {
       // Llamar al servicio para enviar los datos
       final response =
@@ -180,7 +183,11 @@ class _WaterServiceRegistrationScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error al guardar el servicio: $e")),
       );
-    }
+    } finally {
+  setState(() {
+    _isLoading = false; // ✅ Finaliza la carga
+  });
+}
   }
 
   // Variables para almacenar la imagen seleccionada
@@ -248,7 +255,13 @@ class _WaterServiceRegistrationScreenState
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: Center(
+      body: _isLoading
+    ? const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF00747C),
+          strokeWidth: 4,
+        ),
+      ):Center(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(

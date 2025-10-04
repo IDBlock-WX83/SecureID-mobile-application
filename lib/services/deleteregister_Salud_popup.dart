@@ -33,20 +33,38 @@ class DeleteRegisterSaludPopup extends StatelessWidget {
               // Botón Aceptar
               TextButton(
                 onPressed: () async {
-  // Llamar al método DELETE del servicio
-  try {
-    await socialServicesService.deleteSocialService(serviceId);
-    onProfileClick(); // Llama a la función proporcionada
-    Navigator.of(context).pop(true); // Regresa a la pantalla anterior con el valor true
-  } catch (e) {
-    // Manejar error
-    print('Error al eliminar: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al eliminar el servicio.')),
-    );
-  }
-},
+                  // 🔹 Mostrar círculo de carga
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) => const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF00747C),
+                        strokeWidth: 4,
+                      ),
+                    ),
+                  );
 
+                  // Llamar al método DELETE del servicio
+                  try {
+                    await socialServicesService.deleteSocialService(serviceId);
+                    onProfileClick(); // Llama a la función proporcionada
+
+                    Navigator.of(context).pop(); // 🔸 Cierra el círculo de carga
+                    Navigator.of(context).pop(true); // 🔸 Cierra el popup principal
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Servicio eliminado exitosamente.')),
+                    );
+                  } catch (e) {
+                    // Manejar error
+                    Navigator.of(context).pop(); // 🔸 Cierra el círculo de carga
+                    print('Error al eliminar: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al eliminar el servicio.')),
+                    );
+                  }
+                },
                 child: Text(
                   'Aceptar',
                   style: TextStyle(color: Color(0xFF0C59A2), fontSize: 16),
@@ -57,7 +75,6 @@ class DeleteRegisterSaludPopup extends StatelessWidget {
                 onPressed: () {
                   onProfileClick(); // Llama a la función proporcionada
                   Navigator.of(context).pop(); // Cierra el diálogo
-
                 },
                 child: Text(
                   'Cancelar',

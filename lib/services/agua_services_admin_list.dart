@@ -80,7 +80,7 @@ class _WaterServiceListScreenState extends State<WaterServiceListScreen> {
                   onEdit: () {
                     Navigator.pushNamed(
                       context,
-                      'healthedit',
+                      'wateredit',
                       arguments: service.id,
                     ).then((value) {
                       if (value == true) {

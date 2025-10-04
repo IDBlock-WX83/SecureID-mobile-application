@@ -1,0 +1,2 @@
+C:/Users/red_a/OneDrive/Documentos/GitHub/SecureID-mobile-application/android/app/.cxx/RelWithDebInfo/6g142449/x86/CMakeFiles/edit_cache.dir
+C:/Users/red_a/OneDrive/Documentos/GitHub/SecureID-mobile-application/android/app/.cxx/RelWithDebInfo/6g142449/x86/CMakeFiles/rebuild_cache.dir

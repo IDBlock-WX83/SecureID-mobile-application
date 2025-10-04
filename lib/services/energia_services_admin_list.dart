@@ -80,7 +80,7 @@ class _EnergyServiceListScreenState extends State<EnergyServiceListScreen> {
                   onEdit: () {
                     Navigator.pushNamed(
                       context,
-                      'healthedit',
+                      'energyedit',
                       arguments: service.id,
                     ).then((value) {
                       if (value == true) {

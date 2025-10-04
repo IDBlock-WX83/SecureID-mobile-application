@@ -100,6 +100,7 @@ class MyApp extends StatelessWidget {
         'waterlistadmin': (context) => WaterServiceListScreen(),
         'healthedit': (context) => HealthCampaignEditScreen(),
         'energyedit': (context) => EnergyCampaignEditScreen(),
+        'wateredit': (context) => WaterCampaignEditScreen(),
         'educationedit': (context) => EducationCampaignEditScreen(),
         'upload_face_capture': (context) => FaceCaptureScreen(),
         'menu_residentes': (context) => MenuScreen(),

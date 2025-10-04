@@ -80,7 +80,7 @@ class _EducationServiceListScreenState extends State<EducationServiceListScreen>
                   onEdit: () {
                     Navigator.pushNamed(
                       context,
-                      'healthedit',
+                      'educationedit',
                       arguments: service.id,
                     ).then((value) {
                       if (value == true) {

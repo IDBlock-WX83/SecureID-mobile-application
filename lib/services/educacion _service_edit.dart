@@ -34,6 +34,9 @@ class _EducationCampaignEditScreenState extends State<EducationCampaignEditScree
   int? _serviceId;
   bool _isLoaded = false;
 
+bool _isLoadingData = false;
+bool _isLoadingEdit = false;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +61,10 @@ class _EducationCampaignEditScreenState extends State<EducationCampaignEditScree
 
   // Función para cargar los datos del servicio
   Future<void> _loadServiceData(int serviceId) async {
+    setState(() {
+  _isLoadingData = true; // ⏳ Empieza la carga
+});
+
     try {
       final service =
           await socialServicesService.getSocialServiceById(serviceId);
@@ -103,7 +110,11 @@ class _EducationCampaignEditScreenState extends State<EducationCampaignEditScree
       });
     } catch (e) {
       print('Error al cargar los datos del servicio: $e');
-    }
+    }finally {
+  setState(() {
+    _isLoadingData = false; // ✅ Finaliza la carga
+  });
+}
   }
 
   // Función para seleccionar la hora
@@ -188,7 +199,9 @@ class _EducationCampaignEditScreenState extends State<EducationCampaignEditScree
       "socialServicesType": 'EDUCACION',
       "imagen": encodedImage,
     };
-
+setState(() {
+  _isLoadingEdit = true; // ⏳ Empieza la carga
+});
     try {
       final response = await socialServicesService.updateSocialService(
           _serviceId!, socialServiceData);
@@ -201,7 +214,11 @@ class _EducationCampaignEditScreenState extends State<EducationCampaignEditScree
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Error al actualizar el servicio")),
       );
-    }
+    }finally {
+  setState(() {
+    _isLoadingEdit = false; // ✅ Finaliza la carga
+  });
+}
   }
 
   // Función para enviar los datos del formulario al backend
@@ -330,7 +347,19 @@ class _EducationCampaignEditScreenState extends State<EducationCampaignEditScree
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: Center(
+      body:  _isLoadingData
+    ? const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF00747C),
+          strokeWidth: 4,
+        ),
+      ):_isLoadingEdit
+    ? const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF00747C),
+          strokeWidth: 4,
+        ),
+      ):Center(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(

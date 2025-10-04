@@ -17,6 +17,10 @@ class _HealthServiceScreenState extends State<HealthServiceScreen> {
   final ApiService apiService = ApiService();
   late SocialServicesService socialServicesService;
 
+
+  bool _isLoading = true;
+
+
   // Aquí almacenamos la lista de servicios
   List<SocialService> _servicios = [];
 
@@ -29,6 +33,10 @@ class _HealthServiceScreenState extends State<HealthServiceScreen> {
 
   // Función que obtiene los servicios
   Future<void> _loadServicios() async {
+
+    setState(() {
+    _isLoading = true; // ⏳ Empieza la carga
+  });
     try {
       final servicios = await socialServicesService.getSocialServicesByTypeAndNotExpired('SALUD');
       setState(() {
@@ -36,7 +44,11 @@ class _HealthServiceScreenState extends State<HealthServiceScreen> {
       });
     } catch (e) {
       print('Error al cargar servicios: $e');
-    }
+    }finally {
+    setState(() {
+      _isLoading = false; // ✅ Finaliza la carga
+    });
+  }
   }
 
   @override
@@ -57,7 +69,14 @@ class _HealthServiceScreenState extends State<HealthServiceScreen> {
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFC7C7CC),
-      body: _servicios.isEmpty // Si la lista está vacía, muestra un indicador de carga o un mensaje
+      body:  _isLoading
+    ? const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFF00747C),
+          strokeWidth: 4,
+        ),
+      )
+    :_servicios.isEmpty // Si la lista está vacía, muestra un indicador de carga o un mensaje
           ? const Center(
         child: Text(
           'No hay servicios disponibles',
