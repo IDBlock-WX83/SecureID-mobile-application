@@ -5,7 +5,7 @@ import 'package:ztech_mobile_application/RecordHash/Model/RecordHashResponseDto.
 
 class RecordHashApiService {
   // Define la URL base de tu API
-  final String _baseUrl = "http://10.0.2.2:8080/api/blockchain";
+  final String _baseUrl = "https://secure-id.azurewebsites.net/api/blockchain";
 
   // Método para obtener el historial de bloques (Blockchain)
   Future<List<RecordHashResponseDto>> getBlockchain() async {

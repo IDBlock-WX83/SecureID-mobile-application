@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class BlockchainApiService {
   // Define la URL base de tu API
-  final String _baseUrl = "http://10.0.2.2:8080/api/blockchain"; // Cambia a la IP correcta si es necesario
+  final String _baseUrl = "https://secure-id.azurewebsites.net/api/blockchain"; // Cambia a la IP correcta si es necesario
 
   // Método para añadir una identificación
   Future<Map<String, dynamic>> addIdentification(Map<String, dynamic> identificationData) async {
