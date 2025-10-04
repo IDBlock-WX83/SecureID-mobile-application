@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -49,21 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-static const FirebaseOptions android = FirebaseOptions(
-  apiKey: 'AIzaSyDxKXT4r3wEzkboySnJgNosVwaJc26Kiwc',
-  appId: '1:1052416122366:android:feec5c22df0d96777db4af',
-  messagingSenderId: '1052416122366',
-  projectId: 'app-movil-upc',
-  storageBucket: 'app-movil-upc.firebasestorage.app',
-);
-
-static const FirebaseOptions ios = FirebaseOptions(
-  apiKey: 'TU_API_KEY_IOS_AQUI', // te lo dará GoogleService-Info.plist
-  appId: 'TU_APP_ID_IOS_AQUI',   // viene del mismo plist
-  messagingSenderId: '1052416122366',
-  projectId: 'app-movil-upc',
-  storageBucket: 'app-movil-upc.firebasestorage.app',
-  iosBundleId: 'com.secureid.app', // usa el mismo si registras igual en iOS
-);
-
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDxKXT4r3wEzkboySnJgNosVwaJc26Kiwc',
+    appId: '1:1052416122366:android:feec5c22df0d96777db4af',
+    messagingSenderId: '1052416122366',
+    projectId: 'app-movil-upc',
+    storageBucket: 'app-movil-upc.firebasestorage.app',
+  );
 }
