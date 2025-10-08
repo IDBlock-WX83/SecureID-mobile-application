@@ -1,4 +1,4 @@
-package com.example.ztech_mobile_application
+package com.secureid.app
 
 import io.flutter.embedding.android.FlutterActivity
 

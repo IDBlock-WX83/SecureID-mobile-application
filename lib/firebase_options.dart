@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -50,20 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAA4y70N-HmMc5OyOrsV3-apThv5Ln7vqg',
-    appId: '1:144385939861:android:9edfde3231a0b18955be9c',
-    messagingSenderId: '144385939861',
-    projectId: 'tp1-id',
-    storageBucket: 'tp1-id.firebasestorage.app',
+    apiKey: 'AIzaSyDxKXT4r3wEzkboySnJgNosVwaJc26Kiwc',
+    appId: '1:1052416122366:android:feec5c22df0d96777db4af',
+    messagingSenderId: '1052416122366',
+    projectId: 'app-movil-upc',
+    storageBucket: 'app-movil-upc.firebasestorage.app',
   );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAy1VJ0bxyfUev7AnidUWLT1YAa3W_EEcU',
-    appId: '1:144385939861:ios:d3bc5999e2b4dba955be9c',
-    messagingSenderId: '144385939861',
-    projectId: 'tp1-id',
-    storageBucket: 'tp1-id.firebasestorage.app',
-    iosBundleId: 'com.example.ztechMobileApplication',
-  );
-
 }
